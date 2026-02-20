@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fundraising Emails — Move People to Give</title>
+  <meta name="description"
+    content="Professional fundraising email copywriting for political campaigns and organizations. We write the emails that raise the money.">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: { 50: '#f0f3f9', 100: '#dce3f0', 200: '#b8c7e1', 300: '#8ba3cc', 400: '#5c7db5', 500: '#1a3a5c', 600: '#142d48', 700: '#0f2137', 800: '#0a1626', 900: '#060d17' },
+            gold: { 50: '#fdf8ef', 100: '#faefd5', 200: '#f4dcaa', 300: '#edc576', 400: '#e6ad42', 500: '#d4952a', 600: '#b87a1f', 700: '#935c18', 800: '#6e4212', 900: '#4a2c0d' },
+            cream: '#FBF7F0',
+            coral: '#E8664A',
+            sage: '#4A7C6F',
+          },
+          fontFamily: {
+            display: ['"Playfair Display"', 'Georgia', 'serif'],
+            body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    * {
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes countUp {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-8px);
+      }
+    }
+
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .animate-fade-up {
+      animation: fadeUp 0.8s ease-out forwards;
+    }
+
+    .animate-fade-up-delay-1 {
+      animation: fadeUp 0.8s ease-out 0.15s forwards;
+      opacity: 0;
+    }
+
+    .animate-fade-up-delay-2 {
+      animation: fadeUp 0.8s ease-out 0.3s forwards;
+      opacity: 0;
+    }
+
+    .animate-fade-up-delay-3 {
+      animation: fadeUp 0.8s ease-out 0.45s forwards;
+      opacity: 0;
+    }
+
+    .animate-float {
+      animation: float 4s ease-in-out infinite;
+    }
+
+    .animate-marquee {
+      animation: marquee 30s linear infinite;
+    }
+
+    .grain {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.03;
+    }
+
+    .card-shadow {
+      box-shadow: 0 1px 3px rgba(26, 58, 92, 0.06), 0 8px 24px rgba(26, 58, 92, 0.08);
+    }
+
+    .card-shadow-lg {
+      box-shadow: 0 2px 6px rgba(26, 58, 92, 0.06), 0 12px 40px rgba(26, 58, 92, 0.12);
+    }
+
+    .nav-blur {
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .animate-fade-up,
+      .animate-fade-up-delay-1,
+      .animate-fade-up-delay-2,
+      .animate-fade-up-delay-3,
+      .animate-float,
+      .animate-marquee {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    /* Scrolling testimonial columns */
+    @keyframes scrollUp {
+      0% {
+        transform: translateY(0);
+      }
+
+      100% {
+        transform: translateY(-50%);
+      }
+    }
+
+    .testimonial-col {
+      animation: scrollUp var(--scroll-duration, 25s) linear infinite;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .testimonial-col {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-cream font-body text-navy-700 overflow-x-hidden">
+
+  <!-- Reusable SVG Sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" class="hidden">
+    <symbol id="icon-star" viewBox="0 0 20 20" fill="currentColor">
+      <path
+        d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+    </symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 13l4 4L19 7" />
+    </symbol>
+  </svg>
+
+  <!-- Grain Overlay -->
+  <svg class="grain">
+    <filter id="noiseFilter">
+      <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+    </filter>
+    <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+  </svg>
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 nav-blur bg-cream/80 border-b border-navy-200/30">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="#"
+        class="font-display font-bold text-xl text-navy-600 tracking-tight cursor-pointer hover:text-navy-500 transition-colors duration-200">
+        Fundraising <span class="text-coral">Emails</span>
+      </a>
+      <div class="hidden md:flex items-center gap-8 text-sm font-medium text-navy-500">
+        <a href="#how-it-works" class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">How It
+          Works</a>
+        <a href="#results" class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">Results</a>
+        <a href="#testimonials"
+          class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">Testimonials</a>
+        <a href="#pricing" class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">Pricing</a>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Mobile hamburger -->
+        <button id="mobile-menu-btn"
+          class="md:hidden p-2 text-navy-500 hover:text-navy-700 focus-visible:outline-2 focus-visible:outline-coral rounded-lg"
+          aria-label="Toggle menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <a href="#"
+          class="hidden sm:inline-block text-sm font-medium text-navy-500 hover:text-navy-700 transition-colors duration-200 cursor-pointer">Log
+          In</a>
+        <a href="#cta"
+          class="inline-flex items-center px-5 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral/90 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral transition-all duration-200 cursor-pointer">
+          Get Started
+        </a>
+      </div>
+    </div>
+    <!-- Mobile menu dropdown -->
+    <div id="mobile-menu" class="hidden md:hidden border-t border-navy-200/30 bg-cream/95 nav-blur">
+      <div class="px-6 py-4 flex flex-col gap-3">
+        <a href="#how-it-works" class="text-sm font-medium text-navy-500 hover:text-navy-700 py-2">How It Works</a>
+        <a href="#results" class="text-sm font-medium text-navy-500 hover:text-navy-700 py-2">Results</a>
+        <a href="#testimonials" class="text-sm font-medium text-navy-500 hover:text-navy-700 py-2">Testimonials</a>
+        <a href="#pricing" class="text-sm font-medium text-navy-500 hover:text-navy-700 py-2">Pricing</a>
+      </div>
+    </div>
+  </nav>
+  <script>
+    document.getElementById('mobile-menu-btn').addEventListener('click', function () {
+      document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+  </script>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-cream via-gold-50/40 to-cream"></div>
+      <div class="absolute top-20 right-0 w-96 h-96 bg-coral/5 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-0 w-80 h-80 bg-gold-200/20 rounded-full blur-3xl"></div>
+      <div class="relative max-w-7xl mx-auto px-6">
+        <div class="max-w-4xl mx-auto text-center">
+          <div class="animate-fade-up inline-flex items-center gap-2 px-4 py-1.5 bg-navy-600/5 rounded-full mb-6">
+            <span class="w-2 h-2 bg-sage rounded-full"></span>
+            <span class="text-sm font-medium text-navy-500">Trusted by 200+ campaigns</span>
+          </div>
+          <h1
+            class="animate-fade-up-delay-1 font-display text-4xl sm:text-5xl lg:text-7xl font-bold text-navy-700 leading-[1.1] tracking-tight mb-6">
+            Fundraising Emails That<br class="hidden sm:block">
+            <span class="text-coral italic"> Move People</span> to Give
+          </h1>
+          <p class="animate-fade-up-delay-2 text-lg text-navy-400 leading-relaxed max-w-xl mx-auto mb-8">
+            We write high‑converting fundraising emails for political campaigns and organizations — so you can focus on
+            winning, not writing.
+          </p>
+          <div class="animate-fade-up-delay-3 flex flex-wrap justify-center gap-4 mb-16">
+            <a href="#cta"
+              class="inline-flex items-center gap-2 px-8 py-4 bg-coral text-white font-semibold rounded-full card-shadow hover:shadow-lg hover:bg-coral/90 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral transition-all duration-200 cursor-pointer">
+              Start Raising More
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+            <a href="#how-it-works"
+              class="inline-flex items-center gap-2 px-8 py-4 bg-white/70 text-navy-600 font-semibold rounded-full border border-navy-200/40 hover:bg-white hover:border-navy-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-navy-400 transition-all duration-200 cursor-pointer">
+              See How It Works
+            </a>
+          </div>
+
+          <!-- Hero Visual -->
+          <div class="relative max-w-3xl mx-auto animate-fade-up-delay-2 text-left">
+            <div class="relative bg-white rounded-2xl card-shadow-lg p-6 sm:p-8 border border-navy-100/50">
+              <div class="flex items-center gap-3 mb-6">
+                <div class="w-3 h-3 rounded-full bg-coral/60"></div>
+                <div class="w-3 h-3 rounded-full bg-gold-400/60"></div>
+                <div class="w-3 h-3 rounded-full bg-sage/60"></div>
+              </div>
+              <div class="space-y-3 mb-6">
+                <div class="text-xs font-semibold text-navy-400 uppercase tracking-widest">Subject Line</div>
+                <div class="font-display text-xl sm:text-2xl font-semibold text-navy-700">We're $2,400 short — can you
+                  chip in $25?</div>
+              </div>
+              <div class="bg-navy-50/50 rounded-xl p-5 sm:p-6 space-y-3">
+                <div class="h-3 bg-navy-200/50 rounded-full w-full"></div>
+                <div class="h-3 bg-navy-200/50 rounded-full w-11/12"></div>
+                <div class="h-3 bg-navy-200/50 rounded-full w-5/6"></div>
+                <div class="h-3 bg-navy-200/30 rounded-full w-3/4"></div>
+              </div>
+              <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div
+                  class="inline-flex items-center justify-center px-6 py-3 bg-coral text-white text-sm font-bold rounded-lg w-full sm:w-auto">
+                  DONATE $25</div>
+                <div class="flex items-center gap-6 justify-between w-full sm:w-auto">
+                  <div class="text-xs text-navy-400 uppercase font-semibold tracking-wider">Open Rate</div>
+                  <div class="text-3xl font-bold text-sage">42.3%</div>
+                </div>
+              </div>
+            </div>
+            <!-- Floating accent card -->
+            <div
+              class="hidden sm:block absolute -bottom-6 -left-8 bg-white rounded-xl card-shadow-lg p-4 border border-navy-100/40 animate-float">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-sage/10 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-[10px] text-navy-400 uppercase font-bold tracking-widest">Revenue lift</div>
+                  <div class="text-base font-bold text-navy-700">+67%</div>
+                </div>
+              </div>
+            </div>
+            <!-- Floating accent card top right -->
+            <div
+              class="hidden sm:block absolute -top-5 -right-6 bg-white rounded-xl card-shadow-lg p-4 border border-navy-100/40 animate-float"
+              style="animation-delay: 1.5s;">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-gold-100 rounded-lg flex items-center justify-center">
+                  <svg class="w-5 h-5 text-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-[10px] text-navy-400 uppercase font-bold tracking-widest">Sent today</div>
+                  <div class="text-base font-bold text-navy-700">1.2M</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scrolling Ticker -->
+    <div class="relative py-5 bg-navy-600 overflow-hidden">
+      <div class="animate-marquee flex items-center gap-12 whitespace-nowrap">
+        <span class="text-sm font-medium text-white/70">Congressional Campaigns</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">State Parties</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">PACs & Super PACs</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Advocacy Organizations</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Ballot Initiatives</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Nonprofit Fundraising</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Issue Campaigns</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Gubernatorial Races</span><span class="text-coral">✦</span>
+        <!-- Duplicate for seamless scroll -->
+        <span class="text-sm font-medium text-white/70">Congressional Campaigns</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">State Parties</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">PACs & Super PACs</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Advocacy Organizations</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Ballot Initiatives</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Nonprofit Fundraising</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Issue Campaigns</span><span class="text-coral">✦</span>
+        <span class="text-sm font-medium text-white/70">Gubernatorial Races</span><span class="text-coral">✦</span>
+      </div>
+    </div>
+
+    <!-- Features / How It Works -->
+    <section id="how-it-works" class="py-20 md:py-28">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-coral mb-4">How It Works</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-700 tracking-tight mb-4">Your Fundraising.
+            Our
+            Emails.<br class="hidden sm:block"> <span class="text-coral italic">Their Donations.</span></h2>
+          <p class="text-navy-400 leading-relaxed">We handle the entire email fundraising process — from strategy to
+            send
+            — so your team can focus on the campaign.</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+          <!-- Card 1 -->
+          <div
+            class="group bg-white rounded-2xl card-shadow p-8 border border-navy-100/40 hover:border-coral/20 hover:card-shadow-lg transition-all duration-300 cursor-pointer">
+            <div
+              class="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-coral/15 transition-colors duration-300">
+              <svg class="w-6 h-6 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-semibold text-navy-700 mb-2">We Write It</h3>
+            <p class="text-navy-400 text-sm leading-relaxed">Persuasive, on-brand fundraising copy crafted by writers
+              who've raised millions in political email.</p>
+          </div>
+          <!-- Card 2 -->
+          <div
+            class="group bg-white rounded-2xl card-shadow p-8 border border-navy-100/40 hover:border-sage/20 hover:card-shadow-lg transition-all duration-300 cursor-pointer">
+            <div
+              class="w-12 h-12 bg-sage/10 rounded-xl flex items-center justify-center mb-5 group-hover:bg-sage/15 transition-colors duration-300">
+              <svg class="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-semibold text-navy-700 mb-2">You Approve It</h3>
+            <p class="text-navy-400 text-sm leading-relaxed">Review and approve each email in a simple dashboard.
+              Request
+              edits or approve with one click.</p>
+          </div>
+          <!-- Card 3 -->
+          <div
+            class="group bg-white rounded-2xl card-shadow p-8 border border-navy-100/40 hover:border-gold-400/20 hover:card-shadow-lg transition-all duration-300 cursor-pointer">
+            <div
+              class="w-12 h-12 bg-gold-100 rounded-xl flex items-center justify-center mb-5 group-hover:bg-gold-200/60 transition-colors duration-300">
+              <svg class="w-6 h-6 text-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h3 class="font-display text-xl font-semibold text-navy-700 mb-2">Money Rolls In</h3>
+            <p class="text-navy-400 text-sm leading-relaxed">Watch your inbox turn into a fundraising engine. Track
+              every
+              dollar with real-time analytics.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Bar -->
+    <section id="results" class="py-14 bg-navy-600 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-navy-700 via-navy-600 to-navy-700"></div>
+      <div class="relative max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div>
+            <div class="font-display text-3xl sm:text-4xl font-bold text-white mb-1">$48M+</div>
+            <p class="text-sm text-white/60">Raised for clients</p>
+          </div>
+          <div>
+            <div class="font-display text-3xl sm:text-4xl font-bold text-white mb-1">200+</div>
+            <p class="text-sm text-white/60">Campaigns served</p>
+          </div>
+          <div>
+            <div class="font-display text-3xl sm:text-4xl font-bold text-white mb-1">38%</div>
+            <p class="text-sm text-white/60">Avg. open rate</p>
+          </div>
+          <div>
+            <div class="font-display text-3xl sm:text-4xl font-bold text-coral mb-1">4.2×</div>
+            <p class="text-sm text-white/60">ROI on email spend</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrations — Orbiting Platforms -->
+    <section id="integrations" class="py-16 md:py-24 relative overflow-hidden"
+      style="background: linear-gradient(135deg, #1a3150 0%, #142d48 50%, #162740 100%);">
+      <!-- Subtle background texture -->
+      <div class="absolute inset-0 opacity-[0.03]"
+        style="background-image: radial-gradient(circle at 25% 25%, #fff 0%, transparent 50%), radial-gradient(circle at 75% 75%, #fff 0%, transparent 50%);">
+      </div>
+
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-10">
+          <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-coral mb-4">We Work With</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-white tracking-tight">Any Email Platform
+            in<br><span class="text-coral italic">Your Fundraising Stack</span></h2>
+        </div>
+
+        <!-- Orbit Container -->
+        <div id="orbit-container" class="relative mx-auto" style="width: min(420px, 85vw); height: min(420px, 85vw);">
+
+          <!-- Orbit Ring 1 (Inner) -->
+          <div
+            class="orbit-ring absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+            style="width: 240px; height: 240px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 0 30px rgba(255,255,255,0.03);">
+          </div>
+          <!-- Orbit Ring 2 (Outer) -->
+          <div
+            class="orbit-ring absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+            style="width: 400px; height: 400px; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 0 40px rgba(255,255,255,0.03);">
+          </div>
+
+          <!-- Central Icon -->
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 z-10">
+            <div class="absolute inset-0 rounded-full bg-coral/20 blur-xl animate-pulse"></div>
+            <div class="absolute inset-0 rounded-full bg-gold-400/15 blur-2xl animate-pulse"
+              style="animation-delay:1s;">
+            </div>
+            <div
+              class="relative w-full h-full bg-gradient-to-br from-navy-500 to-navy-800 rounded-full flex items-center justify-center shadow-2xl border border-white/10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none"
+                stroke="url(#orbitGrad)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <defs>
+                  <linearGradient id="orbitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#E8664A" />
+                    <stop offset="100%" stop-color="#d4952a" />
+                  </linearGradient>
+                </defs>
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Orbiting Nodes (positioned via JS) -->
+          <div class="orbit-node" data-orbit="120" data-speed="0.5" data-phase="0">
+            <div class="orbit-node-inner" style="--glow-color: rgba(232,102,74,0.4);">
+              <img src="https://cdn.brandfetch.io/nationbuilder.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal"
+                alt="NationBuilder" class="w-7 h-7 object-contain" loading="lazy" />
+            </div>
+            <div class="orbit-label">NationBuilder</div>
+          </div>
+
+          <div class="orbit-node" data-orbit="120" data-speed="0.5" data-phase="2.094">
+            <div class="orbit-node-inner" style="--glow-color: rgba(59,130,246,0.4);">
+              <img src="https://cdn.brandfetch.io/ngpvan.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal"
+                alt="NGP VAN" class="w-7 h-7 object-contain" loading="lazy" />
+            </div>
+            <div class="orbit-label">NGP VAN</div>
+          </div>
+
+          <div class="orbit-node" data-orbit="120" data-speed="0.5" data-phase="4.189">
+            <div class="orbit-node-inner" style="--glow-color: rgba(239,68,68,0.4);">
+              <img src="https://cdn.brandfetch.io/actionnetwork.org/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal"
+                alt="Action Network" class="w-7 h-7 object-contain" loading="lazy" />
+            </div>
+            <div class="orbit-label">Action Network</div>
+          </div>
+
+          <div class="orbit-node" data-orbit="200" data-speed="-0.35" data-phase="0">
+            <div class="orbit-node-inner orbit-node-outer" style="--glow-color: rgba(212,149,42,0.4);">
+              <img src="https://cdn.brandfetch.io/constantcontact.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal"
+                alt="Constant Contact" class="w-8 h-8 object-contain" loading="lazy" />
+            </div>
+            <div class="orbit-label">Constant Contact</div>
+          </div>
+
+          <div class="orbit-node" data-orbit="200" data-speed="-0.35" data-phase="2.094">
+            <div class="orbit-node-inner orbit-node-outer" style="--glow-color: rgba(234,179,8,0.4);">
+              <img src="https://cdn.brandfetch.io/mailchimp.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal"
+                alt="Mailchimp" class="w-8 h-8 object-contain" loading="lazy" />
+            </div>
+            <div class="orbit-label">Mailchimp</div>
+          </div>
+
+          <div class="orbit-node" data-orbit="200" data-speed="-0.35" data-phase="4.189">
+            <div class="orbit-node-inner orbit-node-outer" style="--glow-color: rgba(96,165,250,0.4);">
+              <img src="https://cdn.brandfetch.io/activecampaign.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal"
+                alt="ActiveCampaign" class="w-8 h-8 object-contain" loading="lazy" />
+            </div>
+            <div class="orbit-label">ActiveCampaign</div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <style>
+      .orbit-node {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 48px;
+        height: 48px;
+        z-index: 10;
+        transition: transform 0.1s linear;
+        cursor: pointer;
+      }
+
+      .orbit-node-inner {
+        width: 100%;
+        height: 100%;
+        padding: 8px;
+        background: #ffffff;
+        border-radius: 9999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.9);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+
+      .orbit-node-outer {
+        width: 58px;
+        height: 58px;
+      }
+
+      .orbit-node:hover .orbit-node-inner {
+        transform: scale(1.3);
+        box-shadow: 0 0 30px var(--glow-color, rgba(232, 102, 74, 0.4)), 0 0 60px var(--glow-color, rgba(232, 102, 74, 0.2));
+        z-index: 20;
+      }
+
+      .orbit-label {
+        position: absolute;
+        bottom: -24px;
+        left: 50%;
+        transform: translateX(-50%) scale(0);
+        padding: 3px 8px;
+        background: rgba(20, 45, 72, 0.95);
+        backdrop-filter: blur(8px);
+        border-radius: 6px;
+        font-size: 11px;
+        color: white;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s, transform 0.2s;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .orbit-node:hover .orbit-label {
+        opacity: 1;
+        transform: translateX(-50%) scale(1);
+      }
+
+      @media (max-width: 480px) {
+        .orbit-ring:last-of-type {
+          width: 300px !important;
+          height: 300px !important;
+        }
+
+        .orbit-ring:first-of-type {
+          width: 180px !important;
+          height: 180px !important;
+        }
+      }
+    </style>
+
+    <script>
+      (function () {
+        const container = document.getElementById('orbit-container');
+        const nodes = container.querySelectorAll('.orbit-node');
+        let time = 0;
+        let paused = false;
+        let lastTimestamp = null;
+
+        container.addEventListener('mouseenter', () => paused = true);
+        container.addEventListener('mouseleave', () => { paused = false; lastTimestamp = null; });
+
+        function animate(timestamp) {
+          if (!paused) {
+            if (lastTimestamp === null) lastTimestamp = timestamp;
+            const dt = (timestamp - lastTimestamp) / 1000;
+            lastTimestamp = timestamp;
+            time += dt;
+          } else {
+            lastTimestamp = null;
+          }
+
+          const isMobile = window.innerWidth <= 480;
+
+          nodes.forEach(node => {
+            let radius = parseFloat(node.dataset.orbit);
+            if (isMobile) radius = radius === 200 ? 150 : 90;
+            const speed = parseFloat(node.dataset.speed);
+            const phase = parseFloat(node.dataset.phase);
+            const angle = time * speed + phase;
+            const x = Math.cos(angle) * radius;
+            const y = Math.sin(angle) * radius;
+            node.style.transform = 'translate(calc(' + x + 'px - 50%), calc(' + y + 'px - 50%))';
+          });
+
+          requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+      })();
+    </script>
+
+    <!-- Feature Showcase -->
+    <section class="py-20 md:py-28 bg-cream/10">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+          <div>
+            <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-sage mb-4">Built for
+              Campaigns</span>
+            <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-700 tracking-tight mb-6">Grow Donations
+              Using
+              <span class="text-coral italic">Email Strategy</span>
+            </h2>
+            <div class="space-y-5">
+              <div class="flex gap-4">
+                <div class="mt-1 w-6 h-6 bg-coral/10 rounded-full flex items-center justify-center flex-shrink-0"><svg
+                    class="w-3.5 h-3.5 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg></div>
+                <div>
+                  <h4 class="font-semibold text-navy-700 mb-1">Deadline-Driven Copy</h4>
+                  <p class="text-sm text-navy-400 leading-relaxed">FEC deadlines, matching gifts, opposition attacks —
+                    we
+                    turn urgency into dollars.</p>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="mt-1 w-6 h-6 bg-sage/10 rounded-full flex items-center justify-center flex-shrink-0"><svg
+                    class="w-3.5 h-3.5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg></div>
+                <div>
+                  <h4 class="font-semibold text-navy-700 mb-1">A/B Tested Subject Lines</h4>
+                  <p class="text-sm text-navy-400 leading-relaxed">Every send comes optimized. We test subject lines,
+                    preview text, and send times.</p>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <div class="mt-1 w-6 h-6 bg-gold-200/60 rounded-full flex items-center justify-center flex-shrink-0">
+                  <svg class="w-3.5 h-3.5 text-gold-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 class="font-semibold text-navy-700 mb-1">Compliance Built In</h4>
+                  <p class="text-sm text-navy-400 leading-relaxed">Every email includes proper disclaimer, paid-for-by
+                    language, and unsubscribe compliance.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Right Visual -->
+          <div class="relative">
+            <div class="bg-white rounded-2xl card-shadow-lg p-6 border border-navy-100/50">
+              <div class="text-xs font-bold uppercase tracking-[0.15em] text-navy-400 mb-4">Campaign Performance</div>
+              <div class="grid grid-cols-2 gap-4 mb-5">
+                <div class="bg-navy-50/50 rounded-xl p-4">
+                  <div class="text-2xl font-bold text-navy-700">$348K</div>
+                  <p class="text-xs text-navy-400 mt-1">This Quarter</p>
+                </div>
+                <div class="bg-coral/5 rounded-xl p-4">
+                  <div class="text-2xl font-bold text-coral">+67%</div>
+                  <p class="text-xs text-navy-400 mt-1">vs. Last Quarter</p>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <div class="flex justify-between text-xs text-navy-400 mb-1"><span>End-of-Quarter Push</span><span
+                      class="font-semibold text-navy-600">$142K</span></div>
+                  <div class="h-2.5 bg-navy-100/50 rounded-full overflow-hidden">
+                    <div class="h-full bg-coral rounded-full" style="width: 82%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs text-navy-400 mb-1"><span>Monthly Recurring</span><span
+                      class="font-semibold text-navy-600">$98K</span></div>
+                  <div class="h-2.5 bg-navy-100/50 rounded-full overflow-hidden">
+                    <div class="h-full bg-sage rounded-full" style="width: 56%"></div>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex justify-between text-xs text-navy-400 mb-1"><span>Welcome Series</span><span
+                      class="font-semibold text-navy-600">$67K</span></div>
+                  <div class="h-2.5 bg-navy-100/50 rounded-full overflow-hidden">
+                    <div class="h-full bg-gold-400 rounded-full" style="width: 38%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mid-Page CTA -->
+    <section class="py-12 bg-navy-600 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-navy-700 via-navy-600 to-navy-700"></div>
+      <div class="relative max-w-3xl mx-auto px-6 text-center">
+        <h3 class="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight mb-4">Ready to Raise More <span
+            class="text-coral italic">This Quarter?</span></h3>
+        <p class="text-white/60 text-sm mb-6 max-w-lg mx-auto">First email draft delivered in 48 hours. No contracts —
+          cancel anytime.</p>
+        <a href="#cta"
+          class="inline-flex items-center gap-2 px-7 py-3.5 bg-coral text-white font-semibold rounded-full hover:bg-coral/90 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral transition-all duration-200 cursor-pointer">
+          Get Started
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- Testimonials — Scrolling Columns -->
+    <section id="testimonials" class="py-20 md:py-28 bg-navy-50/40">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-coral mb-4">Testimonials</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-700 tracking-tight">Campaigns That<br><span
+              class="text-coral italic">Raised More</span></h2>
+          <p class="text-navy-400 mt-4 leading-relaxed">See what campaign teams have to say about working with us.</p>
+        </div>
+
+        <!-- Scrolling columns container -->
+        <div class="flex justify-center gap-6 max-h-[740px] overflow-hidden"
+          style="-webkit-mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent); mask-image: linear-gradient(to bottom, transparent, black 15%, black 85%, transparent);">
+
+          <!-- Column 1 -->
+          <div class="w-full max-w-xs">
+            <div class="testimonial-col flex flex-col gap-6 pb-6" style="--scroll-duration: 22s;">
+              <!-- Set A -->
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Fundraising Emails completely transformed our
+                  email program. We went from scraping by to raising $1.2M in a single quarter. Their writers understand
+                  political urgency."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center font-display font-bold text-coral text-xs">
+                    SR</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Sarah Rodriguez</div>
+                    <div class="text-xs text-navy-400">Finance Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Their deadline copy is the best in the business.
+                  When we hit an FEC filing deadline, they turned around three emails in 48 hours that outraised our
+                  entire Q2."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-sage/10 rounded-full flex items-center justify-center font-display font-bold text-sage text-xs">
+                    DT</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">David Torres</div>
+                    <div class="text-xs text-navy-400">Campaign Treasurer</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"We saw a 34% increase in our recurring donor base
+                  within the first two months. The welcome series they wrote converts like nothing else we've tried."
+                </p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center font-display font-bold text-gold-600 text-xs">
+                    KW</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Karen Washington</div>
+                    <div class="text-xs text-navy-400">Development Director</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Duplicate Set A for seamless loop -->
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Fundraising Emails completely transformed our
+                  email program. We went from scraping by to raising $1.2M in a single quarter. Their writers understand
+                  political urgency."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center font-display font-bold text-coral text-xs">
+                    SR</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Sarah Rodriguez</div>
+                    <div class="text-xs text-navy-400">Finance Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Their deadline copy is the best in the business.
+                  When we hit an FEC filing deadline, they turned around three emails in 48 hours that outraised our
+                  entire Q2."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-sage/10 rounded-full flex items-center justify-center font-display font-bold text-sage text-xs">
+                    DT</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">David Torres</div>
+                    <div class="text-xs text-navy-400">Campaign Treasurer</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"We saw a 34% increase in our recurring donor base
+                  within the first two months. The welcome series they wrote converts like nothing else we've tried."
+                </p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center font-display font-bold text-gold-600 text-xs">
+                    KW</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Karen Washington</div>
+                    <div class="text-xs text-navy-400">Development Director</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 2 (hidden on mobile) -->
+          <div class="hidden md:block w-full max-w-xs">
+            <div class="testimonial-col flex flex-col gap-6 pb-6" style="--scroll-duration: 28s;">
+              <!-- Set B -->
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"The best investment we made all cycle. Their
+                  end-of-quarter emails alone raised more than our previous agency did in six months. Absolute game
+                  changer."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-sage/10 rounded-full flex items-center justify-center font-display font-bold text-sage text-xs">
+                    MJ</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Marcus Johnson</div>
+                    <div class="text-xs text-navy-400">Campaign Manager</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Finally, a team that understands political email.
+                  They match our candidate's voice perfectly and never miss a deadline — even during the final push."
+                </p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center font-display font-bold text-coral text-xs">
+                    RP</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Rachel Park</div>
+                    <div class="text-xs text-navy-400">Communications Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Our average gift size jumped from $18 to $31
+                  after they rewrote our donation page emails. The ROI speaks for itself — 4x return in the first
+                  month."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center font-display font-bold text-gold-600 text-xs">
+                    JM</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">James Mitchell</div>
+                    <div class="text-xs text-navy-400">Digital Fundraiser</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Duplicate Set B -->
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"The best investment we made all cycle. Their
+                  end-of-quarter emails alone raised more than our previous agency did in six months. Absolute game
+                  changer."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-sage/10 rounded-full flex items-center justify-center font-display font-bold text-sage text-xs">
+                    MJ</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Marcus Johnson</div>
+                    <div class="text-xs text-navy-400">Campaign Manager</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Finally, a team that understands political email.
+                  They match our candidate's voice perfectly and never miss a deadline — even during the final push."
+                </p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center font-display font-bold text-coral text-xs">
+                    RP</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Rachel Park</div>
+                    <div class="text-xs text-navy-400">Communications Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Our average gift size jumped from $18 to $31
+                  after they rewrote our donation page emails. The ROI speaks for itself — 4x return in the first
+                  month."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center font-display font-bold text-gold-600 text-xs">
+                    JM</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">James Mitchell</div>
+                    <div class="text-xs text-navy-400">Digital Fundraiser</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Column 3 (hidden on mobile & tablet) -->
+          <div class="hidden lg:block w-full max-w-xs">
+            <div class="testimonial-col flex flex-col gap-6 pb-6" style="--scroll-duration: 25s;">
+              <!-- Set C -->
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"We needed someone who could match our candidate's
+                  voice and hit tight deadlines. Fundraising Emails nailed it every time. Our small-dollar program has
+                  never been stronger."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center font-display font-bold text-gold-600 text-xs">
+                    AL</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Amanda Liu</div>
+                    <div class="text-xs text-navy-400">Digital Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Switched from an agency that charged 3x as much
+                  and delivered half the results. These emails consistently hit 40%+ open rates for our PAC."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center font-display font-bold text-coral text-xs">
+                    TC</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Tom Chen</div>
+                    <div class="text-xs text-navy-400">PAC Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"The onboarding was fast, the drafts were sharp on
+                  the first pass, and our donors responded immediately. Raised $86K in our first week."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-sage/10 rounded-full flex items-center justify-center font-display font-bold text-sage text-xs">
+                    LB</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Lisa Bradley</div>
+                    <div class="text-xs text-navy-400">Executive Director</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Duplicate Set C -->
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"We needed someone who could match our candidate's
+                  voice and hit tight deadlines. Fundraising Emails nailed it every time. Our small-dollar program has
+                  never been stronger."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-gold-100 rounded-full flex items-center justify-center font-display font-bold text-gold-600 text-xs">
+                    AL</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Amanda Liu</div>
+                    <div class="text-xs text-navy-400">Digital Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"Switched from an agency that charged 3x as much
+                  and delivered half the results. These emails consistently hit 40%+ open rates for our PAC."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-coral/10 rounded-full flex items-center justify-center font-display font-bold text-coral text-xs">
+                    TC</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Tom Chen</div>
+                    <div class="text-xs text-navy-400">PAC Director</div>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-white rounded-2xl card-shadow p-7 border border-navy-100/40" aria-hidden="true">
+                <p class="text-sm text-navy-500 leading-relaxed mb-5">"The onboarding was fast, the drafts were sharp on
+                  the first pass, and our donors responded immediately. Raised $86K in our first week."</p>
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 bg-sage/10 rounded-full flex items-center justify-center font-display font-bold text-sage text-xs">
+                    LB</div>
+                  <div>
+                    <div class="text-sm font-bold text-navy-700 leading-tight">Lisa Bradley</div>
+                    <div class="text-xs text-navy-400">Executive Director</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="pricing" class="py-20 md:py-28 bg-white relative">
+      <div class="max-w-7xl mx-auto px-6 relative z-10">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+          <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-coral mb-4">Investment</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-700 tracking-tight">Flexible Plans
+            For<br><span class="text-coral italic">Campaigns of All Sizes</span></h2>
+          <p class="mt-4 text-navy-500 max-w-lg mx-auto">Flat-rate monthly retainers to write your emails, plus a 10%
+            commission on the total funds raised from the emails we send.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <!-- Starter Plan -->
+          <div
+            class="bg-cream/30 rounded-3xl p-8 border border-navy-100/50 flex flex-col hover:border-navy-200 transition-colors duration-300">
+            <div class="mb-6">
+              <h3 class="font-display text-xl font-bold text-navy-700 mb-2">Starter</h3>
+              <div class="flex items-baseline gap-1">
+                <span class="text-3xl font-bold text-navy-700">$499</span>
+                <span class="text-navy-400 text-sm">/mo</span>
+              </div>
+              <p class="text-sm font-semibold text-coral mt-1">+ 10% commission</p>
+            </div>
+            <ul class="text-sm text-navy-500 space-y-4 mb-8 flex-grow">
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-sage shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Perfect for local & down-ballot races</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-sage shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>4 targeted fundraising emails/month</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-sage shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Basic analytics reporting</span>
+              </li>
+            </ul>
+            <a href="#"
+              class="block w-full text-center px-6 py-3 border-2 border-navy-700 text-navy-700 font-semibold rounded-full hover:bg-navy-700 hover:text-white transition-colors duration-200">Get
+              Started</a>
+          </div>
+
+          <!-- Grow Plan -->
+          <div class="bg-navy-700 rounded-3xl p-8 card-shadow-lg relative flex flex-col transform md:-translate-y-4">
+            <div class="absolute top-0 transform -translate-y-1/2 left-1/2 -translate-x-1/2">
+              <span class="bg-coral text-white text-xs font-bold uppercase tracking-widest py-1 px-4 rounded-full">Most
+                Popular</span>
+            </div>
+            <div class="mb-6 mt-2">
+              <h3 class="font-display text-xl font-bold text-white mb-2">Grow</h3>
+              <div class="flex items-baseline gap-1">
+                <span class="text-3xl font-bold text-white">$995</span>
+                <span class="text-white/60 text-sm">/mo</span>
+              </div>
+              <p class="text-sm font-semibold text-coral mt-1">+ 10% commission</p>
+            </div>
+            <ul class="text-sm text-white/80 space-y-4 mb-8 flex-grow">
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-coral shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>For state legislative & congressional districts</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-coral shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>10 data-driven fundraising emails/month</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-coral shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>A/B testing on subject lines</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-coral shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Advanced audience segmentation</span>
+              </li>
+            </ul>
+            <a href="#"
+              class="block w-full text-center px-6 py-3 bg-coral text-white font-semibold rounded-full hover:bg-coral/90 transition-colors duration-200">Start
+              Growing</a>
+          </div>
+
+          <!-- Pro Plan -->
+          <div
+            class="bg-cream/30 rounded-3xl p-8 border border-navy-100/50 flex flex-col hover:border-navy-200 transition-colors duration-300">
+            <div class="mb-6">
+              <h3 class="font-display text-xl font-bold text-navy-700 mb-2">Pro</h3>
+              <div class="flex items-baseline gap-1">
+                <span class="text-3xl font-bold text-navy-700">$1,995</span>
+                <span class="text-navy-400 text-sm">/mo</span>
+              </div>
+              <p class="text-sm font-semibold text-coral mt-1">+ 10% commission</p>
+            </div>
+            <ul class="text-sm text-navy-500 space-y-4 mb-8 flex-grow">
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-sage shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>For statewide campaigns</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-sage shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Unlimited fundraising emails/month</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-sage shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Dedicated campaign strategist</span>
+              </li>
+              <li class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-sage shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span>Custom landing page optimization</span>
+              </li>
+            </ul>
+            <a href="#"
+              class="block w-full text-center px-6 py-3 border-2 border-navy-700 text-navy-700 font-semibold rounded-full hover:bg-navy-700 hover:text-white transition-colors duration-200">Get
+              Pro</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-20 md:py-28 bg-navy-50/30">
+      <div class="max-w-3xl mx-auto px-6">
+        <div class="text-center mb-14">
+          <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-coral mb-4">FAQ</span>
+          <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-700 tracking-tight">Common <span
+              class="text-coral italic">Questions</span></h2>
+        </div>
+        <div class="space-y-4">
+          <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+            <summary
+              class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+              How fast can you start writing our emails?
+              <svg class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Fast. After a 30-minute onboarding call, we
+              deliver your first email draft within 48 hours. Most clients are fully ramped and sending within one week.
+            </div>
+          </details>
+          <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+            <summary
+              class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+              What does the 10% commission cover?
+              <svg class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">The commission is based on total dollars raised
+              through the emails we write and send. It aligns our incentives — we only win when you raise more. The flat
+              retainer covers our writing, strategy, and testing work.</div>
+          </details>
+          <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+            <summary
+              class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+              Will the emails sound like our candidate/org?
+              <svg class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Yes. We do a thorough voice-match during
+              onboarding — reviewing past communications, speeches, and social content. You approve every email before
+              it sends, so nothing goes out that doesn't feel like you.</div>
+          </details>
+          <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+            <summary
+              class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+              What email platforms do you work with?
+              <svg class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">We integrate with all major platforms —
+              NationBuilder, NGP VAN, Action Network, Mailchimp, Constant Contact, ActiveCampaign, and more. We'll work
+              with whatever your campaign already uses.</div>
+          </details>
+          <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+            <summary
+              class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+              Is there a long-term contract?
+              <svg class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">No. All plans are month-to-month. Cancel
+              anytime with no penalty. We believe our work speaks for itself — you stay because the results are there,
+              not because of a contract.</div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section id="cta" class="py-20 md:py-28 relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-br from-cream via-coral/5 to-cream"></div>
+      <div class="relative max-w-3xl mx-auto px-6 text-center">
+        <h2 class="font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-700 tracking-tight mb-5">Are You
+          Ready To<br>
+          <span class="text-coral italic">Raise More?</span>
+        </h2>
+        <p class="text-navy-400 leading-relaxed max-w-xl mx-auto mb-8">Join 200+ campaigns and organizations who trust
+          Fundraising Emails to power their fundraising email programs.</p>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="#"
+            class="inline-flex items-center gap-2 px-8 py-4 bg-coral text-white text-lg font-semibold rounded-full card-shadow-lg hover:shadow-xl hover:bg-coral/90 active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-coral transition-all duration-200 cursor-pointer">
+            Get Started Today
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+        <p class="text-xs text-navy-400/60 mt-5">No contracts. Cancel anytime. First email draft in 48 hours.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-12 bg-navy-700 text-white/60">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+        <a href="#" class="font-display font-bold text-xl text-white tracking-tight cursor-pointer">Fundraising <span
+            class="text-coral">Emails</span></a>
+        <div class="flex flex-wrap items-center gap-6 text-sm">
+          <a href="#" class="hover:text-white transition-colors duration-200 cursor-pointer">Privacy</a>
+          <a href="#" class="hover:text-white transition-colors duration-200 cursor-pointer">Terms</a>
+          <a href="#" class="hover:text-white transition-colors duration-200 cursor-pointer">Contact</a>
+        </div>
+        <p class="text-xs text-white/40">&copy; 2026 Fundraising Emails. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+
+</html>
