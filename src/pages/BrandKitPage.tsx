@@ -92,7 +92,7 @@ export default function BrandKitPage() {
                 <div className="max-w-2xl px-8 py-8 space-y-12">
 
                     {/* ── BRAND DETAILS ── */}
-                    <section id="brand-details">
+                    <section id="brand-details" className="scroll-mt-20">
                         <h2 className="mb-8 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                             Brand Details
                         </h2>
@@ -164,7 +164,7 @@ export default function BrandKitPage() {
                     <hr className="border-white/[0.06]" />
 
                     {/* ── CONTENT: LEGAL ── */}
-                    <section id="legal">
+                    <section id="legal" className="scroll-mt-20">
                         <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                             Content
                         </h2>
@@ -206,7 +206,7 @@ export default function BrandKitPage() {
                     <hr className="border-white/[0.06]" />
 
                     {/* ── CONTENT: SOCIALS ── */}
-                    <section id="socials">
+                    <section id="socials" className="scroll-mt-20">
                         <h2 className="mb-6 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                             Socials
                         </h2>
@@ -250,7 +250,7 @@ export default function BrandKitPage() {
                     <hr className="border-white/[0.06]" />
 
                     {/* ── VISUALS: LOGOS ── */}
-                    <section id="logos">
+                    <section id="logos" className="scroll-mt-20">
                         <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                             Logos
                         </h2>
@@ -308,7 +308,7 @@ export default function BrandKitPage() {
                     <hr className="border-white/[0.06]" />
 
                     {/* ── VISUALS: COLORS ── */}
-                    <section id="color" className="pb-16">
+                    <section id="color" className="scroll-mt-20 pb-16">
                         <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                             Colors
                         </h2>
