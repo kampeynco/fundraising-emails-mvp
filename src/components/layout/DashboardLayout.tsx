@@ -14,6 +14,7 @@ import {
     HashtagIcon,
     ImageUploadIcon,
     DropletIcon,
+    AlertSquareIcon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -35,7 +36,7 @@ const brandKitSections = [
     {
         label: 'Content',
         items: [
-            { icon: JusticeScale01Icon, label: 'Content', sectionId: 'legal' },
+            { icon: AlertSquareIcon, label: 'Content', sectionId: 'legal' },
             { icon: HashtagIcon, label: 'Socials', sectionId: 'socials' },
         ],
     },
