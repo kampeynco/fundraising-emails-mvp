@@ -188,7 +188,7 @@ export default function BrandKitPage() {
                         </h2>
 
                         <div className="mb-6 mt-6">
-                            <label className="mb-2 block text-sm font-medium text-white/50">Mail To Address</label>
+                            <label className="mb-2 block text-sm font-medium text-white/50">Mail Checks To Address</label>
                             <input
                                 type="text"
                                 value={data.copyright}
