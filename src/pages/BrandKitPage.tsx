@@ -64,7 +64,7 @@ export default function BrandKitPage() {
     return (
         <div className="flex h-full">
             {/* Form area */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="w-1/2 overflow-y-auto">
                 {/* Top bar */}
                 <div className="sticky top-0 z-10 flex items-center justify-between border-b border-white/[0.06] bg-[#111827]/95 backdrop-blur-sm px-8 py-4">
                     <div className="flex items-center gap-4">
@@ -362,8 +362,8 @@ export default function BrandKitPage() {
             </div>
 
             {/* Right preview panel */}
-            <div className="hidden w-80 flex-shrink-0 border-l border-white/[0.06] bg-[#0f172a] p-6 xl:block">
-                <div className="sticky top-6 mx-auto max-w-[280px]">
+            <div className="flex-1 border-l border-white/[0.06] bg-[#0f172a] p-6">
+                <div className="sticky top-6 mx-auto w-[80%]">
                     <div className="overflow-hidden rounded-xl bg-white shadow-2xl shadow-black/30">
                         {/* Preview header */}
                         <div className="bg-gradient-to-br from-[#0f2137] to-[#142d48] px-5 py-4 text-center">
