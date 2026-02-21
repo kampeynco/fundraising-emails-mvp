@@ -103,12 +103,12 @@ export function useBrandKit() {
                     copyright: row.copyright || '',
                     footer: row.footer || '',
                     disclaimers: row.disclaimers || '',
-                    socials: (row.socials as BrandKitSocial[]) || DEFAULT_BRAND_KIT.socials,
+                    socials: (row.socials as unknown as BrandKitSocial[]) || DEFAULT_BRAND_KIT.socials,
                     colors: { ...DEFAULT_COLORS, ...((row.colors as unknown as BrandKitColors) || {}) },
                     primary_logo_url: row.primary_logo_url || '',
                     icon_logo_url: row.icon_logo_url || '',
-                    show_header: row.show_header ?? false,
-                    show_footer: row.show_footer ?? false,
+                    show_header: (row as any).show_header ?? false,
+                    show_footer: (row as any).show_footer ?? false,
                 })
             }
             // If no row exists, keep defaults — it will be created on first save
@@ -146,7 +146,7 @@ export function useBrandKit() {
 
         const { data: row, error: saveError } = await supabase
             .from('brand_kits')
-            .upsert(payload, { onConflict: 'user_id' })
+            .upsert(payload as any, { onConflict: 'user_id' })
             .select()
             .single()
 
