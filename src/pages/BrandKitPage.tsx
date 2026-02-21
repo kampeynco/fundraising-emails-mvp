@@ -362,8 +362,8 @@ export default function BrandKitPage() {
             </div>
 
             {/* Right preview panel */}
-            <div className="flex-1 border-l border-white/[0.06] bg-white overflow-y-auto">
-                <div className="w-full">
+            <div className="flex-1 border-l border-white/[0.06] bg-white overflow-hidden">
+                <div className="h-full overflow-y-auto">
                     <div className="bg-white">
                         {/* Preview header */}
                         <div className="bg-gradient-to-br from-[#0f2137] to-[#142d48] px-8 py-6 text-center">
