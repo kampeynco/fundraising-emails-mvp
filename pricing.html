@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing — Fundraising Emails</title>
+    <meta name="description"
+        content="Choose your weekly email capacity. Fundraising email plans starting at 1 email per week, delivered every Thursday.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: { 50: '#f0f3f9', 100: '#dce3f0', 200: '#b8c7e1', 300: '#8ba3cc', 400: '#5c7db5', 500: '#1a3a5c', 600: '#142d48', 700: '#0f2137', 800: '#0a1626', 900: '#060d17' },
+                        gold: { 50: '#fdf8ef', 100: '#faefd5', 200: '#f4dcaa', 300: '#edc576', 400: '#e6ad42', 500: '#d4952a', 600: '#b87a1f', 700: '#935c18', 800: '#6e4212', 900: '#4a2c0d' },
+                        cream: '#FBF7F0',
+                        coral: '#E8664A',
+                        sage: '#4A7C6F',
+                    },
+                    fontFamily: {
+                        display: ['"Playfair Display"', 'Georgia', 'serif'],
+                        body: ['"DM Sans"', 'system-ui', 'sans-serif'],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        * {
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-up {
+            animation: fadeUp 0.8s ease-out forwards;
+        }
+
+        .animate-fade-up-delay-1 {
+            animation: fadeUp 0.8s ease-out 0.15s forwards;
+            opacity: 0;
+        }
+
+        .animate-fade-up-delay-2 {
+            animation: fadeUp 0.8s ease-out 0.3s forwards;
+            opacity: 0;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.03;
+        }
+
+        .card-shadow {
+            box-shadow: 0 1px 3px rgba(26, 58, 92, 0.06), 0 8px 24px rgba(26, 58, 92, 0.08);
+        }
+
+        .card-shadow-lg {
+            box-shadow: 0 2px 6px rgba(26, 58, 92, 0.06), 0 12px 40px rgba(26, 58, 92, 0.12);
+        }
+
+        .nav-blur {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+
+        /* Capacity selector */
+        .cap-btn {
+            transition: all 0.25s ease;
+        }
+
+        .cap-btn.active {
+            background: #0f2137;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(15, 33, 55, 0.25);
+            transform: scale(1.05);
+        }
+
+        .cap-btn:not(.active):hover {
+            background: rgba(26, 58, 92, 0.08);
+        }
+
+        /* Plan card transitions */
+        .plan-card {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        /* Add-on toggle */
+        .toggle-track {
+            transition: background 0.2s ease;
+        }
+
+        .toggle-track.on {
+            background: #4A7C6F;
+        }
+
+        .toggle-thumb {
+            transition: transform 0.2s ease;
+        }
+
+        .toggle-track.on .toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .animate-fade-up,
+            .animate-fade-up-delay-1,
+            .animate-fade-up-delay-2 {
+                animation: none !important;
+                opacity: 1 !important;
+                transform: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-cream font-body text-navy-700 overflow-x-hidden">
+
+    <!-- Grain -->
+    <svg class="grain">
+        <filter id="noiseFilter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+    </svg>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 nav-blur bg-cream/80 border-b border-navy-200/30">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/"
+                class="font-display font-bold text-xl text-navy-600 tracking-tight cursor-pointer hover:text-navy-500 transition-colors duration-200">
+                Fundraising <span class="text-coral">Emails</span>
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-navy-500">
+                <a href="/#how-it-works" class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">How
+                    It Works</a>
+                <a href="/#results"
+                    class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">Results</a>
+                <a href="/#examples"
+                    class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">Examples</a>
+                <a href="/pricing"
+                    class="text-navy-700 font-semibold transition-colors duration-200 cursor-pointer">Pricing</a>
+                <a href="/#faq" class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">FAQ</a>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/login"
+                    class="hidden sm:inline-block text-sm font-medium text-navy-500 hover:text-navy-700 transition-colors duration-200 cursor-pointer">Log
+                    In</a>
+                <a href="/get-started"
+                    class="inline-flex items-center px-5 py-2.5 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral/90 active:scale-[0.97] transition-all duration-200 cursor-pointer">Get
+                    Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- ═══════════ HERO ═══════════ -->
+        <section class="relative pt-32 pb-10 md:pt-40 md:pb-14">
+            <div class="absolute inset-0 bg-gradient-to-br from-cream via-gold-50/30 to-cream"></div>
+            <div class="relative max-w-3xl mx-auto px-6 text-center">
+                <span
+                    class="animate-fade-up inline-block text-xs font-bold uppercase tracking-[0.2em] text-coral mb-4">Pricing</span>
+                <h1
+                    class="animate-fade-up-delay-1 font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-navy-700 leading-[1.1] tracking-tight mb-5">
+                    Choose your weekly<br class="hidden sm:block"> <span class="text-coral italic">email
+                        capacity.</span>
+                </h1>
+                <p class="animate-fade-up-delay-2 text-lg text-navy-400 leading-relaxed max-w-xl mx-auto">
+                    Every plan includes the <strong class="text-navy-600">Thursday Drop</strong>: next week's
+                    fundraising emails delivered every Thursday — ready to approve and schedule.
+                </p>
+            </div>
+        </section>
+
+        <!-- ═══════════ ALL TIERS INCLUDE ═══════════ -->
+        <section class="pb-10">
+            <div class="max-w-3xl mx-auto px-6">
+                <div class="bg-white rounded-2xl card-shadow p-6 border border-navy-100/40">
+                    <p class="text-xs font-bold text-navy-400 uppercase tracking-[0.15em] mb-3">All tiers include</p>
+                    <div class="flex flex-wrap gap-x-6 gap-y-2">
+                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>Ready-to-send drafts/week</span>
+                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>Subject lines + preview text</span>
+                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>Deadline-aware sequencing</span>
+                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>Unlimited revisions*</span>
+                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                    d="M5 13l4 4L19 7" />
+                            </svg>Managed queue</span>
+                    </div>
+                    <p class="text-xs text-navy-400/60 mt-3 italic">*Unlimited revisions during the scheduled window for
+                        that email.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ CAPACITY SELECTOR ═══════════ -->
+        <section id="plans" class="py-10">
+            <div class="max-w-3xl mx-auto px-6">
+
+                <!-- Selector Buttons -->
+                <div class="flex justify-center mb-10">
+                    <div class="inline-flex bg-white rounded-2xl card-shadow border border-navy-100/40 p-1.5 gap-1">
+                        <button class="cap-btn active px-5 py-3 rounded-xl text-sm font-semibold"
+                            data-tier="0">1x/wk</button>
+                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
+                            data-tier="1">2x/wk</button>
+                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
+                            data-tier="2">3x/wk</button>
+                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
+                            data-tier="3">4x/wk</button>
+                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
+                            data-tier="4">5x/wk</button>
+                    </div>
+                </div>
+
+                <!-- Plan Card (dynamic) -->
+                <div id="plan-card"
+                    class="plan-card bg-white rounded-3xl card-shadow-lg border border-navy-100/40 p-8 sm:p-10 mb-8">
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-8">
+                        <div>
+                            <div class="flex items-center gap-3 mb-2">
+                                <h2 id="plan-name" class="font-display text-2xl sm:text-3xl font-bold text-navy-700">
+                                    Starter</h2>
+                                <span id="plan-badge"
+                                    class="hidden bg-coral text-white text-xs font-bold uppercase tracking-widest py-0.5 px-3 rounded-full">Most
+                                    Popular</span>
+                            </div>
+                            <p id="plan-emails" class="text-navy-400 text-sm">1 email/week · <span
+                                    id="plan-monthly">4–5</span>/month</p>
+                            <p id="plan-desc" class="text-navy-400 text-sm mt-1">Best for low-volume lists, consistent
+                                presence, first-time programs</p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="flex items-baseline gap-1 justify-end">
+                                <span id="plan-price"
+                                    class="font-display text-4xl sm:text-5xl font-bold text-navy-700">$499</span>
+                                <span class="text-navy-400 text-sm">/mo</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-navy-100/30 pt-6 mb-8">
+                        <p class="text-xs font-bold text-navy-400 uppercase tracking-[0.15em] mb-4">What's included</p>
+                        <div class="grid sm:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg><span class="text-sm text-navy-600" id="feat-drafts">1 ready-to-send
+                                    draft/week</span></div>
+                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg><span class="text-sm text-navy-600">Subject lines + preview text options</span>
+                            </div>
+                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg><span class="text-sm text-navy-600">Deadline-aware sequencing</span></div>
+                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg><span class="text-sm text-navy-600">Unlimited revisions</span></div>
+                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg><span class="text-sm text-navy-600" id="feat-queue">Managed queue</span></div>
+                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
+                                </svg><span class="text-sm text-navy-600">Thursday Drop delivery</span></div>
+                        </div>
+                    </div>
+
+                    <a id="plan-cta" href="/get-started"
+                        class="block w-full text-center px-6 py-4 bg-coral text-white text-lg font-semibold rounded-full hover:bg-coral/90 active:scale-[0.97] transition-all duration-200 cursor-pointer">Start
+                        Starter</a>
+                </div>
+
+                <!-- Rapid Response Add-On -->
+                <div class="bg-navy-700 rounded-2xl p-6 sm:p-8 mb-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        <div>
+                            <div class="flex items-center gap-2 mb-1"><svg class="w-5 h-5 text-coral" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                </svg>
+                                <h3 class="font-display text-lg font-bold text-white">Rapid Response (24hr)</h3>
+                            </div>
+                            <p class="text-white/60 text-sm max-w-md">For urgent moments: breaking news, opposition
+                                hits, last-minute match, deadline surprise. Draft delivered within 24 business hours.
+                            </p>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div class="text-white font-display font-bold text-xl">+$149<span
+                                    class="text-white/50 text-sm font-body font-normal">/email</span></div>
+                            <p class="text-white/40 text-xs mt-1">Add to any plan</p>
+                        </div>
+                    </div>
+                    <p class="text-white/40 text-xs mt-4 italic">"Politics happens fast. Rapid Response keeps your email
+                        program from falling behind the news cycle."</p>
+                </div>
+
+                <p class="text-center text-sm text-navy-400 italic">Pause or cancel anytime. Keep everything we've
+                    written.</p>
+            </div>
+        </section>
+
+        <!-- ═══════════ THURSDAY DROP ═══════════ -->
+        <section class="py-16 md:py-20">
+            <div class="max-w-3xl mx-auto px-6">
+                <div class="text-center mb-10">
+                    <span class="inline-block text-xs font-bold uppercase tracking-[0.2em] text-sage mb-4">How Delivery
+                        Works</span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-700 tracking-tight">The <span
+                            class="text-coral italic">Thursday Drop</span></h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="bg-white rounded-2xl card-shadow p-6 border border-navy-100/40 text-center">
+                        <div class="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <span class="font-display font-bold text-coral text-lg">M</span></div>
+                        <h3 class="font-display text-lg font-semibold text-navy-700 mb-1">Monday</h3>
+                        <p class="text-sm text-navy-400">Submit requests by noon. Share goals, notes, links, and any
+                            prior emails.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl card-shadow p-6 border border-navy-100/40 text-center">
+                        <div class="w-12 h-12 bg-sage/10 rounded-xl flex items-center justify-center mx-auto mb-4"><span
+                                class="font-display font-bold text-sage text-lg">T–W</span></div>
+                        <h3 class="font-display text-lg font-semibold text-navy-700 mb-1">Tuesday–Wednesday</h3>
+                        <p class="text-sm text-navy-400">We write, you review, revisions handled. Ask strategy refined.
+                        </p>
+                    </div>
+                    <div class="bg-white rounded-2xl card-shadow p-6 border border-navy-100/40 text-center">
+                        <div class="w-12 h-12 bg-gold-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                            <span class="font-display font-bold text-gold-600 text-lg">Th</span></div>
+                        <h3 class="font-display text-lg font-semibold text-navy-700 mb-1">Thursday</h3>
+                        <p class="text-sm text-navy-400">Next week's fundraising emails delivered — ready to approve and
+                            schedule.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ FAQ (pricing-specific) ═══════════ -->
+        <section class="py-16 md:py-20 bg-navy-50/30">
+            <div class="max-w-3xl mx-auto px-6">
+                <div class="text-center mb-10">
+                    <h2 class="font-display text-2xl sm:text-3xl font-bold text-navy-700 tracking-tight">Pricing <span
+                            class="text-coral italic">Questions</span></h2>
+                </div>
+                <div class="space-y-4">
+                    <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+                        <summary
+                            class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+                            What does "unlimited revisions" mean exactly?<svg
+                                class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg></summary>
+                        <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Unlimited revisions during the
+                            scheduled window for that email. Once a draft is delivered, you can request as many changes
+                            as needed before it's finalized. This doesn't cover reopening drafts weeks later.</div>
+                    </details>
+                    <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+                        <summary
+                            class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+                            Can I change my plan later?<svg
+                                class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg></summary>
+                        <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Yes — upgrade or downgrade anytime.
+                            Changes take effect on your next billing cycle. You can also pause if you're between
+                            campaigns.</div>
+                    </details>
+                    <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+                        <summary
+                            class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+                            How does Rapid Response work?<svg
+                                class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg></summary>
+                        <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Rapid Response is a per-email
+                            add-on for urgent moments. Submit your request and get a complete draft within 24 business
+                            hours. Subject lines, preview text, and revisions are all included. Available on any plan.
+                        </div>
+                    </details>
+                    <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
+                        <summary
+                            class="flex items-center justify-between p-6 cursor-pointer list-none font-semibold text-navy-700 hover:text-coral transition-colors duration-200">
+                            Is there a contract?<svg
+                                class="w-5 h-5 text-navy-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7" />
+                            </svg></summary>
+                        <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">No long-term contract.
+                            Month-to-month. Pause or cancel anytime — and keep everything we've written.</div>
+                    </details>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════ CTA ═══════════ -->
+        <section class="py-16 md:py-20 relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-cream via-coral/5 to-cream"></div>
+            <div class="relative max-w-3xl mx-auto px-6 text-center">
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-navy-700 tracking-tight mb-4">Ready to stop
+                    writing <span class="text-coral italic">emails at midnight?</span></h2>
+                <p class="text-navy-400 max-w-lg mx-auto mb-6">Pick your plan and start getting fundraising emails
+                    delivered like clockwork.</p>
+                <a href="/get-started"
+                    class="inline-flex items-center gap-2 px-8 py-4 bg-coral text-white text-lg font-semibold rounded-full card-shadow-lg hover:shadow-xl hover:bg-coral/90 active:scale-[0.97] transition-all duration-200 cursor-pointer">Get
+                    Started <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg></a>
+                <p class="text-xs text-navy-400/60 mt-4">200+ campaigns served · $4.8M+ raised</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-navy-700 text-white/60">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <a href="/" class="font-display font-bold text-xl text-white tracking-tight cursor-pointer">Fundraising
+                    <span class="text-coral">Emails</span></a>
+                <div class="flex flex-wrap items-center gap-6 text-sm">
+                    <a href="/#how-it-works" class="hover:text-white transition-colors duration-200 cursor-pointer">How
+                        It Works</a>
+                    <a href="/pricing" class="text-white transition-colors duration-200 cursor-pointer">Pricing</a>
+                    <a href="#" class="hover:text-white transition-colors duration-200 cursor-pointer">Privacy</a>
+                    <a href="#" class="hover:text-white transition-colors duration-200 cursor-pointer">Terms</a>
+                    <a href="#" class="hover:text-white transition-colors duration-200 cursor-pointer">Contact</a>
+                </div>
+                <p class="text-xs text-white/40">&copy; 2026 Fundraising Emails. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Pricing Logic -->
+    <script>
+            (function () {
+                var tiers = [
+                    { name: 'Starter', emails: 1, monthly: '4–5', price: '$499', desc: 'Best for low-volume lists, consistent presence, first-time programs', cta: 'Start Starter', queue: 'Managed queue', popular: false },
+                    { name: 'Baseline', emails: 2, monthly: '8–10', price: '$749', desc: 'Best for steady fundraising with light deadlines', cta: 'Start Baseline', queue: 'Managed queue', popular: false },
+                    { name: 'Momentum', emails: 3, monthly: '12–15', price: '$995', desc: 'Best for active campaigns running weekly asks + deadline pushes', cta: 'Start Momentum', queue: 'Priority queue', popular: true },
+                    { name: 'Accelerate', emails: 4, monthly: '16–18', price: '$1,295', desc: 'Best for heavy calendars, frequent deadlines, rapid iteration', cta: 'Start Accelerate', queue: 'Priority queue', popular: false },
+                    { name: 'Full Send', emails: 5, monthly: '20–22', price: '$1,595', desc: 'Best for aggressive fundraising cadence + constant deadlines', cta: 'Start Full Send', queue: 'Priority queue', popular: false }
+                ];
+
+                var btns = document.querySelectorAll('.cap-btn');
+                var card = document.getElementById('plan-card');
+
+                function update(i) {
+                    var t = tiers[i];
+                    document.getElementById('plan-name').textContent = t.name;
+                    document.getElementById('plan-monthly').textContent = t.monthly;
+                    document.getElementById('plan-desc').textContent = t.desc;
+                    document.getElementById('plan-price').textContent = t.price;
+                    document.getElementById('plan-cta').textContent = t.cta;
+                    document.getElementById('feat-drafts').textContent = t.emails + ' ready-to-send draft' + (t.emails > 1 ? 's' : '') + '/week';
+                    document.getElementById('feat-queue').textContent = t.queue;
+                    document.getElementById('plan-emails').innerHTML = t.emails + ' email' + (t.emails > 1 ? 's' : '') + '/week · <span id="plan-monthly">' + t.monthly + '</span>/month';
+
+                    var badge = document.getElementById('plan-badge');
+                    if (t.popular) { badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); }
+
+                    btns.forEach(function (b) { b.classList.remove('active'); });
+                    btns[i].classList.add('active');
+
+                    // Animate card
+                    card.style.opacity = '0'; card.style.transform = 'translateY(8px)';
+                    setTimeout(function () { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 50);
+                }
+
+                btns.forEach(function (btn, idx) {
+                    btn.addEventListener('click', function () { update(idx); });
+                });
+            })();
+    </script>
+
+</body>
+
+</html>
