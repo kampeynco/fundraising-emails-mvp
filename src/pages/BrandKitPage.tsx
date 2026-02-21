@@ -122,7 +122,7 @@ export default function BrandKitPage() {
                     {/* ── BRAND DETAILS ── */}
                     <section id="brand-details" className="scroll-mt-20">
                         <h2 className="mb-8 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                            Brand Details
+                            Details
                         </h2>
 
                         <div className="mb-6">

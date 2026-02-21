@@ -16,6 +16,8 @@ import {
     DropletIcon,
     AlertSquareIcon,
     Link02Icon,
+    ProfileIcon,
+    EdgeStyleIcon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -31,7 +33,7 @@ const brandKitSections = [
     {
         label: null,
         items: [
-            { icon: GridIcon, label: 'Brand Details', sectionId: 'brand-details' },
+            { icon: ProfileIcon, label: 'Details', sectionId: 'brand-details' },
         ],
     },
     {
@@ -46,7 +48,7 @@ const brandKitSections = [
         items: [
             { icon: ImageUploadIcon, label: 'Logos', sectionId: 'logos' },
             { icon: DropletIcon, label: 'Color', sectionId: 'color' },
-            { icon: Mail01Icon, label: 'Header & Footer', sectionId: 'email-format' },
+            { icon: EdgeStyleIcon, label: 'Formatting', sectionId: 'email-format' },
         ],
     },
 ]
