@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { Button } from '@/components/ui/button'
+import { HexColorPickerField } from '@/components/ui/hex-color-picker'
 import { useBrandKit, type BrandKitSocial } from '@/hooks/useBrandKit'
 
 const toneOptions = [
@@ -27,7 +28,6 @@ export default function BrandKitPage() {
     const { data, setData, loading, saving, error, lastSaved, save, uploadLogo } = useBrandKit()
     const primaryLogoRef = useRef<HTMLInputElement>(null)
     const iconLogoRef = useRef<HTMLInputElement>(null)
-    const colorRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
     const updateField = <K extends keyof typeof data>(field: K, value: (typeof data)[K]) => {
         setData(prev => ({ ...prev, [field]: value }))
