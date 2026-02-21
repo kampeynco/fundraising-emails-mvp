@@ -1,9 +1,15 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { HugeiconsIcon } from '@hugeicons/react'
+import {
+    MailAtSign01Icon,
+    ArrowLeft01Icon,
+    LockPasswordIcon,
+    Mail01Icon,
+} from '@hugeicons/core-free-icons'
 import { Button } from './button'
 import { Input } from './input'
-import { AtSignIcon, ChevronLeftIcon, LockIcon, MailIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface AuthPageProps {
@@ -45,22 +51,22 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
 
     return (
         <main className="relative md:h-screen md:overflow-hidden lg:grid lg:grid-cols-2">
-            {/* Left decorative panel */}
-            <div className="bg-muted/60 relative hidden h-full flex-col border-r p-10 lg:flex">
-                <div className="from-background absolute inset-0 z-10 bg-gradient-to-t to-transparent" />
+            {/* Left decorative panel — deep navy to match landing page */}
+            <div className="relative hidden h-full flex-col p-10 lg:flex" style={{ background: 'linear-gradient(to bottom, #0f2137, #142d48)' }}>
+                <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0f2137]/60 to-transparent" />
                 <div className="z-10 flex items-center gap-2">
-                    <MailIcon className="size-6" />
-                    <p className="text-xl font-semibold">
-                        Fundraising <span className="text-primary">Emails</span>
+                    <HugeiconsIcon icon={Mail01Icon} size={24} className="text-white/90" />
+                    <p className="text-xl font-bold tracking-tight text-white">
+                        Fundraising <span className="text-[#e8614d]">Emails</span>
                     </p>
                 </div>
                 <div className="z-10 mt-auto">
                     <blockquote className="space-y-2">
-                        <p className="text-xl">
+                        <p className="text-xl text-white/90">
                             &ldquo;We raised 3× more in Q4 after switching to their email
                             program. The copy practically writes itself.&rdquo;
                         </p>
-                        <footer className="font-mono text-sm font-semibold">
+                        <footer className="font-mono text-sm font-semibold text-white/60">
                             ~ Campaign Finance Director
                         </footer>
                     </blockquote>
@@ -82,18 +88,20 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                     <div className="bg-[radial-gradient(50%_50%_at_50%_50%,--theme(--color-foreground/.04)_0,--theme(--color-foreground/.01)_80%,transparent_100%)] absolute top-0 right-0 h-320 w-60 -translate-y-87.5 rounded-full" />
                 </div>
 
+                {/* Home button — uses <a> to navigate outside the React SPA to the static landing page */}
                 <Button variant="ghost" className="absolute top-7 left-5" asChild>
-                    <Link to="/">
-                        <ChevronLeftIcon className="size-4 me-2" />
+                    <a href="/">
+                        <HugeiconsIcon icon={ArrowLeft01Icon} size={16} className="me-2" />
                         Home
-                    </Link>
+                    </a>
                 </Button>
 
                 <div className="mx-auto space-y-4 sm:w-sm">
+                    {/* Mobile branding — matches landing page: bold tracking-tight, coral accent */}
                     <div className="flex items-center gap-2 lg:hidden">
-                        <MailIcon className="size-6" />
-                        <p className="text-xl font-semibold">
-                            Fundraising <span className="text-primary">Emails</span>
+                        <HugeiconsIcon icon={Mail01Icon} size={24} />
+                        <p className="text-xl font-bold tracking-tight">
+                            Fundraising <span className="text-[#e8614d]">Emails</span>
                         </p>
                     </div>
 
@@ -156,7 +164,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                                         autoComplete="email"
                                     />
                                     <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-                                        <AtSignIcon className="size-4" aria-hidden="true" />
+                                        <HugeiconsIcon icon={MailAtSign01Icon} size={16} aria-hidden="true" />
                                     </div>
                                 </div>
                             </div>
@@ -182,7 +190,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                                             autoComplete="new-password"
                                         />
                                         <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-                                            <LockIcon className="size-4" aria-hidden="true" />
+                                            <HugeiconsIcon icon={LockPasswordIcon} size={16} aria-hidden="true" />
                                         </div>
                                     </div>
                                 </div>
@@ -263,7 +271,7 @@ function FloatingPaths({ position }: { position: number }) {
     return (
         <div className="pointer-events-none absolute inset-0">
             <svg
-                className="h-full w-full text-slate-950 dark:text-white"
+                className="h-full w-full text-white/50"
                 viewBox="0 0 696 316"
                 fill="none"
             >
@@ -274,11 +282,11 @@ function FloatingPaths({ position }: { position: number }) {
                         d={path.d}
                         stroke="currentColor"
                         strokeWidth={path.width}
-                        strokeOpacity={0.1 + path.id * 0.03}
-                        initial={{ pathLength: 0.3, opacity: 0.6 }}
+                        strokeOpacity={0.15 + path.id * 0.04}
+                        initial={{ pathLength: 0.3, opacity: 0.8 }}
                         animate={{
                             pathLength: 1,
-                            opacity: [0.3, 0.6, 0.3],
+                            opacity: [0.5, 0.9, 0.5],
                             pathOffset: [0, 1, 0],
                         }}
                         transition={{
