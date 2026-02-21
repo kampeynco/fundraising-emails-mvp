@@ -392,8 +392,8 @@ export default function BrandKitPage() {
             </div>
 
             {/* Right preview panel */}
-            <div className="flex-1 flex items-center justify-center border-l border-white/[0.06] bg-[#0f172a] overflow-hidden p-6">
-                <div className="h-[90%] w-full overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/30">
+            <div className="flex-1 flex items-center justify-center border-l border-white/[0.06] overflow-hidden p-6" style={{ backgroundColor: data.colors.background }}>
+                <div className="h-[90%] w-full overflow-hidden rounded-2xl shadow-2xl shadow-black/30" style={{ backgroundColor: data.colors.container }}>
                     <div>
                         {/* Preview header */}
                         <div className="bg-gradient-to-br from-[#0f2137] to-[#142d48] px-8 py-6 text-center">
@@ -402,7 +402,7 @@ export default function BrandKitPage() {
                             </p>
                         </div>
                         {/* Preview body */}
-                        <div className="px-8 py-10 text-center" style={{ backgroundColor: data.colors.background }}>
+                        <div className="px-8 py-10 text-center" style={{ backgroundColor: data.colors.container }}>
                             <h3 className="mb-4 text-xl font-bold" style={{ fontFamily: '"Playfair Display", Georgia, serif', color: data.colors.foreground }}>
                                 Your Journey Begins!
                             </h3>
@@ -430,7 +430,7 @@ export default function BrandKitPage() {
 
                         {/* Social icons */}
                         {data.socials.some(s => s.url) && (
-                            <div className="flex items-center justify-center gap-3 pb-4" style={{ backgroundColor: data.colors.background }}>
+                            <div className="flex items-center justify-center gap-3 pb-4" style={{ backgroundColor: data.colors.container }}>
                                 {data.socials.filter(s => s.url).map((s, i) => (
                                     <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0f2137]">
                                         <span className="text-[10px] font-bold text-white">{s.platform[0]}</span>
@@ -440,7 +440,7 @@ export default function BrandKitPage() {
                         )}
 
                         {/* Footer preview */}
-                        <div className="border-t border-gray-100 px-6 py-5 text-center" style={{ backgroundColor: data.colors.background }}>
+                        <div className="border-t border-gray-100 px-6 py-5 text-center" style={{ backgroundColor: data.colors.container }}>
                             {data.disclaimers && (
                                 <p className="mb-2 text-[11px] leading-relaxed text-[#8ba3cc]">{data.disclaimers}</p>
                             )}
