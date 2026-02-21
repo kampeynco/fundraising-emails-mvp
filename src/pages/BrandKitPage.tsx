@@ -16,6 +16,7 @@ const toneOptions = [
 ]
 
 const socialPlatforms = [
+    'Website',
     'Instagram',
     'Facebook',
     'Twitter / X',
@@ -28,6 +29,7 @@ const socialPlatforms = [
 
 // SVG path data for social media icons (simple, recognizable glyphs)
 const socialIconPaths: Record<string, string> = {
+    Website: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z',
     Instagram: 'M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5M12 7a5 5 0 1 1 0 10 5 5 0 0 1 0-10m0 2a3 3 0 1 0 0 6 3 3 0 0 0 0-6',
     Facebook: 'M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95',
     'Twitter / X': 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z',
@@ -122,27 +124,15 @@ export default function BrandKitPage() {
                             Brand Details
                         </h2>
 
-                        <div className="mb-6 grid grid-cols-2 gap-6">
-                            <div>
-                                <label className="mb-2 block text-sm font-medium text-white/50">Kit Name</label>
-                                <input
-                                    type="text"
-                                    value={data.kit_name}
-                                    onChange={(e) => updateField('kit_name', e.target.value)}
-                                    placeholder="My Campaign"
-                                    className={inputClasses}
-                                />
-                            </div>
-                            <div>
-                                <label className="mb-2 block text-sm font-medium text-white/50">Website</label>
-                                <input
-                                    type="url"
-                                    value={data.website}
-                                    onChange={(e) => updateField('website', e.target.value)}
-                                    placeholder="https://www.example.com/"
-                                    className={inputClasses}
-                                />
-                            </div>
+                        <div className="mb-6">
+                            <label className="mb-2 block text-sm font-medium text-white/50">Committee Name</label>
+                            <input
+                                type="text"
+                                value={data.kit_name}
+                                onChange={(e) => updateField('kit_name', e.target.value)}
+                                placeholder="My Campaign"
+                                className={inputClasses}
+                            />
                         </div>
 
                         <div className="mb-6">
@@ -222,7 +212,7 @@ export default function BrandKitPage() {
                     {/* ── CONTENT: SOCIALS ── */}
                     <section id="socials" className="scroll-mt-20">
                         <h2 className="mb-6 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                            Socials
+                            Links
                         </h2>
 
                         <div className="space-y-3">
@@ -257,7 +247,7 @@ export default function BrandKitPage() {
                             onClick={addSocial}
                             className="mt-4 cursor-pointer text-sm font-medium text-[#e8614d] transition-colors hover:text-[#d4553f]"
                         >
-                            + Add social link
+                            + Add links
                         </button>
                     </section>
 
