@@ -27,6 +27,7 @@ export default function BrandKitPage() {
     const { data, setData, loading, saving, error, lastSaved, save, uploadLogo } = useBrandKit()
     const primaryLogoRef = useRef<HTMLInputElement>(null)
     const iconLogoRef = useRef<HTMLInputElement>(null)
+    const colorRefs = useRef<Record<string, HTMLInputElement | null>>({})
 
     const updateField = <K extends keyof typeof data>(field: K, value: (typeof data)[K]) => {
         setData(prev => ({ ...prev, [field]: value }))
@@ -49,6 +50,11 @@ export default function BrandKitPage() {
     const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>, type: 'primary' | 'icon') => {
         const file = e.target.files?.[0]
         if (file) await uploadLogo(file, type)
+    }
+
+    const removeLogo = (type: 'primary' | 'icon') => {
+        const field = type === 'primary' ? 'primary_logo_url' : 'icon_logo_url'
+        setData(prev => ({ ...prev, [field]: '' }))
     }
 
     const inputClasses = "w-full rounded-lg border border-white/[0.08] bg-[#1e293b] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
@@ -263,19 +269,31 @@ export default function BrandKitPage() {
                         <div className="grid grid-cols-2 gap-6">
                             {/* Primary Logo */}
                             <div>
-                                <div
-                                    onClick={() => primaryLogoRef.current?.click()}
-                                    className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-[#e8614d]/40 hover:bg-[#1e293b]/80"
-                                >
-                                    {data.primary_logo_url ? (
-                                        <img src={data.primary_logo_url} alt="Primary logo" className="h-full w-full object-contain p-4" />
-                                    ) : (
-                                        <div className="text-center">
-                                            <svg className="mx-auto mb-2 h-8 w-8 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                                <div className="relative">
+                                    <div
+                                        onClick={() => primaryLogoRef.current?.click()}
+                                        className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-[#e8614d]/40 hover:bg-[#1e293b]/80"
+                                    >
+                                        {data.primary_logo_url ? (
+                                            <img src={data.primary_logo_url} alt="Primary logo" className="h-full w-full object-contain p-4" />
+                                        ) : (
+                                            <div className="text-center">
+                                                <svg className="mx-auto mb-2 h-8 w-8 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                                                </svg>
+                                                <p className="text-xs text-white/30">Upload logo</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {data.primary_logo_url && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); removeLogo('primary') }}
+                                            className="absolute -right-2 -top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
+                                        >
+                                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
-                                            <p className="text-xs text-white/30">Upload logo</p>
-                                        </div>
+                                        </button>
                                     )}
                                 </div>
                                 <p className="mt-2 text-sm font-medium text-white">Primary</p>
@@ -284,19 +302,31 @@ export default function BrandKitPage() {
 
                             {/* Icon Logo */}
                             <div>
-                                <div
-                                    onClick={() => iconLogoRef.current?.click()}
-                                    className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-[#e8614d]/40 hover:bg-[#1e293b]/80"
-                                >
-                                    {data.icon_logo_url ? (
-                                        <img src={data.icon_logo_url} alt="Icon logo" className="h-full w-full object-contain p-4" />
-                                    ) : (
-                                        <div className="text-center">
-                                            <svg className="mx-auto mb-2 h-8 w-8 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                                <div className="relative">
+                                    <div
+                                        onClick={() => iconLogoRef.current?.click()}
+                                        className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-[#e8614d]/40 hover:bg-[#1e293b]/80"
+                                    >
+                                        {data.icon_logo_url ? (
+                                            <img src={data.icon_logo_url} alt="Icon logo" className="h-full w-full object-contain p-4" />
+                                        ) : (
+                                            <div className="text-center">
+                                                <svg className="mx-auto mb-2 h-8 w-8 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
+                                                </svg>
+                                                <p className="text-xs text-white/30">Upload icon</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    {data.icon_logo_url && (
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); removeLogo('icon') }}
+                                            className="absolute -right-2 -top-2 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-colors hover:bg-red-600"
+                                        >
+                                            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                                             </svg>
-                                            <p className="text-xs text-white/30">Upload icon</p>
-                                        </div>
+                                        </button>
                                     )}
                                 </div>
                                 <p className="mt-2 text-sm font-medium text-white">Icon</p>
