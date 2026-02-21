@@ -4,12 +4,12 @@ import { useBrandKit, type BrandKitSocial } from '@/hooks/useBrandKit'
 
 const toneOptions = [
     'Inspirational',
-    'Urgent',
-    'Personal',
+    'Neutral',
+    'Formal',
+    'Friendly',
+    'Playful',
     'Professional',
-    'Conversational',
     'Empathetic',
-    'Bold',
 ]
 
 const socialPlatforms = [
