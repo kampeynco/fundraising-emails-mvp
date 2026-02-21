@@ -6,12 +6,18 @@ import tailwindcss from '@tailwindcss/vite'
 // Rewrite SPA routes to app.html
 function spaFallback(): Plugin {
     const spaRoutes = ['/dashboard', '/get-started', '/onboard', '/login']
+    const staticRoutes: Record<string, string> = { '/pricing': '/pricing.html' }
     return {
         name: 'spa-fallback',
         configureServer(server) {
             server.middlewares.use((req, _res, next) => {
-                if (req.url && spaRoutes.some(r => req.url!.startsWith(r))) {
-                    req.url = '/app.html'
+                if (req.url) {
+                    const staticMatch = Object.keys(staticRoutes).find(r => req.url!.startsWith(r))
+                    if (staticMatch) {
+                        req.url = staticRoutes[staticMatch]
+                    } else if (spaRoutes.some(r => req.url!.startsWith(r))) {
+                        req.url = '/app.html'
+                    }
                 }
                 next()
             })
@@ -31,6 +37,7 @@ export default defineConfig({
             input: {
                 main: path.resolve(__dirname, 'index.html'),
                 app: path.resolve(__dirname, 'app.html'),
+                pricing: path.resolve(__dirname, 'pricing.html'),
             },
         },
     },
