@@ -139,11 +139,11 @@ export default function BrandKitPage() {
                         </div>
 
                         <div className="mb-6">
-                            <label className="mb-2 block text-sm font-medium text-white/50">Brand Summary</label>
+                            <label className="mb-2 block text-sm font-medium text-white/50">Tell us about your committee</label>
                             <textarea
                                 value={data.brand_summary}
                                 onChange={(e) => updateField('brand_summary', e.target.value)}
-                                placeholder="Describe your campaign's brand, mission, and key messages..."
+                                placeholder="Enter your candidate's bio, organization's mission..."
                                 rows={5}
                                 className={`${inputClasses} resize-none leading-relaxed`}
                             />
@@ -438,7 +438,7 @@ export default function BrandKitPage() {
             {/* Right preview panel */}
             <div className="flex-1 flex items-center justify-center border-l border-white/[0.06] overflow-hidden p-6" style={{ backgroundColor: data.colors.background }}>
                 <div className="h-[90%] w-full overflow-hidden rounded-2xl shadow-2xl shadow-black/30" style={{ backgroundColor: data.colors.container }}>
-                    <div>
+                    <div className="flex h-full flex-col">
                         {/* Preview header — shown when enabled or logo uploaded */}
                         {(data.show_header || !!data.primary_logo_url) && (
                             <div className="px-8 py-6 text-center" style={{ backgroundColor: data.colors.header }}>
@@ -457,7 +457,7 @@ export default function BrandKitPage() {
                         )}
 
                         {/* Preview body */}
-                        <div className="px-8 py-10 text-center" style={{ backgroundColor: data.colors.container }}>
+                        <div className="flex-1 px-8 py-10 text-center" style={{ backgroundColor: data.colors.container }}>
                             <h3 className="mb-4 text-xl font-bold" style={{ fontFamily: '"Playfair Display", Georgia, serif', color: data.colors.foreground }}>
                                 Your Journey Begins!
                             </h3>
