@@ -362,9 +362,9 @@ export default function BrandKitPage() {
             </div>
 
             {/* Right preview panel */}
-            <div className="flex-1 border-l border-white/[0.06] bg-white overflow-hidden">
-                <div className="h-full overflow-y-auto">
-                    <div className="bg-white">
+            <div className="flex-1 flex items-center justify-center border-l border-white/[0.06] bg-[#0f172a] overflow-hidden p-6">
+                <div className="h-[90%] w-full overflow-y-auto rounded-2xl bg-white shadow-2xl shadow-black/30">
+                    <div>
                         {/* Preview header */}
                         <div className="bg-gradient-to-br from-[#0f2137] to-[#142d48] px-8 py-6 text-center">
                             <p className="text-lg font-bold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
