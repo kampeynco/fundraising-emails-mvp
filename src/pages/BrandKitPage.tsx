@@ -62,7 +62,7 @@ export default function BrandKitPage() {
     }
 
     return (
-        <div className="flex h-full">
+        <div className="flex h-full overflow-hidden">
             {/* Form area */}
             <div className="w-1/2 overflow-y-auto">
                 {/* Top bar */}
