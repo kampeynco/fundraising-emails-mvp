@@ -362,36 +362,36 @@ export default function BrandKitPage() {
             </div>
 
             {/* Right preview panel */}
-            <div className="flex-1 border-l border-white/[0.06] bg-[#0f172a] p-6">
-                <div className="sticky top-6 mx-auto w-[80%]">
-                    <div className="overflow-hidden rounded-xl bg-white shadow-2xl shadow-black/30">
+            <div className="flex-1 border-l border-white/[0.06] bg-[#0f172a] overflow-y-auto">
+                <div className="sticky top-0 mx-auto w-[80%] py-8">
+                    <div className="overflow-hidden rounded-2xl bg-white shadow-2xl shadow-black/30">
                         {/* Preview header */}
-                        <div className="bg-gradient-to-br from-[#0f2137] to-[#142d48] px-5 py-4 text-center">
-                            <p className="text-sm font-bold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+                        <div className="bg-gradient-to-br from-[#0f2137] to-[#142d48] px-8 py-6 text-center">
+                            <p className="text-lg font-bold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                                 Fundraising <span className="text-[#e8614d]">Emails</span>
                             </p>
                         </div>
                         {/* Preview body */}
-                        <div className="px-5 py-6 text-center" style={{ backgroundColor: data.colors.background }}>
-                            <h3 className="mb-3 text-base font-bold" style={{ fontFamily: '"Playfair Display", Georgia, serif', color: data.colors.foreground }}>
+                        <div className="px-8 py-10 text-center" style={{ backgroundColor: data.colors.background }}>
+                            <h3 className="mb-4 text-xl font-bold" style={{ fontFamily: '"Playfair Display", Georgia, serif', color: data.colors.foreground }}>
                                 Your Journey Begins!
                             </h3>
-                            <p className="mb-4 text-xs leading-relaxed text-[#5c7db5]">
+                            <p className="mb-5 text-sm leading-relaxed text-[#5c7db5]">
                                 Congratulations on taking this important step! You've joined a community of forward-thinkers and change-makers.
                             </p>
-                            <p className="mb-4 text-xs leading-relaxed text-[#5c7db5]">
+                            <p className="mb-5 text-sm leading-relaxed text-[#5c7db5]">
                                 Every great journey starts with a single step. Complete your setup to unlock your full potential with us.
                             </p>
                             <button
-                                className="mb-4 cursor-pointer rounded-lg px-5 py-2.5 text-xs font-semibold transition-colors"
+                                className="mb-5 cursor-pointer rounded-lg px-8 py-3 text-sm font-semibold transition-colors"
                                 style={{ backgroundColor: data.colors.accent, color: data.colors.button_text }}
                             >
                                 Unlock Your Potential
                             </button>
-                            <p className="mb-3 text-[10px] leading-relaxed text-[#8ba3cc]">
+                            <p className="mb-4 text-xs leading-relaxed text-[#8ba3cc]">
                                 Remember, every expert was once a beginner. Our support team is here to guide you every step of the way.
                             </p>
-                            <p className="text-[10px] font-medium" style={{ color: data.colors.foreground }}>
+                            <p className="text-xs font-medium" style={{ color: data.colors.foreground }}>
                                 Believe in yourself,
                                 <br />
                                 {data.kit_name || 'Campaign'} Family
@@ -400,25 +400,25 @@ export default function BrandKitPage() {
 
                         {/* Social icons */}
                         {data.socials.some(s => s.url) && (
-                            <div className="flex items-center justify-center gap-2 pb-2" style={{ backgroundColor: data.colors.background }}>
+                            <div className="flex items-center justify-center gap-3 pb-4" style={{ backgroundColor: data.colors.background }}>
                                 {data.socials.filter(s => s.url).map((s, i) => (
-                                    <div key={i} className="flex h-6 w-6 items-center justify-center rounded-full bg-[#0f2137]">
-                                        <span className="text-[8px] font-bold text-white">{s.platform[0]}</span>
+                                    <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0f2137]">
+                                        <span className="text-[10px] font-bold text-white">{s.platform[0]}</span>
                                     </div>
                                 ))}
                             </div>
                         )}
 
                         {/* Footer preview */}
-                        <div className="border-t border-gray-100 px-4 py-3 text-center" style={{ backgroundColor: data.colors.background }}>
+                        <div className="border-t border-gray-100 px-6 py-5 text-center" style={{ backgroundColor: data.colors.background }}>
                             {data.disclaimers && (
-                                <p className="mb-1 text-[8px] leading-relaxed text-[#8ba3cc]">{data.disclaimers}</p>
+                                <p className="mb-2 text-[11px] leading-relaxed text-[#8ba3cc]">{data.disclaimers}</p>
                             )}
                             {data.copyright && (
-                                <p className="text-[8px] text-[#8ba3cc]">{data.copyright}</p>
+                                <p className="mb-1 text-[11px] text-[#8ba3cc]">{data.copyright}</p>
                             )}
                             {data.address && (
-                                <p className="text-[8px] text-[#8ba3cc]">{data.address}</p>
+                                <p className="text-[11px] text-[#8ba3cc]">{data.address}</p>
                             )}
                         </div>
                     </div>
