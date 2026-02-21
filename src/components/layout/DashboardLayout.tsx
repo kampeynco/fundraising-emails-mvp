@@ -35,7 +35,7 @@ const brandKitSections = [
     {
         label: 'Content',
         items: [
-            { icon: JusticeScale01Icon, label: 'Legal', sectionId: 'legal' },
+            { icon: JusticeScale01Icon, label: 'Content', sectionId: 'legal' },
             { icon: HashtagIcon, label: 'Socials', sectionId: 'socials' },
         ],
     },

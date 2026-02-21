@@ -198,17 +198,6 @@ export default function BrandKitPage() {
                             />
                         </div>
 
-                        <div className="mb-6">
-                            <label className="mb-2 block text-sm font-medium text-white/50">Footer</label>
-                            <input
-                                type="text"
-                                value={data.footer}
-                                onChange={(e) => updateField('footer', e.target.value)}
-                                placeholder="Add standard footer text that appears in every email"
-                                className={inputClasses}
-                            />
-                        </div>
-
                         <div>
                             <label className="mb-2 block text-sm font-medium text-white/50">Disclaimers</label>
                             <input
