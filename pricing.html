@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pricing — Fundraising Emails</title>
     <meta name="description"
-        content="Choose your weekly email capacity. Fundraising email plans starting at 1 email per week, delivered every Thursday.">
+        content="Build your custom fundraising email plan. Choose weekly sends, add rapid response, and pick your platform.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link
@@ -86,42 +86,117 @@
             -webkit-backdrop-filter: blur(16px);
         }
 
-        /* Capacity selector */
-        .cap-btn {
-            transition: all 0.25s ease;
+        /* Slider track */
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: #dce3f0;
+            outline: none;
+            cursor: pointer;
         }
 
-        .cap-btn.active {
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
             background: #0f2137;
-            color: #fff;
-            box-shadow: 0 4px 16px rgba(15, 33, 55, 0.25);
-            transform: scale(1.05);
+            border: 4px solid #fff;
+            box-shadow: 0 2px 8px rgba(15, 33, 55, 0.3);
+            cursor: grab;
         }
 
-        .cap-btn:not(.active):hover {
-            background: rgba(26, 58, 92, 0.08);
+        input[type="range"]::-moz-range-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #0f2137;
+            border: 4px solid #fff;
+            box-shadow: 0 2px 8px rgba(15, 33, 55, 0.3);
+            cursor: grab;
         }
 
-        /* Plan card transitions */
-        .plan-card {
-            transition: opacity 0.3s ease, transform 0.3s ease;
+        input[type="range"]:active::-webkit-slider-thumb {
+            cursor: grabbing;
+            transform: scale(1.1);
         }
 
-        /* Add-on toggle */
+        /* Platform card selection */
+        .platform-card {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+
+        .platform-card.selected {
+            border-color: #0f2137;
+            box-shadow: 0 0 0 2px #0f2137;
+        }
+
+        .platform-card:not(.selected):hover {
+            border-color: #8ba3cc;
+        }
+
+        /* Toggle */
         .toggle-track {
+            width: 48px;
+            height: 26px;
+            border-radius: 999px;
+            background: #dce3f0;
             transition: background 0.2s ease;
+            cursor: pointer;
+            position: relative;
         }
 
         .toggle-track.on {
             background: #4A7C6F;
         }
 
+        .toggle-track.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
         .toggle-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+            position: absolute;
+            top: 2px;
+            left: 2px;
             transition: transform 0.2s ease;
         }
 
         .toggle-track.on .toggle-thumb {
-            transform: translateX(20px);
+            transform: translateX(22px);
+        }
+
+        /* Section card animation */
+        .config-section {
+            transition: opacity 0.2s ease;
+        }
+
+        /* Badge */
+        .feature-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.8125rem;
+            font-weight: 500;
+            border: 1px solid;
+        }
+
+        /* Summary bar */
+        .summary-bar {
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -178,177 +253,317 @@
 
     <main>
         <!-- ═══════════ HERO ═══════════ -->
-        <section class="relative pt-32 pb-10 md:pt-40 md:pb-14">
+        <section class="relative pt-28 pb-8 md:pt-36 md:pb-10">
             <div class="absolute inset-0 bg-gradient-to-br from-cream via-gold-50/30 to-cream"></div>
             <div class="relative max-w-3xl mx-auto px-6 text-center">
                 <span
                     class="animate-fade-up inline-block text-xs font-bold uppercase tracking-[0.2em] text-coral mb-4">Pricing</span>
                 <h1
-                    class="animate-fade-up-delay-1 font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-navy-700 leading-[1.1] tracking-tight mb-5">
-                    Choose your weekly<br class="hidden sm:block"> <span class="text-coral italic">email
-                        capacity.</span>
+                    class="animate-fade-up-delay-1 font-display text-3xl sm:text-4xl lg:text-5xl font-bold text-navy-700 leading-[1.1] tracking-tight mb-4">
+                    A custom pricing <span class="text-coral italic">plan.</span>
                 </h1>
-                <p class="animate-fade-up-delay-2 text-lg text-navy-400 leading-relaxed max-w-xl mx-auto">
-                    Every plan includes the <strong class="text-navy-600">Thursday Drop</strong>: next week's
-                    fundraising emails delivered every Thursday — ready to approve and schedule.
+                <p class="animate-fade-up-delay-2 text-base text-navy-400 leading-relaxed max-w-lg mx-auto">
+                    Choose the plan and services best for your committee's needs.
                 </p>
             </div>
         </section>
 
-        <!-- ═══════════ ALL TIERS INCLUDE ═══════════ -->
-        <section class="pb-10">
-            <div class="max-w-3xl mx-auto px-6">
-                <div class="bg-white rounded-2xl card-shadow p-6 border border-navy-100/40">
-                    <p class="text-xs font-bold text-navy-400 uppercase tracking-[0.15em] mb-3">All tiers include</p>
-                    <div class="flex flex-wrap gap-x-6 gap-y-2">
-                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>Ready-to-send drafts/week</span>
-                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>Subject lines + preview text</span>
-                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>Deadline-aware sequencing</span>
-                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>Unlimited revisions*</span>
-                        <span class="flex items-center gap-2 text-sm text-navy-600"><svg class="w-4 h-4 text-sage"
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                    d="M5 13l4 4L19 7" />
-                            </svg>Managed queue</span>
-                    </div>
-                    <p class="text-xs text-navy-400/60 mt-3 italic">*Unlimited revisions during the scheduled window for
-                        that email.</p>
-                </div>
-            </div>
-        </section>
+        <!-- ═══════════ CONFIGURATOR ═══════════ -->
+        <section class="py-8 md:py-12">
+            <div class="max-w-4xl mx-auto px-6">
 
-        <!-- ═══════════ CAPACITY SELECTOR ═══════════ -->
-        <section id="plans" class="py-10">
-            <div class="max-w-3xl mx-auto px-6">
-
-                <!-- Selector Buttons -->
-                <div class="flex justify-center mb-10">
-                    <div class="inline-flex bg-white rounded-2xl card-shadow border border-navy-100/40 p-1.5 gap-1">
-                        <button class="cap-btn active px-5 py-3 rounded-xl text-sm font-semibold"
-                            data-tier="0">1x/wk</button>
-                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
-                            data-tier="1">2x/wk</button>
-                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
-                            data-tier="2">3x/wk</button>
-                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
-                            data-tier="3">4x/wk</button>
-                        <button class="cap-btn px-5 py-3 rounded-xl text-sm font-semibold text-navy-500"
-                            data-tier="4">5x/wk</button>
-                    </div>
-                </div>
-
-                <!-- Plan Card (dynamic) -->
-                <div id="plan-card"
-                    class="plan-card bg-white rounded-3xl card-shadow-lg border border-navy-100/40 p-8 sm:p-10 mb-8">
-                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-6 mb-8">
-                        <div>
-                            <div class="flex items-center gap-3 mb-2">
-                                <h2 id="plan-name" class="font-display text-2xl sm:text-3xl font-bold text-navy-700">
-                                    Starter</h2>
-                                <span id="plan-badge"
-                                    class="hidden bg-coral text-white text-xs font-bold uppercase tracking-widest py-0.5 px-3 rounded-full">Most
-                                    Popular</span>
+                <!-- ── SUMMARY ROW ── -->
+                <div id="summary-bar"
+                    class="bg-white rounded-2xl card-shadow-lg border border-navy-100/40 p-5 sm:p-6 mb-8 sticky top-[68px] z-40 summary-bar">
+                    <div class="flex flex-wrap items-center gap-x-6 gap-y-3 justify-between">
+                        <!-- Line items -->
+                        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                            <div class="text-center min-w-[80px]">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Email
+                                    Writing</p>
+                                <p id="sum-writing" class="text-lg font-bold text-navy-700">$249</p>
                             </div>
-                            <p id="plan-emails" class="text-navy-400 text-sm">1 email/week · <span
-                                    id="plan-monthly">4–5</span>/month</p>
-                            <p id="plan-desc" class="text-navy-400 text-sm mt-1">Best for low-volume lists, consistent
-                                presence, first-time programs</p>
+                            <div class="text-navy-200 hidden sm:block">+</div>
+                            <div class="text-center min-w-[80px]">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Rapid
+                                    Response</p>
+                                <p id="sum-rapid" class="text-lg font-bold text-navy-700">$0</p>
+                            </div>
+                            <div class="text-navy-200 hidden sm:block">+</div>
+                            <div class="text-center min-w-[80px]">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">
+                                    Platform</p>
+                                <p id="sum-platform" class="text-lg font-bold text-navy-700">$249</p>
+                            </div>
+                        </div>
+                        <!-- Total -->
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <p id="sum-total" class="font-display text-3xl sm:text-4xl font-bold text-navy-700">$498
+                                </p>
+                                <p class="text-xs text-navy-400">/month</p>
+                            </div>
+                            <a href="/get-started"
+                                class="hidden sm:inline-flex items-center px-6 py-3 bg-coral text-white text-sm font-semibold rounded-full hover:bg-coral/90 active:scale-[0.97] transition-all duration-200 cursor-pointer">Get
+                                Started</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── EMAIL WRITING SERVICE ── -->
+                <div class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
+                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
+                        <div>
+                            <h2 class="font-display text-xl font-bold text-navy-700 mb-1">Email Writing Service</h2>
+                            <p class="text-sm text-navy-400">Done-for-you fundraising emails, delivered weekly via the
+                                Thursday Drop.</p>
                         </div>
                         <div class="text-right shrink-0">
-                            <div class="flex items-baseline gap-1 justify-end">
-                                <span id="plan-price"
-                                    class="font-display text-4xl sm:text-5xl font-bold text-navy-700">$499</span>
-                                <span class="text-navy-400 text-sm">/mo</span>
-                            </div>
+                            <p id="writing-price" class="font-display text-2xl font-bold text-navy-700">$249</p>
+                            <p class="text-xs text-navy-400">/month</p>
                         </div>
                     </div>
 
-                    <div class="border-t border-navy-100/30 pt-6 mb-8">
-                        <p class="text-xs font-bold text-navy-400 uppercase tracking-[0.15em] mb-4">What's included</p>
-                        <div class="grid sm:grid-cols-2 gap-3">
-                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg><span class="text-sm text-navy-600" id="feat-drafts">1 ready-to-send
-                                    draft/week</span></div>
-                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg><span class="text-sm text-navy-600">Subject lines + preview text options</span>
+                    <div class="grid sm:grid-cols-2 gap-6">
+                        <!-- Left: Platforms -->
+                        <div>
+                            <p class="text-xs font-bold text-navy-400 uppercase tracking-[0.15em] mb-3">Supported
+                                Platforms</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="feature-badge bg-navy-50 border-navy-200/50 text-navy-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M8 12l2 2 4-4" />
+                                    </svg>
+                                    ActBlue
+                                </span>
+                                <span class="feature-badge bg-navy-50 border-navy-200/50 text-navy-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M8 12l2 2 4-4" />
+                                    </svg>
+                                    NGP VAN
+                                </span>
+                                <span class="feature-badge bg-navy-50 border-navy-200/50 text-navy-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M8 12l2 2 4-4" />
+                                    </svg>
+                                    Action Network
+                                </span>
+                                <span class="feature-badge bg-navy-50 border-navy-200/50 text-navy-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M8 12l2 2 4-4" />
+                                    </svg>
+                                    Mailchimp
+                                </span>
+                                <span class="feature-badge bg-navy-50 border-navy-200/50 text-navy-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M8 12l2 2 4-4" />
+                                    </svg>
+                                    HubSpot
+                                </span>
+                                <span class="feature-badge bg-navy-50 border-navy-200/50 text-navy-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="12" r="10" />
+                                        <path d="M8 12l2 2 4-4" />
+                                    </svg>
+                                    EveryAction
+                                </span>
                             </div>
-                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg><span class="text-sm text-navy-600">Deadline-aware sequencing</span></div>
-                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg><span class="text-sm text-navy-600">Unlimited revisions</span></div>
-                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg><span class="text-sm text-navy-600" id="feat-queue">Managed queue</span></div>
-                            <div class="flex items-start gap-3"><svg class="w-5 h-5 text-sage shrink-0 mt-0.5"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M5 13l4 4L19 7" />
-                                </svg><span class="text-sm text-navy-600">Thursday Drop delivery</span></div>
+                        </div>
+                        <!-- Right: Features -->
+                        <div>
+                            <p class="text-xs font-bold text-navy-400 uppercase tracking-[0.15em] mb-3">Included
+                                Features</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="feature-badge bg-sage/10 border-sage/30 text-sage">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Graphic Design
+                                </span>
+                                <span class="feature-badge bg-sage/10 border-sage/30 text-sage">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    A/B Testing
+                                </span>
+                                <span class="feature-badge bg-sage/10 border-sage/30 text-sage">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Unlimited Revisions
+                                </span>
+                                <span class="feature-badge bg-sage/10 border-sage/30 text-sage">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Deadline-Aware Sequencing
+                                </span>
+                                <span class="feature-badge bg-sage/10 border-sage/30 text-sage">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Subject Line Options
+                                </span>
+                                <span class="feature-badge bg-sage/10 border-sage/30 text-sage">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                            d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Preview Text Options
+                                </span>
+                            </div>
                         </div>
                     </div>
-
-                    <a id="plan-cta" href="/get-started"
-                        class="block w-full text-center px-6 py-4 bg-coral text-white text-lg font-semibold rounded-full hover:bg-coral/90 active:scale-[0.97] transition-all duration-200 cursor-pointer">Start
-                        Starter</a>
                 </div>
 
-                <!-- Rapid Response Add-On -->
-                <div class="bg-navy-700 rounded-2xl p-6 sm:p-8 mb-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <!-- ── WEEKLY SENDS SLIDER ── -->
+                <div class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
+                    <div class="flex items-center justify-between mb-6">
                         <div>
-                            <div class="flex items-center gap-2 mb-1"><svg class="w-5 h-5 text-coral" fill="none"
-                                    stroke="currentColor" viewBox="0 0 24 24">
+                            <h2 class="font-display text-xl font-bold text-navy-700 mb-1">Weekly Sends</h2>
+                            <p class="text-sm text-navy-400">Drag to set your weekly email volume.</p>
+                        </div>
+                        <div class="flex items-baseline gap-1.5 bg-navy-700 text-white px-4 py-2 rounded-xl">
+                            <span id="slider-count" class="font-display text-2xl font-bold">1</span>
+                            <span class="text-white/60 text-xs">/wk</span>
+                        </div>
+                    </div>
+
+                    <!-- Slider -->
+                    <div class="px-2">
+                        <input type="range" id="sends-slider" min="1" max="5" step="1" value="1" class="w-full mb-4">
+                        <div class="flex justify-between text-xs text-navy-400 font-medium px-0.5">
+                            <span>1/wk</span>
+                            <span>2/wk</span>
+                            <span>3/wk</span>
+                            <span>4/wk</span>
+                            <span>5/wk</span>
+                        </div>
+                    </div>
+
+                    <!-- Tier labels -->
+                    <div class="mt-5 pt-5 border-t border-navy-100/30">
+                        <div class="flex flex-wrap items-center gap-3">
+                            <span id="tier-label" class="text-sm font-semibold text-navy-700">1 email/week</span>
+                            <span class="text-navy-300">·</span>
+                            <span id="tier-monthly" class="text-sm text-navy-400">4–5 emails/month</span>
+                            <span class="text-navy-300">·</span>
+                            <span id="tier-desc" class="text-sm text-navy-400 italic">Ideal for smaller
+                                committees</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── RAPID RESPONSE SERVICE ── -->
+                <div id="rapid-section"
+                    class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-5 h-5 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
-                                <h3 class="font-display text-lg font-bold text-white">Rapid Response (24hr)</h3>
+                                <h2 class="font-display text-xl font-bold text-navy-700">Rapid Response Service</h2>
                             </div>
-                            <p class="text-white/60 text-sm max-w-md">For urgent moments: breaking news, opposition
-                                hits, last-minute match, deadline surprise. Draft delivered within 24 business hours.
-                            </p>
+                            <p class="text-sm text-navy-400 mb-1">24-hour turnaround for urgent moments: breaking news,
+                                opposition hits, last-minute match, deadline surprises.</p>
+                            <p id="rapid-disabled-msg" class="text-xs text-coral font-medium mt-2">⚡ Available at 3+
+                                emails/week</p>
                         </div>
-                        <div class="text-right shrink-0">
-                            <div class="text-white font-display font-bold text-xl">+$149<span
-                                    class="text-white/50 text-sm font-body font-normal">/email</span></div>
-                            <p class="text-white/40 text-xs mt-1">Add to any plan</p>
+                        <div class="flex items-center gap-4 shrink-0">
+                            <div class="text-right">
+                                <p class="font-display text-xl font-bold text-navy-700">$995</p>
+                                <p class="text-xs text-navy-400">/month</p>
+                            </div>
+                            <div id="rapid-toggle" class="toggle-track disabled" role="switch" aria-checked="false"
+                                tabindex="0">
+                                <div class="toggle-thumb"></div>
+                            </div>
                         </div>
                     </div>
-                    <p class="text-white/40 text-xs mt-4 italic">"Politics happens fast. Rapid Response keeps your email
-                        program from falling behind the news cycle."</p>
                 </div>
 
-                <p class="text-center text-sm text-navy-400 italic">Pause or cancel anytime. Keep everything we've
+                <!-- ── PLATFORM ── -->
+                <div class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h2 class="font-display text-xl font-bold text-navy-700 mb-1">Platform</h2>
+                            <p class="text-sm text-navy-400">Choose your dashboard and client portal access level.</p>
+                        </div>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <!-- Base -->
+                        <div class="platform-card selected bg-white rounded-2xl card-shadow p-6 border-2 border-navy-700"
+                            data-platform="base" data-price="249">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-display text-lg font-bold text-navy-700">Base</h3>
+                                <div class="flex items-baseline gap-0.5">
+                                    <span class="text-xl font-bold text-navy-700">$249</span>
+                                    <span class="text-xs text-navy-400">/mo</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-navy-400 mb-4">Ideal for smaller committees just getting started.</p>
+                            <div class="mt-4 flex items-center gap-2">
+                                <div
+                                    class="w-5 h-5 rounded-full border-2 border-navy-700 flex items-center justify-center platform-radio">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-navy-700 platform-dot"></div>
+                                </div>
+                                <span class="text-sm font-medium text-navy-700">Selected</span>
+                            </div>
+                        </div>
+                        <!-- Pro -->
+                        <div class="platform-card bg-white rounded-2xl card-shadow p-6 border-2 border-navy-200/50"
+                            data-platform="pro" data-price="499">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-display text-lg font-bold text-navy-700">Pro</h3>
+                                <div class="flex items-baseline gap-0.5">
+                                    <span class="text-xl font-bold text-navy-700">$499</span>
+                                    <span class="text-xs text-navy-400">/mo</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-navy-400 mb-4">Built for larger committees running aggressive
+                                programs.</p>
+                            <div class="mt-4 flex items-center gap-2">
+                                <div
+                                    class="w-5 h-5 rounded-full border-2 border-navy-300 flex items-center justify-center platform-radio">
+                                    <div class="w-2.5 h-2.5 rounded-full bg-navy-700 hidden platform-dot"></div>
+                                </div>
+                                <span class="text-sm font-medium text-navy-400">Select</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pause/cancel note -->
+                <p class="text-center text-sm text-navy-400 italic mb-4">Pause or cancel anytime. Keep everything we've
                     written.</p>
+
+                <!-- Mobile CTA -->
+                <div class="sm:hidden text-center mb-8">
+                    <a href="/get-started"
+                        class="inline-flex items-center gap-2 px-8 py-4 bg-coral text-white font-semibold rounded-full card-shadow hover:bg-coral/90 active:scale-[0.97] transition-all duration-200 cursor-pointer w-full justify-center">Get
+                        Started <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                        </svg></a>
+                </div>
             </div>
         </section>
 
@@ -364,7 +579,8 @@
                 <div class="grid md:grid-cols-3 gap-6">
                     <div class="bg-white rounded-2xl card-shadow p-6 border border-navy-100/40 text-center">
                         <div class="w-12 h-12 bg-coral/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <span class="font-display font-bold text-coral text-lg">M</span></div>
+                            <span class="font-display font-bold text-coral text-lg">M</span>
+                        </div>
                         <h3 class="font-display text-lg font-semibold text-navy-700 mb-1">Monday</h3>
                         <p class="text-sm text-navy-400">Submit requests by noon. Share goals, notes, links, and any
                             prior emails.</p>
@@ -378,7 +594,8 @@
                     </div>
                     <div class="bg-white rounded-2xl card-shadow p-6 border border-navy-100/40 text-center">
                         <div class="w-12 h-12 bg-gold-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                            <span class="font-display font-bold text-gold-600 text-lg">Th</span></div>
+                            <span class="font-display font-bold text-gold-600 text-lg">Th</span>
+                        </div>
                         <h3 class="font-display text-lg font-semibold text-navy-700 mb-1">Thursday</h3>
                         <p class="text-sm text-navy-400">Next week's fundraising emails delivered — ready to approve and
                             schedule.</p>
@@ -387,7 +604,7 @@
             </div>
         </section>
 
-        <!-- ═══════════ FAQ (pricing-specific) ═══════════ -->
+        <!-- ═══════════ FAQ ═══════════ -->
         <section class="py-16 md:py-20 bg-navy-50/30">
             <div class="max-w-3xl mx-auto px-6">
                 <div class="text-center mb-10">
@@ -406,7 +623,7 @@
                             </svg></summary>
                         <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Unlimited revisions during the
                             scheduled window for that email. Once a draft is delivered, you can request as many changes
-                            as needed before it's finalized. This doesn't cover reopening drafts weeks later.</div>
+                            as needed before it's finalized.</div>
                     </details>
                     <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
                         <summary
@@ -430,10 +647,10 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M19 9l-7 7-7-7" />
                             </svg></summary>
-                        <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Rapid Response is a per-email
-                            add-on for urgent moments. Submit your request and get a complete draft within 24 business
-                            hours. Subject lines, preview text, and revisions are all included. Available on any plan.
-                        </div>
+                        <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Rapid Response is a monthly add-on
+                            ($995/mo) for campaigns sending 3+ emails/week. It gives you 24-hour turnaround on urgent
+                            emails — breaking news, opposition hits, deadline surprises. Subject lines, preview text,
+                            and revisions are all included.</div>
                     </details>
                     <details class="group bg-white rounded-2xl card-shadow border border-navy-100/40 overflow-hidden">
                         <summary
@@ -489,45 +706,121 @@
         </div>
     </footer>
 
-    <!-- Pricing Logic -->
+    <!-- ═══════════ PRICING LOGIC ═══════════ -->
     <script>
             (function () {
+                // ── Config ──
                 var tiers = [
-                    { name: 'Starter', emails: 1, monthly: '4–5', price: '$499', desc: 'Best for low-volume lists, consistent presence, first-time programs', cta: 'Start Starter', queue: 'Managed queue', popular: false },
-                    { name: 'Baseline', emails: 2, monthly: '8–10', price: '$749', desc: 'Best for steady fundraising with light deadlines', cta: 'Start Baseline', queue: 'Managed queue', popular: false },
-                    { name: 'Momentum', emails: 3, monthly: '12–15', price: '$995', desc: 'Best for active campaigns running weekly asks + deadline pushes', cta: 'Start Momentum', queue: 'Priority queue', popular: true },
-                    { name: 'Accelerate', emails: 4, monthly: '16–18', price: '$1,295', desc: 'Best for heavy calendars, frequent deadlines, rapid iteration', cta: 'Start Accelerate', queue: 'Priority queue', popular: false },
-                    { name: 'Full Send', emails: 5, monthly: '20–22', price: '$1,595', desc: 'Best for aggressive fundraising cadence + constant deadlines', cta: 'Start Full Send', queue: 'Priority queue', popular: false }
+                    { emails: 1, price: 249, monthly: '4–5', label: '1 email/week', desc: 'Ideal for smaller committees' },
+                    { emails: 2, price: 499, monthly: '8–10', label: '2 emails/week', desc: 'Steady fundraising with light deadlines' },
+                    { emails: 3, price: 995, monthly: '12–15', label: '3 emails/week', desc: 'Active campaigns + deadline pushes' },
+                    { emails: 4, price: 1995, monthly: '16–18', label: '4 emails/week', desc: 'Heavy calendars, frequent deadlines' },
+                    { emails: 5, price: 3995, monthly: '20–22', label: '5 emails/week', desc: 'Aggressive cadence + constant deadlines' }
                 ];
+                var rapidPrice = 995;
+                var rapidEnabled = false;
+                var rapidAvailable = false;
+                var platformPrice = 249;
+                var currentTier = 0;
 
-                var btns = document.querySelectorAll('.cap-btn');
-                var card = document.getElementById('plan-card');
+                // ── DOM Refs ──
+                var slider = document.getElementById('sends-slider');
+                var sliderCount = document.getElementById('slider-count');
+                var writingPrice = document.getElementById('writing-price');
+                var tierLabel = document.getElementById('tier-label');
+                var tierMonthly = document.getElementById('tier-monthly');
+                var tierDesc = document.getElementById('tier-desc');
+                var rapidToggle = document.getElementById('rapid-toggle');
+                var rapidMsg = document.getElementById('rapid-disabled-msg');
+                var sumWriting = document.getElementById('sum-writing');
+                var sumRapid = document.getElementById('sum-rapid');
+                var sumPlatform = document.getElementById('sum-platform');
+                var sumTotal = document.getElementById('sum-total');
+                var platformCards = document.querySelectorAll('.platform-card');
 
-                function update(i) {
-                    var t = tiers[i];
-                    document.getElementById('plan-name').textContent = t.name;
-                    document.getElementById('plan-monthly').textContent = t.monthly;
-                    document.getElementById('plan-desc').textContent = t.desc;
-                    document.getElementById('plan-price').textContent = t.price;
-                    document.getElementById('plan-cta').textContent = t.cta;
-                    document.getElementById('feat-drafts').textContent = t.emails + ' ready-to-send draft' + (t.emails > 1 ? 's' : '') + '/week';
-                    document.getElementById('feat-queue').textContent = t.queue;
-                    document.getElementById('plan-emails').innerHTML = t.emails + ' email' + (t.emails > 1 ? 's' : '') + '/week · <span id="plan-monthly">' + t.monthly + '</span>/month';
+                function fmt(n) { return '$' + n.toLocaleString('en-US'); }
 
-                    var badge = document.getElementById('plan-badge');
-                    if (t.popular) { badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); }
+                function updateTotal() {
+                    var writing = tiers[currentTier].price;
+                    var rapid = (rapidEnabled && rapidAvailable) ? rapidPrice : 0;
+                    var total = writing + rapid + platformPrice;
 
-                    btns.forEach(function (b) { b.classList.remove('active'); });
-                    btns[i].classList.add('active');
-
-                    // Animate card
-                    card.style.opacity = '0'; card.style.transform = 'translateY(8px)';
-                    setTimeout(function () { card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, 50);
+                    sumWriting.textContent = fmt(writing);
+                    sumRapid.textContent = rapid ? fmt(rapid) : '$0';
+                    sumPlatform.textContent = fmt(platformPrice);
+                    sumTotal.textContent = fmt(total);
                 }
 
-                btns.forEach(function (btn, idx) {
-                    btn.addEventListener('click', function () { update(idx); });
+                // ── Slider ──
+                slider.addEventListener('input', function () {
+                    var v = parseInt(this.value);
+                    currentTier = v - 1;
+                    var t = tiers[currentTier];
+
+                    sliderCount.textContent = v;
+                    writingPrice.textContent = fmt(t.price);
+                    tierLabel.textContent = t.label;
+                    tierMonthly.textContent = t.monthly + ' emails/month';
+                    tierDesc.textContent = t.desc;
+
+                    // Rapid Response availability
+                    rapidAvailable = v >= 3;
+                    if (!rapidAvailable) {
+                        rapidEnabled = false;
+                        rapidToggle.classList.remove('on');
+                        rapidToggle.classList.add('disabled');
+                        rapidToggle.setAttribute('aria-checked', 'false');
+                        rapidMsg.textContent = '⚡ Available at 3+ emails/week';
+                        rapidMsg.classList.remove('hidden');
+                    } else {
+                        rapidToggle.classList.remove('disabled');
+                        rapidMsg.classList.add('hidden');
+                    }
+
+                    updateTotal();
                 });
+
+                // ── Rapid Response Toggle ──
+                rapidToggle.addEventListener('click', function () {
+                    if (!rapidAvailable) return;
+                    rapidEnabled = !rapidEnabled;
+                    this.classList.toggle('on', rapidEnabled);
+                    this.setAttribute('aria-checked', rapidEnabled ? 'true' : 'false');
+                    updateTotal();
+                });
+                rapidToggle.addEventListener('keydown', function (e) {
+                    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); this.click(); }
+                });
+
+                // ── Platform Cards ──
+                platformCards.forEach(function (card) {
+                    card.addEventListener('click', function () {
+                        platformCards.forEach(function (c) {
+                            c.classList.remove('selected');
+                            c.style.borderColor = '';
+                            var dot = c.querySelector('.platform-dot');
+                            var radio = c.querySelector('.platform-radio');
+                            var label = c.querySelector('.platform-radio + span');
+                            if (dot) dot.classList.add('hidden');
+                            if (radio) radio.style.borderColor = '#8ba3cc';
+                            if (label) { label.textContent = 'Select'; label.classList.remove('text-navy-700'); label.classList.add('text-navy-400'); }
+                        });
+
+                        this.classList.add('selected');
+                        var dot = this.querySelector('.platform-dot');
+                        var radio = this.querySelector('.platform-radio');
+                        var label = this.querySelector('.platform-radio + span');
+                        if (dot) dot.classList.remove('hidden');
+                        if (radio) radio.style.borderColor = '#0f2137';
+                        if (label) { label.textContent = 'Selected'; label.classList.add('text-navy-700'); label.classList.remove('text-navy-400'); }
+
+                        platformPrice = parseInt(this.dataset.price);
+                        updateTotal();
+                    });
+                });
+
+                // Init
+                updateTotal();
             })();
     </script>
 
