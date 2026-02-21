@@ -74,6 +74,7 @@ Before coding, understand the context and commit to a bold aesthetic direction:
 - Do not use generic AI-generated aesthetics.
 - Do not use default Tailwind blue/indigo as primary color.
 - Do not use lucide-react — use hugeicons exclusively.
+- Do not use the native `<input type="color">` — use the custom `HexColorPickerField` component (`src/components/ui/hex-color-picker.tsx`) which uses `react-colorful` for a hex-only gradient picker popover.
 
 ## Agent Skills
 

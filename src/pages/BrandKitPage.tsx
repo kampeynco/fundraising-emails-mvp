@@ -351,69 +351,22 @@ export default function BrandKitPage() {
                                 { key: 'accent' as const, label: 'Accent', desc: 'Buttons, links, and highlights' },
                                 { key: 'button_text' as const, label: 'Button Text', desc: 'Text on buttons' },
                             ].map((item) => (
-                                <div key={item.key} className="relative">
-                                    <div
-                                        className="h-36 cursor-pointer rounded-xl border border-white/[0.08] transition-colors hover:border-[#e8614d]/40"
-                                        style={{ backgroundColor: data.colors[item.key] }}
-                                        onClick={() => colorRefs.current[item.key]?.click()}
-                                    />
-                                    <input
-                                        ref={(el) => { colorRefs.current[item.key] = el }}
-                                        type="color"
-                                        value={data.colors[item.key]}
-                                        onChange={(e) => updateField('colors', { ...data.colors, [item.key]: e.target.value })}
-                                        className="pointer-events-none absolute left-0 top-0 h-0 w-0 opacity-0"
-                                    />
-                                    <div className="mt-2 flex items-center gap-2">
-                                        <p className="text-sm font-medium text-white">{item.label}</p>
-                                        <input
-                                            type="text"
-                                            value={data.colors[item.key].toUpperCase()}
-                                            onChange={(e) => {
-                                                const v = e.target.value
-                                                if (/^#[0-9A-Fa-f]{0,6}$/.test(v)) {
-                                                    updateField('colors', { ...data.colors, [item.key]: v })
-                                                }
-                                            }}
-                                            maxLength={7}
-                                            className="w-20 rounded border border-white/[0.08] bg-transparent px-2 py-0.5 text-xs font-mono text-white/60 outline-none focus:border-[#e8614d]/50"
-                                        />
-                                    </div>
-                                    <p className="text-xs text-white/40">{item.desc}</p>
-                                </div>
+                                <HexColorPickerField
+                                    key={item.key}
+                                    color={data.colors[item.key]}
+                                    onChange={(c) => updateField('colors', { ...data.colors, [item.key]: c })}
+                                    label={item.label}
+                                    description={item.desc}
+                                />
                             ))}
                         </div>
 
-                        <div className="relative">
-                            <div
-                                className="h-36 cursor-pointer rounded-xl border border-white/[0.08] transition-colors hover:border-[#e8614d]/40"
-                                style={{ backgroundColor: data.colors.foreground }}
-                                onClick={() => colorRefs.current['foreground']?.click()}
-                            />
-                            <input
-                                ref={(el) => { colorRefs.current['foreground'] = el }}
-                                type="color"
-                                value={data.colors.foreground}
-                                onChange={(e) => updateField('colors', { ...data.colors, foreground: e.target.value })}
-                                className="pointer-events-none absolute left-0 top-0 h-0 w-0 opacity-0"
-                            />
-                            <div className="mt-2 flex items-center gap-2">
-                                <p className="text-sm font-medium text-white">Foreground</p>
-                                <input
-                                    type="text"
-                                    value={data.colors.foreground.toUpperCase()}
-                                    onChange={(e) => {
-                                        const v = e.target.value
-                                        if (/^#[0-9A-Fa-f]{0,6}$/.test(v)) {
-                                            updateField('colors', { ...data.colors, foreground: v })
-                                        }
-                                    }}
-                                    maxLength={7}
-                                    className="w-20 rounded border border-white/[0.08] bg-transparent px-2 py-0.5 text-xs font-mono text-white/60 outline-none focus:border-[#e8614d]/50"
-                                />
-                            </div>
-                            <p className="text-xs text-white/40">Text and other content elements</p>
-                        </div>
+                        <HexColorPickerField
+                            color={data.colors.foreground}
+                            onChange={(c) => updateField('colors', { ...data.colors, foreground: c })}
+                            label="Foreground"
+                            description="Text and other content elements"
+                        />
                     </section>
 
                 </div>

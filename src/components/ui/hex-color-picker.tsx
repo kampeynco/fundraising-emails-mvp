@@ -50,23 +50,8 @@ export function HexColorPickerField({ color, onChange, label, description }: Hex
                 onClick={() => setOpen(!open)}
             />
 
-            {/* Label + hex input row */}
-            <div className="mt-2 flex items-center gap-2">
-                <p className="text-sm font-medium text-white">{label}</p>
-                <input
-                    type="text"
-                    value={hexInput}
-                    onChange={(e) => handleHexChange(e.target.value)}
-                    onBlur={() => {
-                        // On blur, reset to current valid color if input is incomplete
-                        if (hexInput.length !== 7) {
-                            setHexInput(color.toUpperCase())
-                        }
-                    }}
-                    maxLength={7}
-                    className="w-[5.5rem] rounded border border-white/[0.08] bg-transparent px-2 py-0.5 text-xs font-mono text-white/60 outline-none transition-colors focus:border-[#e8614d]/50"
-                />
-            </div>
+            {/* Label + description */}
+            <p className="mt-2 text-sm font-medium text-white">{label}</p>
             <p className="text-xs text-white/40">{description}</p>
 
             {/* Popover color picker */}
