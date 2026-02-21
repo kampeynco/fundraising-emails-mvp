@@ -21,12 +21,12 @@ Choose a clear conceptual direction and execute it with precision. Bold maximali
 
 ## Local Server
 - **Always serve on localhost** — never screenshot a `file:///` URL.
-- Start the dev server: `node serve.mjs` (serves the project root at `http://localhost:3000`)
-- `serve.mjs` lives in the project root. Start it in the background before taking any screenshots.
+- Start the dev server: `npm run dev` (Vite, serves at `http://localhost:5173`)
+- Requires **Node 20+** — run `nvm use` to auto-select from `.nvmrc`.
 - If the server is already running, do not start a second instance.
 
 ## Screenshot Workflow
-- **Use the `browser_subagent` tool** to navigate to `http://localhost:3000` and capture screenshots.
+- **Use the `browser_subagent` tool** to navigate to `http://localhost:5173` and capture screenshots.
 - Browser sessions are automatically recorded as WebP videos to the artifacts directory (`~/.gemini/antigravity/brain/<conversation-id>/`).
 - After capturing, analyze the screenshot directly — Antigravity can see and compare images natively via `view_file`.
 - When comparing, be specific: "heading is 32px but reference shows ~24px", "card gap is 16px but should be 24px"
@@ -98,3 +98,23 @@ When building frontend, leverage these tools:
 - Do not use generic AI-generated aesthetics (purple gradients on white, cookie-cutter layouts).
 - Do not use default Tailwind blue/indigo as primary color.
 - Do not use the same fonts or color schemes across different projects.
+
+## Agent Skills (Antigravity)
+
+This repo uses Antigravity Agent Skills (directory packages with `SKILL.md` and optional supporting assets like `references/`).
+
+### Available Skills
+- **dr-landing-page**
+  - Purpose: direct-response landing page layouts + copywriting
+  - Path: `./.agent/skills/dr-landing-page/`
+  - References: `./.agent/skills/dr-landing-page/references/`
+
+- **refactor-uiux**
+  - Purpose: refactor code following best practices + UI/UX + styling/layout consistency
+  - Path: `./.agent/skills/refactor-uiux/`
+  - References: `./.agent/skills/refactor-uiux/references/`
+  - Diff standard: `./.agent/skills/refactor-uiux/references/refactor-diff-template.md`
+
+### Rules
+- If a skill has a `references/` directory, **read those files before** diagnosing, writing, refactoring, or changing UI/styling.
+- Prefer behavior-preserving refactors unless a behavior change is explicitly requested.
