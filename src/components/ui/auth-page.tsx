@@ -56,7 +56,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                 <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0f2137]/60 to-transparent" />
                 <div className="z-10 flex items-center gap-2">
                     <HugeiconsIcon icon={Mail01Icon} size={24} className="text-white/90" />
-                    <p className="text-xl font-bold tracking-tight text-white">
+                    <p className="text-xl font-bold tracking-tight text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                         Fundraising <span className="text-[#e8614d]">Emails</span>
                     </p>
                 </div>
@@ -100,7 +100,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                     {/* Mobile branding — matches landing page: bold tracking-tight, coral accent */}
                     <div className="flex items-center gap-2 lg:hidden">
                         <HugeiconsIcon icon={Mail01Icon} size={24} />
-                        <p className="text-xl font-bold tracking-tight">
+                        <p className="text-xl font-bold tracking-tight" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                             Fundraising <span className="text-[#e8614d]">Emails</span>
                         </p>
                     </div>
