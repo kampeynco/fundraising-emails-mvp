@@ -1,10 +1,11 @@
+import { useState } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     Mail01Icon,
-    Home01Icon,
-    NoteIcon,
+    Home07Icon,
+    LicenseDraftIcon,
     SwatchIcon,
     Add01Icon,
     Logout03Icon,
@@ -18,8 +19,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 
 // ── Icon sidebar nav items ──────────────────────────────────
 const mainNavItems = [
-    { icon: Home01Icon, label: 'Overview', href: '/dashboard' },
-    { icon: NoteIcon, label: 'Drafts', href: '/dashboard/drafts' },
+    { icon: Home07Icon, label: 'Overview', href: '/dashboard' },
+    { icon: LicenseDraftIcon, label: 'Drafts', href: '/dashboard/drafts' },
     { icon: SwatchIcon, label: 'Brand Kit', href: '/dashboard/brand-kit' },
 ]
 
@@ -28,21 +29,21 @@ const brandKitSections = [
     {
         label: null,
         items: [
-            { icon: GridIcon, label: 'Brand Details', href: '/dashboard/brand-kit' },
+            { icon: GridIcon, label: 'Brand Details', sectionId: 'brand-details' },
         ],
     },
     {
         label: 'Content',
         items: [
-            { icon: JusticeScale01Icon, label: 'Legal', href: '/dashboard/brand-kit/legal' },
-            { icon: HashtagIcon, label: 'Socials', href: '/dashboard/brand-kit/socials' },
+            { icon: JusticeScale01Icon, label: 'Legal', sectionId: 'legal' },
+            { icon: HashtagIcon, label: 'Socials', sectionId: 'socials' },
         ],
     },
     {
         label: 'Visuals',
         items: [
-            { icon: ImageUploadIcon, label: 'Logos', href: '/dashboard/brand-kit/logos' },
-            { icon: DropletIcon, label: 'Color', href: '/dashboard/brand-kit/color' },
+            { icon: ImageUploadIcon, label: 'Logos', sectionId: 'logos' },
+            { icon: DropletIcon, label: 'Color', sectionId: 'color' },
         ],
     },
 ]
@@ -50,6 +51,7 @@ const brandKitSections = [
 export function DashboardLayout() {
     const { user, signOut } = useAuth()
     const location = useLocation()
+    const [activeSection, setActiveSection] = useState('brand-details')
     const isBrandKit = location.pathname.startsWith('/dashboard/brand-kit')
 
     // Get user initial for avatar
@@ -96,8 +98,8 @@ export function DashboardLayout() {
                                     <Link
                                         to={item.href}
                                         className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-colors ${isActive
-                                                ? 'bg-white/15 text-white'
-                                                : 'text-white/50 hover:bg-white/8 hover:text-white/80'
+                                            ? 'bg-white/15 text-white'
+                                            : 'text-white/50 hover:bg-white/8 hover:text-white/80'
                                             }`}
                                     >
                                         <HugeiconsIcon icon={item.icon} size={20} />
@@ -151,20 +153,23 @@ export function DashboardLayout() {
                                 )}
                                 <div className="space-y-0.5">
                                     {section.items.map((item) => {
-                                        const isActive = location.pathname === item.href
+                                        const isActive = activeSection === item.sectionId
 
                                         return (
-                                            <Link
-                                                key={item.href}
-                                                to={item.href}
-                                                className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive
+                                            <button
+                                                key={item.sectionId}
+                                                onClick={() => {
+                                                    setActiveSection(item.sectionId)
+                                                    document.getElementById(item.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                                }}
+                                                className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive
                                                         ? 'bg-[#e8614d] text-white'
                                                         : 'text-white/60 hover:bg-white/8 hover:text-white/90'
                                                     }`}
                                             >
                                                 <HugeiconsIcon icon={item.icon} size={16} />
                                                 {item.label}
-                                            </Link>
+                                            </button>
                                         )
                                     })}
                                 </div>
