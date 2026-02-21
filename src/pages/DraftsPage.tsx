@@ -1,13 +1,4 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
 import type { Draft } from '@/types/draft'
 
 const mockDrafts: Draft[] = [
@@ -20,57 +11,54 @@ const mockDrafts: Draft[] = [
 
 export default function DraftsPage() {
     return (
-        <>
+        <div className="p-8">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h2 className="text-2xl font-bold tracking-tight">Email Drafts</h2>
-                    <p className="text-muted-foreground mt-1">
+                    <h2 className="text-2xl font-bold tracking-tight text-white">Email Drafts</h2>
+                    <p className="mt-1 text-white/50">
                         Review, approve, and track your fundraising emails.
                     </p>
                 </div>
             </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle>All Drafts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Subject</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead>Created</TableHead>
-                                <TableHead className="text-right">Open Rate</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {mockDrafts.map((draft) => (
-                                <TableRow key={draft.id}>
-                                    <TableCell className="font-medium">{draft.subject}</TableCell>
-                                    <TableCell>
-                                        <Badge
-                                            variant={
-                                                draft.status === 'ready'
-                                                    ? 'default'
-                                                    : draft.status === 'review'
-                                                        ? 'secondary'
-                                                        : 'outline'
-                                            }
-                                        >
-                                            {draft.status}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-muted-foreground">
-                                        {draft.created}
-                                    </TableCell>
-                                    <TableCell className="text-right">{draft.opens}</TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
-        </>
+            <div className="rounded-xl border border-white/[0.08] bg-[#1e293b] overflow-hidden">
+                <div className="border-b border-white/[0.06] px-6 py-4">
+                    <h3 className="text-base font-semibold text-white">All Drafts</h3>
+                </div>
+                <table className="w-full">
+                    <thead>
+                        <tr className="border-b border-white/[0.06]">
+                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/40">Subject</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/40">Status</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-white/40">Created</th>
+                            <th className="px-6 py-3 text-right text-xs font-medium uppercase tracking-wider text-white/40">Open Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {mockDrafts.map((draft) => (
+                            <tr key={draft.id} className="border-b border-white/[0.04] transition-colors hover:bg-white/[0.03] cursor-pointer">
+                                <td className="px-6 py-4 text-sm font-medium text-white">{draft.subject}</td>
+                                <td className="px-6 py-4">
+                                    <Badge
+                                        variant={
+                                            draft.status === 'ready'
+                                                ? 'default'
+                                                : draft.status === 'review'
+                                                    ? 'secondary'
+                                                    : 'outline'
+                                        }
+                                    >
+                                        {draft.status}
+                                    </Badge>
+                                </td>
+                                <td className="px-6 py-4 text-sm text-white/40">{draft.created}</td>
+                                <td className="px-6 py-4 text-right text-sm text-white/60">{draft.opens}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     )
 }
+

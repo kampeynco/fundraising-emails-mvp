@@ -1,4 +1,3 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import type { Draft } from '@/types/draft'
 
@@ -17,62 +16,55 @@ const stats = [
 
 export default function DashboardPage() {
     return (
-        <>
+        <div className="p-8">
             <div className="mb-8">
-                <h2 className="text-2xl font-bold tracking-tight">Dashboard</h2>
-                <p className="text-muted-foreground mt-1">
+                <h2 className="text-2xl font-bold tracking-tight text-white">Dashboard</h2>
+                <p className="mt-1 text-white/50">
                     Welcome back. Here's your email program overview.
                 </p>
             </div>
 
             {/* Stats grid */}
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mb-10">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-10">
                 {stats.map((stat) => (
-                    <Card key={stat.label}>
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-sm font-medium text-muted-foreground">
-                                {stat.label}
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-3xl font-bold">{stat.value}</p>
-                        </CardContent>
-                    </Card>
+                    <div key={stat.label} className="rounded-xl border border-white/[0.08] bg-[#1e293b] p-5">
+                        <p className="text-sm font-medium text-white/50">{stat.label}</p>
+                        <p className="mt-2 text-3xl font-bold text-white">{stat.value}</p>
+                    </div>
                 ))}
             </div>
 
             {/* Recent drafts */}
-            <Card>
-                <CardHeader>
-                    <CardTitle>Recent Drafts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        {recentDrafts.map((draft) => (
-                            <div
-                                key={draft.id}
-                                className="flex items-center justify-between p-4 border rounded-lg"
-                            >
-                                <div>
-                                    <p className="font-medium text-sm">{draft.subject}</p>
-                                    <p className="text-xs text-muted-foreground">{draft.date}</p>
-                                </div>
-                                <Badge
-                                    variant={
-                                        draft.status === 'ready'
-                                            ? 'default'
-                                            : draft.status === 'review'
-                                                ? 'secondary'
-                                                : 'outline'
-                                    }
-                                >
-                                    {draft.status}
-                                </Badge>
+            <div className="rounded-xl border border-white/[0.08] bg-[#1e293b]">
+                <div className="border-b border-white/[0.06] px-6 py-4">
+                    <h3 className="text-base font-semibold text-white">Recent Drafts</h3>
+                </div>
+                <div className="p-4 space-y-2">
+                    {recentDrafts.map((draft) => (
+                        <div
+                            key={draft.id}
+                            className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-5 py-4 transition-colors hover:bg-white/[0.04] cursor-pointer"
+                        >
+                            <div>
+                                <p className="font-medium text-sm text-white">{draft.subject}</p>
+                                <p className="text-xs text-white/40 mt-0.5">{draft.date}</p>
                             </div>
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
-        </>
+                            <Badge
+                                variant={
+                                    draft.status === 'ready'
+                                        ? 'default'
+                                        : draft.status === 'review'
+                                            ? 'secondary'
+                                            : 'outline'
+                                }
+                            >
+                                {draft.status}
+                            </Badge>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
     )
 }
+

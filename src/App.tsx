@@ -7,6 +7,7 @@ import LoginPage from '@/pages/LoginPage'
 import GetStartedPage from '@/pages/GetStartedPage'
 import DashboardPage from '@/pages/DashboardPage'
 import DraftsPage from '@/pages/DraftsPage'
+import BrandKitPage from '@/pages/BrandKitPage'
 
 export default function App() {
   return (
@@ -29,6 +30,7 @@ export default function App() {
             >
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/dashboard/drafts" element={<DraftsPage />} />
+              <Route path="/dashboard/brand-kit" element={<BrandKitPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

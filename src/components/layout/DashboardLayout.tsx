@@ -1,51 +1,181 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { Button } from '@/components/ui/button'
+import { HugeiconsIcon } from '@hugeicons/react'
+import {
+    Mail01Icon,
+    Home01Icon,
+    NoteIcon,
+    SwatchIcon,
+    Add01Icon,
+    Logout03Icon,
+    GridIcon,
+    JusticeScale01Icon,
+    HashtagIcon,
+    ImageUploadIcon,
+    DropletIcon,
+} from '@hugeicons/core-free-icons'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
-const navItems = [
-    { label: 'Overview', href: '/dashboard' },
-    { label: 'Drafts', href: '/dashboard/drafts' },
+// ── Icon sidebar nav items ──────────────────────────────────
+const mainNavItems = [
+    { icon: Home01Icon, label: 'Overview', href: '/dashboard' },
+    { icon: NoteIcon, label: 'Drafts', href: '/dashboard/drafts' },
+    { icon: SwatchIcon, label: 'Brand Kit', href: '/dashboard/brand-kit' },
+]
+
+// ── Inner sidebar items for Brand Kit ───────────────────────
+const brandKitSections = [
+    {
+        label: null,
+        items: [
+            { icon: GridIcon, label: 'Brand Details', href: '/dashboard/brand-kit' },
+        ],
+    },
+    {
+        label: 'Content',
+        items: [
+            { icon: JusticeScale01Icon, label: 'Legal', href: '/dashboard/brand-kit/legal' },
+            { icon: HashtagIcon, label: 'Socials', href: '/dashboard/brand-kit/socials' },
+        ],
+    },
+    {
+        label: 'Visuals',
+        items: [
+            { icon: ImageUploadIcon, label: 'Logos', href: '/dashboard/brand-kit/logos' },
+            { icon: DropletIcon, label: 'Color', href: '/dashboard/brand-kit/color' },
+        ],
+    },
 ]
 
 export function DashboardLayout() {
     const { user, signOut } = useAuth()
     const location = useLocation()
+    const isBrandKit = location.pathname.startsWith('/dashboard/brand-kit')
+
+    // Get user initial for avatar
+    const userInitial = user?.email?.[0]?.toUpperCase() || 'U'
 
     return (
-        <div className="min-h-screen bg-muted/40">
-            <header className="border-b bg-background">
-                <div className="container mx-auto flex items-center justify-between h-16 px-6">
-                    <div className="flex items-center gap-8">
-                        <Link to="/dashboard" className="text-lg font-bold tracking-tight">
-                            Fundraising <span className="text-primary">Emails</span>
-                        </Link>
-                        <nav className="hidden sm:flex items-center gap-1">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    to={item.href}
-                                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${location.pathname === item.href
-                                            ? 'bg-muted text-foreground'
-                                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                                        }`}
-                                >
-                                    {item.label}
-                                </Link>
-                            ))}
-                        </nav>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <span className="text-sm text-muted-foreground hidden sm:inline">
-                            {user?.email}
-                        </span>
-                        <Button variant="ghost" size="sm" onClick={signOut}>
-                            Sign Out
-                        </Button>
+        <div className="flex h-screen overflow-hidden bg-[#111827]">
+            {/* ── Left icon sidebar ── */}
+            <aside className="flex w-16 flex-col items-center border-r border-white/[0.06] bg-[#0f2137] py-4">
+                {/* Logo */}
+                <Link
+                    to="/dashboard"
+                    className="mb-6 flex h-10 w-10 items-center justify-center rounded-lg transition-colors hover:bg-white/10"
+                >
+                    <HugeiconsIcon icon={Mail01Icon} size={22} className="text-white/90" />
+                </Link>
+
+                {/* New Request */}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <button
+                            className="mb-4 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-[#e8614d] text-white transition-all hover:bg-[#d4553f] hover:shadow-lg hover:shadow-[#e8614d]/20 active:scale-95"
+                            onClick={() => {/* TODO: open new request modal */ }}
+                        >
+                            <HugeiconsIcon icon={Add01Icon} size={18} />
+                        </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={12}>New Request</TooltipContent>
+                </Tooltip>
+
+                {/* Separator */}
+                <div className="mb-3 h-px w-8 bg-white/10" />
+
+                {/* Main nav icons */}
+                <nav className="flex flex-1 flex-col items-center gap-1">
+                    {mainNavItems.map((item) => {
+                        const isActive = item.href === '/dashboard'
+                            ? location.pathname === '/dashboard'
+                            : location.pathname.startsWith(item.href)
+
+                        return (
+                            <Tooltip key={item.href}>
+                                <TooltipTrigger asChild>
+                                    <Link
+                                        to={item.href}
+                                        className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg transition-colors ${isActive
+                                                ? 'bg-white/15 text-white'
+                                                : 'text-white/50 hover:bg-white/8 hover:text-white/80'
+                                            }`}
+                                    >
+                                        <HugeiconsIcon icon={item.icon} size={20} />
+                                    </Link>
+                                </TooltipTrigger>
+                                <TooltipContent side="right" sideOffset={12}>{item.label}</TooltipContent>
+                            </Tooltip>
+                        )
+                    })}
+                </nav>
+
+                {/* Bottom: user avatar + sign out */}
+                <div className="mt-auto flex flex-col items-center gap-2">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                onClick={signOut}
+                                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/8 hover:text-white/70"
+                            >
+                                <HugeiconsIcon icon={Logout03Icon} size={20} />
+                            </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" sideOffset={12}>Sign Out</TooltipContent>
+                    </Tooltip>
+
+                    <div
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8614d]/20 text-xs font-semibold text-[#e8614d]"
+                        title={user?.email || ''}
+                    >
+                        {userInitial}
                     </div>
                 </div>
-            </header>
+            </aside>
 
-            <main className="container mx-auto px-6 py-10">
+            {/* ── Inner sidebar (Brand Kit only) ── */}
+            {isBrandKit && (
+                <aside className="flex w-56 flex-col border-r border-white/[0.06] bg-[#142d48]">
+                    {/* Title */}
+                    <div className="px-5 py-5">
+                        <h2 className="text-sm font-semibold tracking-wide text-white">Brand Kit</h2>
+                    </div>
+
+                    {/* Navigation sections */}
+                    <nav className="flex-1 space-y-5 px-3">
+                        {brandKitSections.map((section, sIdx) => (
+                            <div key={sIdx}>
+                                {section.label && (
+                                    <p className="mb-2 px-2 text-[11px] font-medium uppercase tracking-wider text-white/40">
+                                        {section.label}
+                                    </p>
+                                )}
+                                <div className="space-y-0.5">
+                                    {section.items.map((item) => {
+                                        const isActive = location.pathname === item.href
+
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                to={item.href}
+                                                className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive
+                                                        ? 'bg-[#e8614d] text-white'
+                                                        : 'text-white/60 hover:bg-white/8 hover:text-white/90'
+                                                    }`}
+                                            >
+                                                <HugeiconsIcon icon={item.icon} size={16} />
+                                                {item.label}
+                                            </Link>
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        ))}
+                    </nav>
+                </aside>
+            )}
+
+            {/* ── Main content area ── */}
+            <main className="flex-1 overflow-y-auto">
                 <Outlet />
             </main>
         </div>
