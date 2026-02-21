@@ -196,7 +196,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                                 </div>
                             )}
 
-                            <Button type="submit" className="w-full" disabled={loading}>
+                            <Button type="submit" className="w-full bg-[#e8614d] hover:bg-[#d4553f] text-white" disabled={loading}>
                                 {loading
                                     ? mode === 'login'
                                         ? 'Sending…'
