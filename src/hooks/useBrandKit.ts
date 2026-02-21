@@ -14,6 +14,8 @@ export interface BrandKitColors {
     accent: string
     button_text: string
     foreground: string
+    header: string
+    footer: string
 }
 
 export interface BrandKitData {
@@ -30,6 +32,8 @@ export interface BrandKitData {
     colors: BrandKitColors
     primary_logo_url: string
     icon_logo_url: string
+    show_header: boolean
+    show_footer: boolean
 }
 
 const DEFAULT_COLORS: BrandKitColors = {
@@ -38,6 +42,8 @@ const DEFAULT_COLORS: BrandKitColors = {
     accent: '#e8614d',
     button_text: '#ffffff',
     foreground: '#1e293b',
+    header: '#0f2137',
+    footer: '#0f2137',
 }
 
 const DEFAULT_BRAND_KIT: BrandKitData = {
@@ -56,6 +62,8 @@ const DEFAULT_BRAND_KIT: BrandKitData = {
     colors: DEFAULT_COLORS,
     primary_logo_url: '',
     icon_logo_url: '',
+    show_header: false,
+    show_footer: false,
 }
 
 // ── Hook ─────────────────────────────────────────────────────
@@ -96,9 +104,11 @@ export function useBrandKit() {
                     footer: row.footer || '',
                     disclaimers: row.disclaimers || '',
                     socials: (row.socials as BrandKitSocial[]) || DEFAULT_BRAND_KIT.socials,
-                    colors: (row.colors as unknown as BrandKitColors) || DEFAULT_COLORS,
+                    colors: { ...DEFAULT_COLORS, ...((row.colors as unknown as BrandKitColors) || {}) },
                     primary_logo_url: row.primary_logo_url || '',
                     icon_logo_url: row.icon_logo_url || '',
+                    show_header: row.show_header ?? false,
+                    show_footer: row.show_footer ?? false,
                 })
             }
             // If no row exists, keep defaults — it will be created on first save
@@ -130,6 +140,8 @@ export function useBrandKit() {
             colors: data.colors,
             primary_logo_url: data.primary_logo_url,
             icon_logo_url: data.icon_logo_url,
+            show_header: data.show_header,
+            show_footer: data.show_footer,
         }
 
         const { data: row, error: saveError } = await supabase
