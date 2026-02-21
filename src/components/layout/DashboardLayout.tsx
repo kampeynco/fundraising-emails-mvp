@@ -163,8 +163,8 @@ export function DashboardLayout() {
                                                     document.getElementById(item.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                                                 }}
                                                 className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive
-                                                        ? 'bg-[#e8614d] text-white'
-                                                        : 'text-white/60 hover:bg-white/8 hover:text-white/90'
+                                                    ? 'bg-[#e8614d] text-white'
+                                                    : 'text-white/60 hover:bg-white/8 hover:text-white/90'
                                                     }`}
                                             >
                                                 <HugeiconsIcon icon={item.icon} size={16} />
@@ -180,7 +180,7 @@ export function DashboardLayout() {
             )}
 
             {/* ── Main content area ── */}
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1 overflow-hidden">
                 <Outlet />
             </main>
         </div>
