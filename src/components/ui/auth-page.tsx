@@ -5,7 +5,6 @@ import { HugeiconsIcon } from '@hugeicons/react'
 import {
     MailAtSign01Icon,
     ArrowLeft01Icon,
-    LockPasswordIcon,
     Mail01Icon,
 } from '@hugeicons/core-free-icons'
 import { Button } from './button'
@@ -15,12 +14,10 @@ import { cn } from '@/lib/utils'
 interface AuthPageProps {
     mode: 'login' | 'signup'
     onSubmitLogin?: (email: string) => Promise<{ error: Error | null }>
-    onSubmitSignup?: (email: string, password: string) => Promise<{ error: Error | null }>
 }
 
-export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps) {
+export function AuthPage({ mode, onSubmitLogin }: AuthPageProps) {
     const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
@@ -30,15 +27,8 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
         setLoading(true)
         setError(null)
 
-        if (mode === 'login' && onSubmitLogin) {
+        if (onSubmitLogin) {
             const result = await onSubmitLogin(email)
-            if (result.error) {
-                setError(result.error.message)
-            } else {
-                setSuccess(true)
-            }
-        } else if (mode === 'signup' && onSubmitSignup) {
-            const result = await onSubmitSignup(email, password)
             if (result.error) {
                 setError(result.error.message)
             } else {
@@ -121,21 +111,15 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                             <p className="text-sm text-muted-foreground">
                                 {mode === 'login'
                                     ? 'Check your email for a magic link to sign in.'
-                                    : 'Check your email to confirm your account, then sign in.'}
+                                    : 'Check your email for a magic link to get started.'}
                             </p>
-                            {mode === 'login' ? (
-                                <Button
-                                    variant="outline"
-                                    className="w-full"
-                                    onClick={() => setSuccess(false)}
-                                >
-                                    Try again
-                                </Button>
-                            ) : (
-                                <Button variant="outline" className="w-full" asChild>
-                                    <Link to="/login">Go to Login</Link>
-                                </Button>
-                            )}
+                            <Button
+                                variant="outline"
+                                className="w-full"
+                                onClick={() => setSuccess(false)}
+                            >
+                                Try again
+                            </Button>
                         </div>
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-3">
@@ -169,41 +153,12 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup }: AuthPageProps)
                                 </div>
                             </div>
 
-                            {mode === 'signup' && (
-                                <div className="space-y-1.5">
-                                    <label
-                                        htmlFor="auth-password"
-                                        className="text-sm font-medium"
-                                    >
-                                        Password
-                                    </label>
-                                    <div className="relative">
-                                        <Input
-                                            id="auth-password"
-                                            placeholder="Min 6 characters"
-                                            className="peer ps-9"
-                                            type="password"
-                                            value={password}
-                                            onChange={(e) => setPassword(e.target.value)}
-                                            minLength={6}
-                                            required
-                                            autoComplete="new-password"
-                                        />
-                                        <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
-                                            <HugeiconsIcon icon={LockPasswordIcon} size={16} aria-hidden="true" />
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+
 
                             <Button type="submit" className="w-full bg-[#e8614d] hover:bg-[#d4553f] text-white" disabled={loading}>
                                 {loading
-                                    ? mode === 'login'
-                                        ? 'Sending…'
-                                        : 'Creating Account…'
-                                    : mode === 'login'
-                                        ? 'Send Magic Link'
-                                        : 'Create Account'}
+                                    ? 'Sending…'
+                                    : 'Send Magic Link'}
                             </Button>
                         </form>
                     )}
