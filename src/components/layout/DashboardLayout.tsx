@@ -44,6 +44,7 @@ const brandKitSections = [
         items: [
             { icon: ImageUploadIcon, label: 'Logos', sectionId: 'logos' },
             { icon: DropletIcon, label: 'Color', sectionId: 'color' },
+            { icon: Mail01Icon, label: 'Email Format', sectionId: 'email-format' },
         ],
     },
 ]

@@ -369,6 +369,68 @@ export default function BrandKitPage() {
                         />
                     </section>
 
+                    <hr className="border-white/[0.06]" />
+
+                    {/* ── VISUALS: EMAIL FORMAT ── */}
+                    <section id="email-format" className="scroll-mt-20 pb-16">
+                        <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+                            Formatting
+                        </h2>
+                        <p className="mb-6 text-sm text-white/40">Toggle header and footer for your email template.</p>
+
+                        {/* Header toggle */}
+                        <div className="mb-6 rounded-xl border border-white/[0.08] bg-[#1e293b] p-5">
+                            <label className="flex cursor-pointer items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={data.show_header || !!data.primary_logo_url}
+                                    onChange={(e) => updateField('show_header', e.target.checked)}
+                                    className="h-4 w-4 rounded border-white/20 bg-transparent accent-[#e8614d]"
+                                />
+                                <div>
+                                    <p className="text-sm font-medium text-white">Header</p>
+                                    <p className="text-xs text-white/40">Top section of the email{data.primary_logo_url ? ' — auto-enabled with logo' : ''}</p>
+                                </div>
+                            </label>
+                            {(data.show_header || !!data.primary_logo_url) && (
+                                <div className="mt-4 pl-7">
+                                    <HexColorPickerField
+                                        color={data.colors.header}
+                                        onChange={(c) => updateField('colors', { ...data.colors, header: c })}
+                                        label="Header Background"
+                                        description="Background color of the email header"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Footer toggle */}
+                        <div className="rounded-xl border border-white/[0.08] bg-[#1e293b] p-5">
+                            <label className="flex cursor-pointer items-center gap-3">
+                                <input
+                                    type="checkbox"
+                                    checked={data.show_footer}
+                                    onChange={(e) => updateField('show_footer', e.target.checked)}
+                                    className="h-4 w-4 rounded border-white/20 bg-transparent accent-[#e8614d]"
+                                />
+                                <div>
+                                    <p className="text-sm font-medium text-white">Footer</p>
+                                    <p className="text-xs text-white/40">Bottom section with legal, disclaimers, and address</p>
+                                </div>
+                            </label>
+                            {data.show_footer && (
+                                <div className="mt-4 pl-7">
+                                    <HexColorPickerField
+                                        color={data.colors.footer}
+                                        onChange={(c) => updateField('colors', { ...data.colors, footer: c })}
+                                        label="Footer Background"
+                                        description="Background color of the email footer"
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </section>
+
                 </div>
             </div>
 
@@ -376,12 +438,23 @@ export default function BrandKitPage() {
             <div className="flex-1 flex items-center justify-center border-l border-white/[0.06] overflow-hidden p-6" style={{ backgroundColor: data.colors.background }}>
                 <div className="h-[90%] w-full overflow-hidden rounded-2xl shadow-2xl shadow-black/30" style={{ backgroundColor: data.colors.container }}>
                     <div>
-                        {/* Preview header */}
-                        <div className="bg-gradient-to-br from-[#0f2137] to-[#142d48] px-8 py-6 text-center">
-                            <p className="text-lg font-bold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                                Fundraising <span className="text-[#e8614d]">Emails</span>
-                            </p>
-                        </div>
+                        {/* Preview header — shown when enabled or logo uploaded */}
+                        {(data.show_header || !!data.primary_logo_url) && (
+                            <div className="px-8 py-6 text-center" style={{ backgroundColor: data.colors.header }}>
+                                {data.primary_logo_url ? (
+                                    <img
+                                        src={data.primary_logo_url}
+                                        alt="Logo"
+                                        className="mx-auto h-10 object-contain"
+                                    />
+                                ) : (
+                                    <p className="text-lg font-bold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+                                        {data.kit_name || 'Your Brand'}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
                         {/* Preview body */}
                         <div className="px-8 py-10 text-center" style={{ backgroundColor: data.colors.container }}>
                             <h3 className="mb-4 text-xl font-bold" style={{ fontFamily: '"Playfair Display", Georgia, serif', color: data.colors.foreground }}>
@@ -413,25 +486,30 @@ export default function BrandKitPage() {
                         {data.socials.some(s => s.url) && (
                             <div className="flex items-center justify-center gap-3 pb-4" style={{ backgroundColor: data.colors.container }}>
                                 {data.socials.filter(s => s.url).map((s, i) => (
-                                    <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full bg-[#0f2137]">
+                                    <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full" style={{ backgroundColor: data.colors.header }}>
                                         <span className="text-[10px] font-bold text-white">{s.platform[0]}</span>
                                     </div>
                                 ))}
                             </div>
                         )}
 
-                        {/* Footer preview */}
-                        <div className="border-t border-gray-100 px-6 py-5 text-center" style={{ backgroundColor: data.colors.container }}>
-                            {data.disclaimers && (
-                                <p className="mb-2 text-[11px] leading-relaxed text-[#8ba3cc]">{data.disclaimers}</p>
-                            )}
-                            {data.copyright && (
-                                <p className="mb-1 text-[11px] text-[#8ba3cc]">{data.copyright}</p>
-                            )}
-                            {data.address && (
-                                <p className="text-[11px] text-[#8ba3cc]">{data.address}</p>
-                            )}
-                        </div>
+                        {/* Footer preview — shown when enabled and has content */}
+                        {data.show_footer && (data.disclaimers || data.copyright || data.address || data.footer) && (
+                            <div className="border-t border-white/10 px-6 py-5 text-center" style={{ backgroundColor: data.colors.footer }}>
+                                {data.disclaimers && (
+                                    <p className="mb-2 text-[11px] leading-relaxed text-white/60">{data.disclaimers}</p>
+                                )}
+                                {data.footer && (
+                                    <p className="mb-2 text-[11px] leading-relaxed text-white/60">{data.footer}</p>
+                                )}
+                                {data.copyright && (
+                                    <p className="mb-1 text-[11px] text-white/60">{data.copyright}</p>
+                                )}
+                                {data.address && (
+                                    <p className="text-[11px] text-white/60">{data.address}</p>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
