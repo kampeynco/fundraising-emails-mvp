@@ -351,38 +351,38 @@ export default function BrandKitPage() {
                                 { key: 'accent' as const, label: 'Accent', desc: 'Buttons, links, and highlights' },
                                 { key: 'button_text' as const, label: 'Button Text', desc: 'Text on buttons' },
                             ].map((item) => (
-                                <div key={item.key}>
-                                    <label className="group cursor-pointer">
-                                        <div
-                                            className="h-36 rounded-xl border border-white/[0.08] transition-colors hover:border-[#e8614d]/40"
-                                            style={{ backgroundColor: data.colors[item.key] }}
-                                        />
-                                        <input
-                                            type="color"
-                                            value={data.colors[item.key]}
-                                            onChange={(e) => updateField('colors', { ...data.colors, [item.key]: e.target.value })}
-                                            className="sr-only"
-                                        />
-                                    </label>
+                                <div key={item.key} className="relative">
+                                    <div
+                                        className="h-36 cursor-pointer rounded-xl border border-white/[0.08] transition-colors hover:border-[#e8614d]/40"
+                                        style={{ backgroundColor: data.colors[item.key] }}
+                                        onClick={() => colorRefs.current[item.key]?.click()}
+                                    />
+                                    <input
+                                        ref={(el) => { colorRefs.current[item.key] = el }}
+                                        type="color"
+                                        value={data.colors[item.key]}
+                                        onChange={(e) => updateField('colors', { ...data.colors, [item.key]: e.target.value })}
+                                        className="pointer-events-none absolute left-0 top-0 h-0 w-0 opacity-0"
+                                    />
                                     <p className="mt-2 text-sm font-medium text-white">{item.label}</p>
                                     <p className="text-xs text-white/40">{item.desc}</p>
                                 </div>
                             ))}
                         </div>
 
-                        <div>
-                            <label className="group cursor-pointer">
-                                <div
-                                    className="h-36 rounded-xl border border-white/[0.08] transition-colors hover:border-[#e8614d]/40"
-                                    style={{ backgroundColor: data.colors.foreground }}
-                                />
-                                <input
-                                    type="color"
-                                    value={data.colors.foreground}
-                                    onChange={(e) => updateField('colors', { ...data.colors, foreground: e.target.value })}
-                                    className="sr-only"
-                                />
-                            </label>
+                        <div className="relative">
+                            <div
+                                className="h-36 cursor-pointer rounded-xl border border-white/[0.08] transition-colors hover:border-[#e8614d]/40"
+                                style={{ backgroundColor: data.colors.foreground }}
+                                onClick={() => colorRefs.current['foreground']?.click()}
+                            />
+                            <input
+                                ref={(el) => { colorRefs.current['foreground'] = el }}
+                                type="color"
+                                value={data.colors.foreground}
+                                onChange={(e) => updateField('colors', { ...data.colors, foreground: e.target.value })}
+                                className="pointer-events-none absolute left-0 top-0 h-0 w-0 opacity-0"
+                            />
                             <p className="mt-2 text-sm font-medium text-white">Foreground</p>
                             <p className="text-xs text-white/40">Text and other content elements</p>
                         </div>
