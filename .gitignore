@@ -14,4 +14,14 @@ Thumbs.db
 
 # Node
 node_modules/
-fundraising-react/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Build
+dist/
+
+# Vite
+*.local

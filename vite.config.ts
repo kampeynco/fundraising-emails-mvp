@@ -1,0 +1,37 @@
+import path from "path"
+import { defineConfig, type Plugin } from 'vite'
+import react from '@vitejs/plugin-react'
+import tailwindcss from '@tailwindcss/vite'
+
+// Rewrite SPA routes to app.html
+function spaFallback(): Plugin {
+    const spaRoutes = ['/dashboard', '/get-started', '/onboard', '/login']
+    return {
+        name: 'spa-fallback',
+        configureServer(server) {
+            server.middlewares.use((req, _res, next) => {
+                if (req.url && spaRoutes.some(r => req.url!.startsWith(r))) {
+                    req.url = '/app.html'
+                }
+                next()
+            })
+        },
+    }
+}
+
+export default defineConfig({
+    plugins: [spaFallback(), react(), tailwindcss()],
+    resolve: {
+        alias: {
+            "@": path.resolve(__dirname, "./src"),
+        },
+    },
+    build: {
+        rollupOptions: {
+            input: {
+                main: path.resolve(__dirname, 'index.html'),
+                app: path.resolve(__dirname, 'app.html'),
+            },
+        },
+    },
+})

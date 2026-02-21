@@ -51,6 +51,10 @@ export default function LoginPage() {
                             <Button type="submit" className="w-full" disabled={loading}>
                                 {loading ? 'Sending...' : 'Send Magic Link'}
                             </Button>
+                            <p className="text-xs text-center text-muted-foreground">
+                                Don't have an account?{' '}
+                                <a href="/get-started" className="underline hover:text-primary">Get Started</a>
+                            </p>
                         </form>
                     )}
                 </CardContent>

@@ -2,9 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import LoginPage from '@/pages/LoginPage'
+import GetStartedPage from '@/pages/GetStartedPage'
 import DashboardPage from '@/pages/DashboardPage'
 import DraftsPage from '@/pages/DraftsPage'
-import './index.css'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -18,7 +18,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return <Navigate to="/dashboard/login" replace />
+    return <Navigate to="/login" replace />
   }
 
   return <>{children}</>
@@ -29,7 +29,9 @@ export default function App() {
     <BrowserRouter>
       <TooltipProvider>
         <Routes>
-          <Route path="/dashboard/login" element={<LoginPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/get-started" element={<GetStartedPage />} />
+          <Route path="/onboard" element={<Navigate to="/get-started" replace />} />
           <Route
             path="/dashboard"
             element={
