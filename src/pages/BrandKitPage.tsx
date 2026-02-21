@@ -346,8 +346,8 @@ export default function BrandKitPage() {
 
                         <div className="grid grid-cols-2 gap-6 mb-8">
                             {[
-                                { key: 'background' as const, label: 'Background', desc: 'The main background of your email' },
-                                { key: 'container' as const, label: 'Container', desc: 'The content box of the email' },
+                                { key: 'background' as const, label: 'Background', desc: 'The panel behind the email' },
+                                { key: 'container' as const, label: 'Container', desc: 'The email content background' },
                                 { key: 'accent' as const, label: 'Accent', desc: 'Buttons, links, and highlights' },
                                 { key: 'button_text' as const, label: 'Button Text', desc: 'Text on buttons' },
                             ].map((item) => (
@@ -364,7 +364,21 @@ export default function BrandKitPage() {
                                         onChange={(e) => updateField('colors', { ...data.colors, [item.key]: e.target.value })}
                                         className="pointer-events-none absolute left-0 top-0 h-0 w-0 opacity-0"
                                     />
-                                    <p className="mt-2 text-sm font-medium text-white">{item.label}</p>
+                                    <div className="mt-2 flex items-center gap-2">
+                                        <p className="text-sm font-medium text-white">{item.label}</p>
+                                        <input
+                                            type="text"
+                                            value={data.colors[item.key].toUpperCase()}
+                                            onChange={(e) => {
+                                                const v = e.target.value
+                                                if (/^#[0-9A-Fa-f]{0,6}$/.test(v)) {
+                                                    updateField('colors', { ...data.colors, [item.key]: v })
+                                                }
+                                            }}
+                                            maxLength={7}
+                                            className="w-20 rounded border border-white/[0.08] bg-transparent px-2 py-0.5 text-xs font-mono text-white/60 outline-none focus:border-[#e8614d]/50"
+                                        />
+                                    </div>
                                     <p className="text-xs text-white/40">{item.desc}</p>
                                 </div>
                             ))}
@@ -383,7 +397,21 @@ export default function BrandKitPage() {
                                 onChange={(e) => updateField('colors', { ...data.colors, foreground: e.target.value })}
                                 className="pointer-events-none absolute left-0 top-0 h-0 w-0 opacity-0"
                             />
-                            <p className="mt-2 text-sm font-medium text-white">Foreground</p>
+                            <div className="mt-2 flex items-center gap-2">
+                                <p className="text-sm font-medium text-white">Foreground</p>
+                                <input
+                                    type="text"
+                                    value={data.colors.foreground.toUpperCase()}
+                                    onChange={(e) => {
+                                        const v = e.target.value
+                                        if (/^#[0-9A-Fa-f]{0,6}$/.test(v)) {
+                                            updateField('colors', { ...data.colors, foreground: v })
+                                        }
+                                    }}
+                                    maxLength={7}
+                                    className="w-20 rounded border border-white/[0.08] bg-transparent px-2 py-0.5 text-xs font-mono text-white/60 outline-none focus:border-[#e8614d]/50"
+                                />
+                            </div>
                             <p className="text-xs text-white/40">Text and other content elements</p>
                         </div>
                     </section>
