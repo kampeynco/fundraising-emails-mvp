@@ -1,17 +1,24 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
 import { createClient } from "@supabase/supabase-js";
-import OpenAI from "openai";
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-// Perplexity Sonar API is OpenAI-compatible
-const perplexity = new OpenAI({
-    apiKey: process.env.PERPLEXITY_API_KEY,
-    baseURL: "https://api.perplexity.ai",
-});
+// ── Perplexity Search API types ──
+interface PerplexitySearchResult {
+    title: string;
+    url: string;
+    snippet: string;
+    date: string | null;
+    last_updated: string | null;
+}
+
+interface PerplexitySearchResponse {
+    results: PerplexitySearchResult[];
+    id: string;
+}
 
 interface ScoredTopic {
     title: string;
@@ -25,8 +32,10 @@ interface ScoredTopic {
 /**
  * Research Topics — AI Content Researcher
  *
- * Searches the web via Perplexity Sonar for relevant news and trends
+ * Searches the web via Perplexity Search API for relevant news and trends
  * that can be used in fundraising email copy.
+ *
+ * Cost: $0.005 per request, no token costs.
  */
 export const researchTopics = task({
     id: "research-topics",
@@ -47,7 +56,7 @@ export const researchTopics = task({
         logger.info("🔍 Research starting", { userId, query, suggestedBy });
         metadata.set("status", "searching").set("query", query);
 
-        // 1. Search via Perplexity Sonar API
+        // 1. Search via Perplexity Search API
         const searchResults = await perplexitySearch(query);
 
         if (!searchResults || searchResults.length === 0) {
@@ -55,13 +64,17 @@ export const researchTopics = task({
             return { saved: 0, query };
         }
 
-        logger.info(`Found ${searchResults.length} topics`, { query });
-        metadata.set("status", "saving").set("topicsFound", searchResults.length);
+        logger.info(`Found ${searchResults.length} results`, { query });
+        metadata.set("status", "scoring").set("resultsFound", searchResults.length);
 
-        // 2. Save results to database
+        // 2. Score and rank results locally (no AI needed — saves cost)
+        const scoredTopics = scoreResults(searchResults, query);
+
+        // 3. Save top results to database
+        const topTopics = scoredTopics.slice(0, 5);
         const savedIds: string[] = [];
 
-        for (const topic of searchResults) {
+        for (const topic of topTopics) {
             const { data, error } = await supabase
                 .from("research_topics")
                 .insert({
@@ -105,70 +118,54 @@ export const researchTopics = task({
     },
 });
 
-// ── Perplexity Sonar API search ──
-async function perplexitySearch(query: string): Promise<ScoredTopic[]> {
+// ── Perplexity Search API ──
+// Endpoint: POST https://api.perplexity.ai/search
+// Cost: $5 per 1K requests ($0.005/request), no token costs
+async function perplexitySearch(
+    query: string
+): Promise<PerplexitySearchResult[]> {
+    const apiKey = process.env.PERPLEXITY_API_KEY;
+    if (!apiKey) throw new Error("PERPLEXITY_API_KEY not set");
+
     try {
-        const response = await perplexity.chat.completions.create({
-            model: "sonar",
-            messages: [
-                {
-                    role: "system",
-                    content: `You are a political campaign research assistant. Search for the most recent, relevant news and topics that could be used in fundraising email copy. For each result, extract:
-- A clear headline/title
-- A 1-2 sentence summary
-- The source URL
-- A key quote or fact usable in email copy
-- A relevance score from 1-10 based on how useful this is for fundraising emails
-
-Return EXACTLY a JSON array of 3-5 objects with this structure:
-[{
-  "title": "headline",
-  "summary": "1-2 sentence summary",
-  "source_url": "https://...",
-  "content_snippet": "key quote or fact",
-  "relevance_score": 8.5
-}]
-
-Return ONLY the JSON array, no other text.`,
-                },
-                {
-                    role: "user",
-                    content: `Find the latest relevant news and topics about: ${query}`,
-                },
-            ],
-            temperature: 0.3,
-            max_tokens: 2000,
+        const response = await fetch("https://api.perplexity.ai/search", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                query,
+                max_results: 10,
+                search_recency_filter: "week",
+                search_domain_filter: [
+                    "nytimes.com",
+                    "washingtonpost.com",
+                    "politico.com",
+                    "thehill.com",
+                    "cnn.com",
+                    "reuters.com",
+                    "apnews.com",
+                    "npr.org",
+                    "axios.com",
+                    "nbcnews.com",
+                    "fec.gov",
+                    "opensecrets.org",
+                ],
+            }),
         });
 
-        const content = response.choices[0]?.message?.content;
-        if (!content) {
-            logger.error("Perplexity returned empty response");
+        if (!response.ok) {
+            const errorText = await response.text();
+            logger.error("Perplexity Search API error", {
+                status: response.status,
+                body: errorText,
+            });
             return [];
         }
 
-        // Extract JSON from response (handle markdown code blocks)
-        const jsonStr = content
-            .replace(/```json\n?/g, "")
-            .replace(/```\n?/g, "")
-            .trim();
-
-        const results = JSON.parse(jsonStr) as Array<{
-            title: string;
-            summary: string;
-            source_url: string;
-            content_snippet: string;
-            relevance_score: number;
-        }>;
-
-        // Extract domain and validate
-        return results.map((r) => ({
-            title: r.title || "Untitled",
-            summary: r.summary || "",
-            source_url: r.source_url || "",
-            source_domain: extractDomain(r.source_url || ""),
-            content_snippet: r.content_snippet || r.summary || "",
-            relevance_score: Math.min(Math.max(r.relevance_score || 5, 0), 10),
-        }));
+        const data = (await response.json()) as PerplexitySearchResponse;
+        return data.results || [];
     } catch (err) {
         logger.error("Perplexity search failed", {
             error: (err as Error).message,
@@ -177,10 +174,85 @@ Return ONLY the JSON array, no other text.`,
     }
 }
 
+// ── Local scoring (no AI cost) ──
+function scoreResults(
+    results: PerplexitySearchResult[],
+    query: string
+): ScoredTopic[] {
+    const queryTerms = query.toLowerCase().split(/\s+/);
+
+    return results
+        .map((result) => {
+            let score = 0;
+
+            // Title relevance (strongest signal)
+            const titleLower = result.title.toLowerCase();
+            for (const term of queryTerms) {
+                if (titleLower.includes(term)) score += 3;
+            }
+
+            // Snippet relevance
+            const snippetLower = result.snippet.toLowerCase();
+            for (const term of queryTerms) {
+                if (snippetLower.includes(term)) score += 2;
+            }
+
+            // Recency bonus
+            if (result.date) {
+                const daysAgo = daysSince(result.date);
+                if (daysAgo <= 1) score += 4;
+                else if (daysAgo <= 3) score += 3;
+                else if (daysAgo <= 7) score += 2;
+            }
+
+            // Source quality
+            const domain = extractDomain(result.url);
+            const tier1 = [
+                "nytimes.com",
+                "washingtonpost.com",
+                "reuters.com",
+                "apnews.com",
+            ];
+            const tier2 = [
+                "politico.com",
+                "thehill.com",
+                "cnn.com",
+                "npr.org",
+                "axios.com",
+                "fec.gov",
+            ];
+            if (tier1.some((d) => domain.includes(d))) score += 3;
+            else if (tier2.some((d) => domain.includes(d))) score += 2;
+
+            // Normalize to 0-10
+            const normalizedScore = Math.min(score / 15, 1) * 10;
+
+            return {
+                title: result.title,
+                summary: result.snippet,
+                source_url: result.url,
+                source_domain: domain,
+                content_snippet: result.snippet.slice(0, 300),
+                relevance_score: Math.round(normalizedScore * 100) / 100,
+            };
+        })
+        .sort((a, b) => b.relevance_score - a.relevance_score);
+}
+
 function extractDomain(url: string): string {
     try {
         return new URL(url).hostname.replace("www.", "");
     } catch {
         return "";
+    }
+}
+
+function daysSince(dateStr: string): number {
+    try {
+        const date = new Date(dateStr);
+        const now = new Date();
+        return Math.max(0, (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
+    } catch {
+        return 999;
     }
 }
