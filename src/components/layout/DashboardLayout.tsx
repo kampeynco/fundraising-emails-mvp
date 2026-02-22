@@ -9,15 +9,13 @@ import {
     SwatchIcon,
     Add01Icon,
     Logout03Icon,
-    GridIcon,
-    JusticeScale01Icon,
-    HashtagIcon,
     ImageUploadIcon,
     DropletIcon,
     AlertSquareIcon,
     Link02Icon,
     ProfileIcon,
     EdgeStyleIcon,
+    Search01Icon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -25,6 +23,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 const mainNavItems = [
     { icon: Home07Icon, label: 'Overview', href: '/dashboard' },
     { icon: LicenseDraftIcon, label: 'Drafts', href: '/dashboard/drafts' },
+    { icon: Search01Icon, label: 'Research', href: '/dashboard/research' },
     { icon: SwatchIcon, label: 'Brand Kit', href: '/dashboard/brand-kit' },
 ]
 

@@ -7,6 +7,7 @@ import LoginPage from '@/pages/LoginPage'
 import GetStartedPage from '@/pages/GetStartedPage'
 import DashboardPage from '@/pages/DashboardPage'
 import DraftsPage from '@/pages/DraftsPage'
+import ResearchPage from '@/pages/ResearchPage'
 import BrandKitPage from '@/pages/BrandKitPage'
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
             >
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/dashboard/drafts" element={<DraftsPage />} />
+              <Route path="/dashboard/research" element={<ResearchPage />} />
               <Route path="/dashboard/brand-kit" element={<BrandKitPage />} />
             </Route>
 
