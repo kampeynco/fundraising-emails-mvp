@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     ArrowDown01Icon,
@@ -166,14 +167,25 @@ export default function DraftsPage() {
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white cursor-pointer"
-                        >
-                            <HugeiconsIcon icon={FlashIcon} className="mr-1.5 h-3.5 w-3.5 text-amber-400" />
-                            Rapid Response
-                        </Button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white cursor-pointer"
+                                >
+                                    <HugeiconsIcon icon={FlashIcon} className="mr-1.5 h-3.5 w-3.5 text-amber-400" />
+                                    Rapid Response
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="max-w-[260px]">
+                                <p className="font-semibold">⚡ Rapid Response</p>
+                                <p className="mt-1 text-xs text-white/60">
+                                    Generate an urgent fundraising email for breaking news, opposition attacks, or flash donation matches.
+                                    Available on plans with 3+ emails/week. 24-hour turnaround.
+                                </p>
+                            </TooltipContent>
+                        </Tooltip>
                     </div>
                 </div>
             </div>

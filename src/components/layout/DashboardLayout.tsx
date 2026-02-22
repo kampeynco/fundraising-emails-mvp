@@ -15,7 +15,9 @@ import {
     Link02Icon,
     ProfileIcon,
     EdgeStyleIcon,
+    EdgeStyleIcon,
     Search01Icon,
+    Settings02Icon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -25,6 +27,7 @@ const mainNavItems = [
     { icon: LicenseDraftIcon, label: 'Drafts', href: '/dashboard/drafts' },
     { icon: Search01Icon, label: 'Research', href: '/dashboard/research' },
     { icon: SwatchIcon, label: 'Brand Kit', href: '/dashboard/brand-kit' },
+    { icon: Settings02Icon, label: 'Settings', href: '/dashboard/settings' },
 ]
 
 // ── Inner sidebar items for Brand Kit ───────────────────────
