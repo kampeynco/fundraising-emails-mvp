@@ -1,17 +1,17 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
 import { createClient } from "@supabase/supabase-js";
+import OpenAI from "openai";
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-interface FirecrawlSearchResult {
-    title: string;
-    url: string;
-    description: string;
-    content?: string;
-}
+// Perplexity Sonar API is OpenAI-compatible
+const perplexity = new OpenAI({
+    apiKey: process.env.PERPLEXITY_API_KEY,
+    baseURL: "https://api.perplexity.ai",
+});
 
 interface ScoredTopic {
     title: string;
@@ -25,7 +25,7 @@ interface ScoredTopic {
 /**
  * Research Topics — AI Content Researcher
  *
- * Searches the web via Firecrawl for relevant news and trends
+ * Searches the web via Perplexity Sonar for relevant news and trends
  * that can be used in fundraising email copy.
  */
 export const researchTopics = task({
@@ -47,25 +47,21 @@ export const researchTopics = task({
         logger.info("🔍 Research starting", { userId, query, suggestedBy });
         metadata.set("status", "searching").set("query", query);
 
-        // 1. Search via Firecrawl API
-        const searchResults = await firecrawlSearch(query);
+        // 1. Search via Perplexity Sonar API
+        const searchResults = await perplexitySearch(query);
 
         if (!searchResults || searchResults.length === 0) {
             logger.info("No results found", { query });
             return { saved: 0, query };
         }
 
-        logger.info(`Found ${searchResults.length} results`, { query });
-        metadata.set("status", "scoring").set("resultsFound", searchResults.length);
+        logger.info(`Found ${searchResults.length} topics`, { query });
+        metadata.set("status", "saving").set("topicsFound", searchResults.length);
 
-        // 2. Score and rank results
-        const scoredTopics = scoreResults(searchResults, query);
-
-        // 3. Save top results to database
-        const topTopics = scoredTopics.slice(0, 5); // Save top 5
+        // 2. Save results to database
         const savedIds: string[] = [];
 
-        for (const topic of topTopics) {
+        for (const topic of searchResults) {
             const { data, error } = await supabase
                 .from("research_topics")
                 .insert({
@@ -109,108 +105,76 @@ export const researchTopics = task({
     },
 });
 
-// ── Firecrawl API search ──
-async function firecrawlSearch(query: string): Promise<FirecrawlSearchResult[]> {
-    const apiKey = process.env.FIRECRAWL_API_KEY;
-    if (!apiKey) throw new Error("FIRECRAWL_API_KEY not set");
-
+// ── Perplexity Sonar API search ──
+async function perplexitySearch(query: string): Promise<ScoredTopic[]> {
     try {
-        const response = await fetch("https://api.firecrawl.dev/v1/search", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${apiKey}`,
-            },
-            body: JSON.stringify({
-                query,
-                limit: 10,
-                scrapeOptions: {
-                    formats: ["markdown"],
+        const response = await perplexity.chat.completions.create({
+            model: "sonar",
+            messages: [
+                {
+                    role: "system",
+                    content: `You are a political campaign research assistant. Search for the most recent, relevant news and topics that could be used in fundraising email copy. For each result, extract:
+- A clear headline/title
+- A 1-2 sentence summary
+- The source URL
+- A key quote or fact usable in email copy
+- A relevance score from 1-10 based on how useful this is for fundraising emails
+
+Return EXACTLY a JSON array of 3-5 objects with this structure:
+[{
+  "title": "headline",
+  "summary": "1-2 sentence summary",
+  "source_url": "https://...",
+  "content_snippet": "key quote or fact",
+  "relevance_score": 8.5
+}]
+
+Return ONLY the JSON array, no other text.`,
                 },
-            }),
+                {
+                    role: "user",
+                    content: `Find the latest relevant news and topics about: ${query}`,
+                },
+            ],
+            temperature: 0.3,
+            max_tokens: 2000,
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            logger.error("Firecrawl API error", {
-                status: response.status,
-                body: errorText,
-            });
+        const content = response.choices[0]?.message?.content;
+        if (!content) {
+            logger.error("Perplexity returned empty response");
             return [];
         }
 
-        const data = await response.json();
-        return (data.data || []).map((item: any) => ({
-            title: item.metadata?.title || item.title || "Untitled",
-            url: item.url || "",
-            description: item.metadata?.description || "",
-            content: item.markdown?.slice(0, 500) || "",
+        // Extract JSON from response (handle markdown code blocks)
+        const jsonStr = content
+            .replace(/```json\n?/g, "")
+            .replace(/```\n?/g, "")
+            .trim();
+
+        const results = JSON.parse(jsonStr) as Array<{
+            title: string;
+            summary: string;
+            source_url: string;
+            content_snippet: string;
+            relevance_score: number;
+        }>;
+
+        // Extract domain and validate
+        return results.map((r) => ({
+            title: r.title || "Untitled",
+            summary: r.summary || "",
+            source_url: r.source_url || "",
+            source_domain: extractDomain(r.source_url || ""),
+            content_snippet: r.content_snippet || r.summary || "",
+            relevance_score: Math.min(Math.max(r.relevance_score || 5, 0), 10),
         }));
     } catch (err) {
-        logger.error("Firecrawl search failed", {
+        logger.error("Perplexity search failed", {
             error: (err as Error).message,
         });
         return [];
     }
-}
-
-// ── Scoring logic ──
-function scoreResults(
-    results: FirecrawlSearchResult[],
-    query: string
-): ScoredTopic[] {
-    const queryTerms = query.toLowerCase().split(/\s+/);
-
-    return results
-        .map((result) => {
-            let score = 0;
-
-            // Title relevance
-            const titleLower = result.title.toLowerCase();
-            for (const term of queryTerms) {
-                if (titleLower.includes(term)) score += 3;
-            }
-
-            // Description relevance
-            const descLower = (result.description || "").toLowerCase();
-            for (const term of queryTerms) {
-                if (descLower.includes(term)) score += 2;
-            }
-
-            // Content relevance
-            const contentLower = (result.content || "").toLowerCase();
-            for (const term of queryTerms) {
-                if (contentLower.includes(term)) score += 1;
-            }
-
-            // Source quality (basic heuristic)
-            const domain = extractDomain(result.url);
-            const majorOutlets = [
-                "nytimes.com", "washingtonpost.com", "politico.com", "thehill.com",
-                "cnn.com", "foxnews.com", "reuters.com", "apnews.com", "bbc.com",
-                "npr.org", "axios.com", "nbcnews.com", "abcnews.go.com",
-            ];
-            if (majorOutlets.some((o) => domain.includes(o))) score += 3;
-
-            // Normalize to 0-10
-            const normalizedScore = Math.min(score / 15, 1) * 10;
-
-            // Extract best snippet
-            const snippet =
-                result.description ||
-                result.content?.slice(0, 200) ||
-                "No snippet available";
-
-            return {
-                title: result.title,
-                summary: result.description || result.content?.slice(0, 300) || "",
-                source_url: result.url,
-                source_domain: domain,
-                content_snippet: snippet,
-                relevance_score: Math.round(normalizedScore * 100) / 100,
-            };
-        })
-        .sort((a, b) => b.relevance_score - a.relevance_score);
 }
 
 function extractDomain(url: string): string {
