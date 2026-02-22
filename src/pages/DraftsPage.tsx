@@ -14,7 +14,6 @@ import {
     Mail01Icon,
     MoreHorizontalIcon,
     PencilEdit01Icon,
-    SentIcon,
     ViewIcon,
 } from '@hugeicons/core-free-icons'
 import { type Draft, type DraftStatus, DRAFT_STATUS_CONFIG } from '@/types/draft'

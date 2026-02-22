@@ -15,7 +15,6 @@ import {
     Link02Icon,
     ProfileIcon,
     EdgeStyleIcon,
-    EdgeStyleIcon,
     Search01Icon,
     Settings02Icon,
 } from '@hugeicons/core-free-icons'
