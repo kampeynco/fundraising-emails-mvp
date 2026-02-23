@@ -271,7 +271,7 @@ export default function ResearchPage() {
                 </div>
 
                 {/* Search bar — always visible on Discover tab, compact on others */}
-                {(activeResearchSection === 'discover' || activeResearchSection === 'saved') && (
+                {activeResearchSection === 'saved' && (
                     <div className="mt-4 flex gap-3">
                         <div className="relative flex-1">
                             <HugeiconsIcon icon={Search01Icon} className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />

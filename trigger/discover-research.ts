@@ -168,37 +168,123 @@ async function processUserDiscovery(kit: BrandKitRow): Promise<number> {
 }
 
 /**
- * Build a personalized Perplexity query from user's brand kit
+ * Build a multi-angle discovery prompt from user's brand kit.
+ * Generates multiple query fragments and combines them into a single
+ * structured Sonar prompt for comprehensive coverage.
+ *
+ * Query formats:
+ * 1. org_name
+ * 2. org_name + office_sought
+ * 3. district + state + office_sought
+ * 4. office_sought + state
+ * 6. stance_issue + office_sought
+ * 7. stance_issue + stance_position
+ * 8. office_sought + state + "election"
+ * 9. office_sought + district + "fundraising"
+ * 14. org_level + state
  */
 function buildDiscoveryQuery(kit: BrandKitRow): string | null {
-    const parts: string[] = [];
+    const queries: string[] = [];
+    const name = kit.kit_name?.trim();
+    const office = kit.office_sought?.trim();
+    const state = kit.state?.trim();
+    const district = kit.district?.trim();
+    const level = kit.org_level?.trim(); // Federal, State, Local
+    const summary = kit.brand_summary?.trim();
 
-    // Add org context
-    if (kit.org_type === "Candidate") {
-        const office = kit.office_sought || "political office";
-        const state = kit.state ? ` in ${kit.state}` : "";
-        parts.push(`Latest political news relevant to a ${office} candidate${state}`);
-    } else if (kit.org_type === "501c3") {
-        parts.push("Latest nonprofit and policy news");
-    } else if (kit.org_type === "501c4") {
-        parts.push("Latest political advocacy and policy news");
-    } else if (kit.org_type) {
-        parts.push("Latest political and campaign news");
+    // Extract stance-like keywords from brand summary
+    const stanceKeywords = extractStanceKeywords(summary);
+
+    // ── Format 1: org_name ──
+    if (name) {
+        queries.push(name);
     }
 
-    // Add brand summary context
-    if (kit.brand_summary) {
-        const summary = kit.brand_summary.slice(0, 200);
-        parts.push(`related to: ${summary}`);
+    // ── Format 2: org_name + office_sought ──
+    if (name && office) {
+        queries.push(`${name} ${office} race`);
     }
 
-    // If we have nothing to search for, skip
-    if (parts.length === 0) return null;
+    // ── Format 3: district + state + office_sought ──
+    if (district && state && office) {
+        queries.push(`${district} ${state} ${office}`);
+    }
 
-    // Add recency emphasis
-    parts.push("Focus on the past 48 hours. Include fundraising angles and donor-relevant stories.");
+    // ── Format 4: office_sought + state ──
+    if (office && state) {
+        queries.push(`${office} ${state}`);
+    }
 
-    return parts.join(". ");
+    // ── Format 6: stance_issue + office_sought ──
+    if (stanceKeywords.length > 0 && office) {
+        // Pick top 2 stance keywords
+        for (const keyword of stanceKeywords.slice(0, 2)) {
+            queries.push(`${keyword} ${office}`);
+        }
+    }
+
+    // ── Format 7: stance_issue + stance_position ──
+    if (stanceKeywords.length > 0) {
+        // Use the first stance keyword with context
+        queries.push(stanceKeywords[0]);
+    }
+
+    // ── Format 8: office_sought + state + "election" ──
+    if (office && state) {
+        queries.push(`${office} ${state} election 2026`);
+    }
+
+    // ── Format 9: office_sought + district + "fundraising" ──
+    if (office && district) {
+        queries.push(`${office} ${district} fundraising`);
+    }
+
+    // ── Format 14: org_level + state ──
+    if (level && state) {
+        queries.push(`${level} races ${state}`);
+    }
+
+    // If no queries could be built, skip
+    if (queries.length === 0) return null;
+
+    // Deduplicate
+    const unique = [...new Set(queries)];
+
+    // Combine into a structured prompt
+    return [
+        `Find the latest news and developments about the following topics (search each one):`,
+        ...unique.map((q, i) => `${i + 1}. ${q}`),
+        ``,
+        `Focus on the past 48 hours. Prioritize stories with fundraising angles, donor-relevant developments, and breaking political news.`,
+    ].join("\n");
+}
+
+/**
+ * Extract stance-like keywords from the brand summary.
+ * Looks for common policy areas mentioned in the text.
+ */
+function extractStanceKeywords(summary: string | undefined): string[] {
+    if (!summary) return [];
+
+    const policyTerms = [
+        "healthcare", "health care", "medicare", "medicaid",
+        "climate", "environment", "clean energy", "green",
+        "education", "schools", "student",
+        "immigration", "border",
+        "economy", "jobs", "inflation", "wages",
+        "gun", "firearms", "second amendment",
+        "abortion", "reproductive", "women's health",
+        "housing", "rent", "affordable housing",
+        "criminal justice", "police", "public safety",
+        "veterans", "military", "defense",
+        "taxes", "tax reform",
+        "voting rights", "election integrity",
+        "infrastructure", "transportation",
+        "social security", "retirement",
+    ];
+
+    const lower = summary.toLowerCase();
+    return policyTerms.filter((term) => lower.includes(term));
 }
 
 /**
@@ -277,32 +363,25 @@ async function sonarSearch(query: string): Promise<ScoredTopic[]> {
 }
 
 /**
- * Score a result based on source quality and query relevance
+ * Score a result on a fixed 0-10 scale.
+ * Source quality is the primary signal — Sonar already filtered for relevance.
  */
-function scoreResult(title: string, summary: string, domain: string, query: string): number {
-    let score = 0;
-    const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 3);
-    const titleLower = title.toLowerCase();
-    const summaryLower = summary.toLowerCase();
+function scoreResult(title: string, summary: string, domain: string, _query: string): number {
+    let score = 2; // Base score: Sonar returned it, so it's at least somewhat relevant
 
-    // Title relevance (strongest signal)
-    for (const term of queryTerms) {
-        if (titleLower.includes(term)) score += 3;
-    }
+    // Source quality (0-5 points) — biggest differentiator
+    if (TIER_1.some((d) => domain.includes(d))) score += 5;
+    else if (TIER_2.some((d) => domain.includes(d))) score += 3;
+    else if (domain) score += 1; // Known domain but not in our tiers
 
-    // Summary relevance
-    for (const term of queryTerms) {
-        if (summaryLower.includes(term)) score += 1;
-    }
+    // Content richness bonus (0-2 points)
+    if (title.length > 30) score += 0.5;
+    if (summary.length > 100) score += 0.5;
+    if (summary.length > 200) score += 0.5;
+    if (title.length > 50 && summary.length > 150) score += 0.5;
 
-    // Source quality
-    if (TIER_1.some((d) => domain.includes(d))) score += 4;
-    else if (TIER_2.some((d) => domain.includes(d))) score += 2;
-
-    // Normalize to 0-10
-    const maxPossible = queryTerms.length * 4 + 4; // all terms match title+summary + tier 1
-    const normalized = Math.min(score / Math.max(maxPossible, 10), 1) * 10;
-    return Math.round(normalized * 100) / 100;
+    // Cap at 10
+    return Math.min(Math.round(score * 100) / 100, 10);
 }
 
 /**

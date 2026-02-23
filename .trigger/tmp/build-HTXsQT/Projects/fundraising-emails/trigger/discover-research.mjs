@@ -95,27 +95,101 @@ async function processUserDiscovery(kit) {
 }
 __name(processUserDiscovery, "processUserDiscovery");
 function buildDiscoveryQuery(kit) {
-  const parts = [];
-  if (kit.org_type === "Candidate") {
-    const office = kit.office_sought || "political office";
-    const state = kit.state ? ` in ${kit.state}` : "";
-    parts.push(`Latest political news relevant to a ${office} candidate${state}`);
-  } else if (kit.org_type === "501c3") {
-    parts.push("Latest nonprofit and policy news");
-  } else if (kit.org_type === "501c4") {
-    parts.push("Latest political advocacy and policy news");
-  } else if (kit.org_type) {
-    parts.push("Latest political and campaign news");
+  const queries = [];
+  const name = kit.kit_name?.trim();
+  const office = kit.office_sought?.trim();
+  const state = kit.state?.trim();
+  const district = kit.district?.trim();
+  const level = kit.org_level?.trim();
+  const summary = kit.brand_summary?.trim();
+  const stanceKeywords = extractStanceKeywords(summary);
+  if (name) {
+    queries.push(name);
   }
-  if (kit.brand_summary) {
-    const summary = kit.brand_summary.slice(0, 200);
-    parts.push(`related to: ${summary}`);
+  if (name && office) {
+    queries.push(`${name} ${office} race`);
   }
-  if (parts.length === 0) return null;
-  parts.push("Focus on the past 48 hours. Include fundraising angles and donor-relevant stories.");
-  return parts.join(". ");
+  if (district && state && office) {
+    queries.push(`${district} ${state} ${office}`);
+  }
+  if (office && state) {
+    queries.push(`${office} ${state}`);
+  }
+  if (stanceKeywords.length > 0 && office) {
+    for (const keyword of stanceKeywords.slice(0, 2)) {
+      queries.push(`${keyword} ${office}`);
+    }
+  }
+  if (stanceKeywords.length > 0) {
+    queries.push(stanceKeywords[0]);
+  }
+  if (office && state) {
+    queries.push(`${office} ${state} election 2026`);
+  }
+  if (office && district) {
+    queries.push(`${office} ${district} fundraising`);
+  }
+  if (level && state) {
+    queries.push(`${level} races ${state}`);
+  }
+  if (queries.length === 0) return null;
+  const unique = [...new Set(queries)];
+  return [
+    `Find the latest news and developments about the following topics (search each one):`,
+    ...unique.map((q, i) => `${i + 1}. ${q}`),
+    ``,
+    `Focus on the past 48 hours. Prioritize stories with fundraising angles, donor-relevant developments, and breaking political news.`
+  ].join("\n");
 }
 __name(buildDiscoveryQuery, "buildDiscoveryQuery");
+function extractStanceKeywords(summary) {
+  if (!summary) return [];
+  const policyTerms = [
+    "healthcare",
+    "health care",
+    "medicare",
+    "medicaid",
+    "climate",
+    "environment",
+    "clean energy",
+    "green",
+    "education",
+    "schools",
+    "student",
+    "immigration",
+    "border",
+    "economy",
+    "jobs",
+    "inflation",
+    "wages",
+    "gun",
+    "firearms",
+    "second amendment",
+    "abortion",
+    "reproductive",
+    "women's health",
+    "housing",
+    "rent",
+    "affordable housing",
+    "criminal justice",
+    "police",
+    "public safety",
+    "veterans",
+    "military",
+    "defense",
+    "taxes",
+    "tax reform",
+    "voting rights",
+    "election integrity",
+    "infrastructure",
+    "transportation",
+    "social security",
+    "retirement"
+  ];
+  const lower = summary.toLowerCase();
+  return policyTerms.filter((term) => lower.includes(term));
+}
+__name(extractStanceKeywords, "extractStanceKeywords");
 async function sonarSearch(query) {
   const apiKey = process.env.PERPLEXITY_API_KEY;
   if (!apiKey) {
@@ -176,22 +250,16 @@ async function sonarSearch(query) {
   }
 }
 __name(sonarSearch, "sonarSearch");
-function scoreResult(title, summary, domain, query) {
-  let score = 0;
-  const queryTerms = query.toLowerCase().split(/\s+/).filter((t) => t.length > 3);
-  const titleLower = title.toLowerCase();
-  const summaryLower = summary.toLowerCase();
-  for (const term of queryTerms) {
-    if (titleLower.includes(term)) score += 3;
-  }
-  for (const term of queryTerms) {
-    if (summaryLower.includes(term)) score += 1;
-  }
-  if (TIER_1.some((d) => domain.includes(d))) score += 4;
-  else if (TIER_2.some((d) => domain.includes(d))) score += 2;
-  const maxPossible = queryTerms.length * 4 + 4;
-  const normalized = Math.min(score / Math.max(maxPossible, 10), 1) * 10;
-  return Math.round(normalized * 100) / 100;
+function scoreResult(title, summary, domain, _query) {
+  let score = 2;
+  if (TIER_1.some((d) => domain.includes(d))) score += 5;
+  else if (TIER_2.some((d) => domain.includes(d))) score += 3;
+  else if (domain) score += 1;
+  if (title.length > 30) score += 0.5;
+  if (summary.length > 100) score += 0.5;
+  if (summary.length > 200) score += 0.5;
+  if (title.length > 50 && summary.length > 150) score += 0.5;
+  return Math.min(Math.round(score * 100) / 100, 10);
 }
 __name(scoreResult, "scoreResult");
 function parseJsonArray(content) {
