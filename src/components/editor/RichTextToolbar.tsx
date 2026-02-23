@@ -118,6 +118,22 @@ export function RichTextToolbar({ containerRef }: RichTextToolbarProps) {
                     <line x1="3" y1="6" x2="21" y2="6" /><line x1="6" y1="12" x2="18" y2="12" /><line x1="4" y1="18" x2="20" y2="18" />
                 </svg>
             </ToolbarButton>
+
+            <div className="mx-1 h-4 w-px bg-white/[0.1]" />
+
+            {/* Font color */}
+            <ToolbarButton
+                onClick={() => {
+                    const color = window.prompt('Enter text color (hex):', '#e8614d')
+                    if (color) execCommand('foreColor', color)
+                }}
+                title="Text Color"
+            >
+                <span className="relative text-xs font-bold">
+                    A
+                    <span className="absolute -bottom-0.5 left-0 right-0 h-[2px] rounded bg-[#e8614d]" />
+                </span>
+            </ToolbarButton>
         </div>
     )
 }
@@ -138,8 +154,8 @@ function ToolbarButton({
             onClick={onClick}
             title={title}
             className={`flex h-7 w-7 items-center justify-center rounded text-xs transition-colors ${active
-                    ? 'bg-[#e8614d]/20 text-[#e8614d]'
-                    : 'text-white/60 hover:bg-white/[0.08] hover:text-white'
+                ? 'bg-[#e8614d]/20 text-[#e8614d]'
+                : 'text-white/60 hover:bg-white/[0.08] hover:text-white'
                 }`}
         >
             {children}
