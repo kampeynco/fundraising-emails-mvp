@@ -619,8 +619,8 @@ export default function BrandKitPage() {
                                         </button>
                                     )}
                                 </div>
-                                <p className="mt-2 text-sm font-medium text-white">Primary</p>
-                                <p className="text-xs text-white/40">Your main logo, usually full-width</p>
+                                <p className="mt-2 text-sm font-medium text-white">Logo</p>
+                                <p className="text-xs text-white/40">Your logo, usually full-width</p>
                             </div>
 
                             {/* Signature */}
