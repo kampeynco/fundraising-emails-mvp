@@ -738,7 +738,7 @@ export default function BrandKitPage() {
                                 />
                                 <div>
                                     <p className="text-sm font-medium text-white">Footer</p>
-                                    <p className="text-xs text-white/40">Bottom section with legal, disclaimers, and address</p>
+                                    <p className="text-xs text-white/40">Bottom section with legal and disclaimers</p>
                                 </div>
                             </label>
                             {data.show_footer && (
@@ -830,7 +830,7 @@ export default function BrandKitPage() {
                         )}
 
                         {/* Footer preview — shown when enabled and has content */}
-                        {data.show_footer && (data.disclaimers || data.copyright || data.address || data.footer) && (
+                        {data.show_footer && (data.disclaimers || data.copyright || data.footer) && (
                             <div className="border-t border-white/10 px-6 py-5 text-center" style={{ backgroundColor: data.colors.footer }}>
                                 {data.disclaimers && (
                                     <p className="mb-2 text-[11px] leading-relaxed text-white/60">{data.disclaimers}</p>
@@ -842,9 +842,6 @@ export default function BrandKitPage() {
                                     <p className="mb-1 text-[11px] text-white/60">
                                         Mail checks to:<br />{data.copyright}
                                     </p>
-                                )}
-                                {data.address && (
-                                    <p className="text-[11px] text-white/60">{data.address}</p>
                                 )}
                             </div>
                         )}
