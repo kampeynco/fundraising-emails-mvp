@@ -1,0 +1,153 @@
+{
+  "configPath": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger.config.mjs",
+  "customConditions": [
+  ],
+  "queues": [
+  ],
+  "runtime": "node",
+  "runtimeVersion": "20.20.0",
+  "tasks": [
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/send-to-action-network.mjs",
+      "filePath": "trigger/send-to-action-network.ts",
+      "id": "send-to-action-network",
+      "machine": {
+        "preset": "small-1x"
+      },
+      "maxDuration": 300,
+      "retry": {
+        "factor": 1.8,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 30000,
+        "minTimeoutInMs": 3000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/send-to-mailchimp.mjs",
+      "filePath": "trigger/send-to-mailchimp.ts",
+      "id": "send-to-mailchimp",
+      "machine": {
+        "preset": "small-1x"
+      },
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 30000,
+        "minTimeoutInMs": 3000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/thursday-drop.mjs",
+      "filePath": "trigger/thursday-drop.ts",
+      "id": "thursday-drop",
+      "maxDuration": 300,
+      "retry": {
+        "factor": 2,
+        "maxAttempts": 2,
+        "maxTimeoutInMs": 60000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      },
+      "schedule": {
+        "cron": "0 12 * * 4",
+        "timezone": "America/Chicago"
+      },
+      "triggerSource": "schedule"
+    },
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/discover-research.mjs",
+      "filePath": "trigger/discover-research.ts",
+      "id": "discover-research",
+      "machine": {
+        "preset": "small-2x"
+      },
+      "maxDuration": 300,
+      "retry": {
+        "factor": 1.5,
+        "maxAttempts": 2,
+        "maxTimeoutInMs": 30000,
+        "minTimeoutInMs": 5000,
+        "randomize": true
+      },
+      "triggerSource": "schedule"
+    },
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/generate-rapid-draft.mjs",
+      "filePath": "trigger/generate-rapid-draft.ts",
+      "id": "generate-rapid-draft",
+      "machine": {
+        "preset": "small-2x"
+      },
+      "maxDuration": 300,
+      "retry": {
+        "factor": 1.5,
+        "maxAttempts": 2,
+        "maxTimeoutInMs": 15000,
+        "minTimeoutInMs": 1000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/generate-user-drafts.mjs",
+      "filePath": "trigger/generate-user-drafts.ts",
+      "id": "generate-user-drafts",
+      "machine": {
+        "preset": "small-2x"
+      },
+      "maxDuration": 300,
+      "retry": {
+        "factor": 1.8,
+        "maxAttempts": 3,
+        "maxTimeoutInMs": 30000,
+        "minTimeoutInMs": 2000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/research-topics.mjs",
+      "filePath": "trigger/research-topics.ts",
+      "id": "research-topics",
+      "machine": {
+        "preset": "small-1x"
+      },
+      "maxDuration": 300,
+      "retry": {
+        "factor": 1.5,
+        "maxAttempts": 2,
+        "maxTimeoutInMs": 15000,
+        "minTimeoutInMs": 2000,
+        "randomize": true
+      }
+    },
+    {
+      "entryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/Projects/fundraising-emails/trigger/schedule-email-deliveries.mjs",
+      "filePath": "trigger/schedule-email-deliveries.ts",
+      "id": "schedule-email-deliveries",
+      "machine": {
+        "preset": "small-1x"
+      },
+      "maxDuration": 300,
+      "retry": {
+        "factor": 1.5,
+        "maxAttempts": 2,
+        "maxTimeoutInMs": 15000,
+        "minTimeoutInMs": 2000,
+        "randomize": true
+      }
+    }
+  ],
+  "timings": {
+    "trigger/discover-research.ts": 1.2514170000000604,
+    "trigger/generate-rapid-draft.ts": 8.24366699999996,
+    "trigger/generate-user-drafts.ts": 1.6910840000000462,
+    "trigger/research-topics.ts": 1.1492090000000417,
+    "trigger/schedule-email-deliveries.ts": 0.9713749999999663,
+    "trigger/send-to-action-network.ts": 17.839124999999967,
+    "trigger/send-to-mailchimp.ts": 4.024833000000058,
+    "trigger/thursday-drop.ts": 1.3092920000000277
+  },
+  "workerEntryPoint": "/Users/admin/Projects/fundraising-emails/.trigger/tmp/build-C9b7Pg/.npm/_npx/f51a09bd0abf5f10/node_modules/trigger.dev/dist/esm/entryPoints/dev-run-worker.mjs"
+}

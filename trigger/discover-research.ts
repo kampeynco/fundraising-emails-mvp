@@ -250,13 +250,9 @@ function buildDiscoveryQuery(kit: BrandKitRow): string | null {
     // Deduplicate
     const unique = [...new Set(queries)];
 
-    // Combine into a structured prompt
-    return [
-        `Find the latest news and developments about the following topics (search each one):`,
-        ...unique.map((q, i) => `${i + 1}. ${q}`),
-        ``,
-        `Focus on the past 48 hours. Prioritize stories with fundraising angles, donor-relevant developments, and breaking political news.`,
-    ].join("\n");
+    // Combine into a natural language prompt (Sonar handles this better than numbered lists)
+    const topicList = unique.join(", ");
+    return `Search for recent news about: ${topicList}. Find political news, campaign updates, fundraising developments, election coverage, and policy stories relevant to these topics. Return diverse results from different angles.`;
 }
 
 /**
@@ -310,16 +306,16 @@ async function sonarSearch(query: string): Promise<ScoredTopic[]> {
                     {
                         role: "system",
                         content:
-                            "You are a political research assistant. Return ONLY a JSON array of objects with keys: title, summary, source_url. Each item should be a distinct news story or policy development. Return 5-10 items, sorted by relevance. No markdown, no explanation, just the JSON array.",
+                            "You are a political research assistant. Search the web for current news. Return ONLY a valid JSON array of objects, each with keys: title, summary, source_url. Include 5-10 distinct news stories. If exact matches are scarce, broaden to related political news in the same region or policy area. No markdown formatting, no explanation text, just the raw JSON array.",
                     },
                     {
                         role: "user",
                         content: query,
                     },
                 ],
-                temperature: 0.1,
-                max_tokens: 2000,
-                search_recency_filter: "week",
+                temperature: 0.2,
+                max_tokens: 2500,
+                search_recency_filter: "day",
             }),
         });
 
