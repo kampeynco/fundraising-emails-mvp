@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Tick01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { supabase } from '@/lib/supabase'
+import { useAuth } from '@/hooks/useAuth'
 
 type SettingsContext = { activeSettingsSection: string }
 
@@ -230,33 +232,122 @@ function BillingSection() {
 }
 
 // ── Integrations Section ────────────────────────────────────
+interface Integration {
+    name: string
+    provider: string
+    desc: string
+    icon: string
+    hasOAuth: boolean
+}
+
+const INTEGRATIONS: Integration[] = [
+    {
+        name: 'Mailchimp',
+        provider: 'mailchimp',
+        desc: 'Send approved emails directly to your Mailchimp audience',
+        icon: '📬',
+        hasOAuth: true,
+    },
+    {
+        name: 'Gmail',
+        provider: 'gmail',
+        desc: 'Send emails from your campaign Gmail account',
+        icon: '📧',
+        hasOAuth: false,
+    },
+    {
+        name: 'Stripe',
+        provider: 'stripe',
+        desc: 'Track donation conversions from email campaigns',
+        icon: '💳',
+        hasOAuth: false,
+    },
+    {
+        name: 'ActBlue',
+        provider: 'actblue',
+        desc: 'Embed ActBlue donation links in fundraising emails',
+        icon: '🗳️',
+        hasOAuth: false,
+    },
+]
+
 function IntegrationsSection() {
-    const integrations = [
-        {
-            name: 'Mailchimp',
-            desc: 'Send approved emails directly to your Mailchimp audience',
-            status: 'not_connected' as const,
-            icon: '📬',
-        },
-        {
-            name: 'Gmail',
-            desc: 'Send emails from your campaign Gmail account',
-            status: 'not_connected' as const,
-            icon: '📧',
-        },
-        {
-            name: 'Stripe',
-            desc: 'Track donation conversions from email campaigns',
-            status: 'not_connected' as const,
-            icon: '💳',
-        },
-        {
-            name: 'ActBlue',
-            desc: 'Embed ActBlue donation links in fundraising emails',
-            status: 'not_connected' as const,
-            icon: '🗳️',
-        },
-    ]
+    const { user } = useAuth()
+    const [connectedProviders, setConnectedProviders] = useState<Record<string, { account_name?: string; list_name?: string }>>({})
+    const [connecting, setConnecting] = useState<string | null>(null)
+
+    // Fetch connected integrations on mount
+    const fetchIntegrations = useCallback(async () => {
+        if (!user) return
+        const { data } = await supabase
+            .from('email_integrations')
+            .select('provider, metadata')
+            .eq('user_id', user.id)
+
+        if (data) {
+            const map: Record<string, { account_name?: string; list_name?: string }> = {}
+            for (const row of data) {
+                const meta = (row.metadata || {}) as Record<string, string>
+                map[row.provider] = {
+                    account_name: meta.account_name,
+                    list_name: meta.list_name,
+                }
+            }
+            setConnectedProviders(map)
+        }
+    }, [user])
+
+    useEffect(() => {
+        fetchIntegrations()
+    }, [fetchIntegrations])
+
+    const handleConnect = async (integration: Integration) => {
+        if (!integration.hasOAuth) return
+        setConnecting(integration.provider)
+
+        try {
+            const { data: { session } } = await supabase.auth.getSession()
+            if (!session) return
+
+            const response = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mailchimp-oauth-url`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${session.access_token}`,
+                        'Content-Type': 'application/json',
+                    },
+                }
+            )
+
+            const { url, error } = await response.json()
+            if (error) {
+                console.error('OAuth URL error:', error)
+                return
+            }
+
+            // Redirect to Mailchimp authorization page
+            window.location.href = url
+        } catch (err) {
+            console.error('Connect failed:', err)
+        } finally {
+            setConnecting(null)
+        }
+    }
+
+    const handleDisconnect = async (provider: string) => {
+        if (!user) return
+        await supabase
+            .from('email_integrations')
+            .delete()
+            .eq('user_id', user.id)
+            .eq('provider', provider)
+
+        setConnectedProviders(prev => {
+            const next = { ...prev }
+            delete next[provider]
+            return next
+        })
+    }
 
     return (
         <div className="space-y-8">
@@ -268,29 +359,66 @@ function IntegrationsSection() {
             </div>
 
             <div className="space-y-3">
-                {integrations.map(integration => (
-                    <div
-                        key={integration.name}
-                        className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 transition-colors hover:bg-white/[0.04]"
-                    >
-                        <div className="flex items-center gap-4">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 text-xl">
-                                {integration.icon}
-                            </span>
-                            <div>
-                                <p className="text-sm font-semibold text-white">{integration.name}</p>
-                                <p className="mt-0.5 text-xs text-white/40">{integration.desc}</p>
-                            </div>
-                        </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            className="cursor-pointer border-white/10 text-xs text-white/50 hover:border-[#e8614d]/50 hover:text-[#e8614d]"
+                {INTEGRATIONS.map(integration => {
+                    const connected = connectedProviders[integration.provider]
+                    const isConnecting = connecting === integration.provider
+
+                    return (
+                        <div
+                            key={integration.name}
+                            className={`flex items-center justify-between rounded-xl border p-5 transition-colors ${connected
+                                    ? 'border-emerald-500/20 bg-emerald-500/5'
+                                    : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
+                                }`}
                         >
-                            Connect
-                        </Button>
-                    </div>
-                ))}
+                            <div className="flex items-center gap-4">
+                                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 text-xl">
+                                    {integration.icon}
+                                </span>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-sm font-semibold text-white">{integration.name}</p>
+                                        {connected && (
+                                            <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                                Connected
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="mt-0.5 text-xs text-white/40">
+                                        {connected?.account_name
+                                            ? `${connected.account_name}${connected.list_name ? ` · ${connected.list_name}` : ''}`
+                                            : integration.desc}
+                                    </p>
+                                </div>
+                            </div>
+
+                            {connected ? (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleDisconnect(integration.provider)}
+                                    className="cursor-pointer border-red-500/20 text-xs text-red-400/60 hover:border-red-500/40 hover:text-red-400"
+                                >
+                                    Disconnect
+                                </Button>
+                            ) : (
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={!integration.hasOAuth || isConnecting}
+                                    onClick={() => handleConnect(integration)}
+                                    className={`cursor-pointer border-white/10 text-xs text-white/50 ${integration.hasOAuth
+                                            ? 'hover:border-[#e8614d]/50 hover:text-[#e8614d]'
+                                            : 'cursor-not-allowed opacity-40'
+                                        }`}
+                                >
+                                    {isConnecting ? 'Connecting…' : integration.hasOAuth ? 'Connect' : 'Coming Soon'}
+                                </Button>
+                            )}
+                        </div>
+                    )
+                })}
             </div>
         </div>
     )
