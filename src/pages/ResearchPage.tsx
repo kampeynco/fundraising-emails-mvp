@@ -133,12 +133,18 @@ export default function ResearchPage() {
 
         switch (activeResearchSection) {
             case 'in-queue':
+                // Topics marked for draft generation but not yet used
                 return searchFiltered.filter(t => t.used_in_draft)
             case 'saved':
-                return searchFiltered.filter(t => !t.used_in_draft)
+                // User-searched topics that haven't been used
+                return searchFiltered.filter(t => t.suggested_by === 'user' && !t.used_in_draft)
             case 'discover':
-                return searchFiltered.filter(t => !t.used_in_draft)
+                // AI-discovered topics, sorted by score (highest first)
+                return searchFiltered
+                    .filter(t => t.suggested_by === 'ai' && !t.used_in_draft)
+                    .sort((a, b) => b.relevance_score - a.relevance_score)
             case 'used':
+                // Topics that have been incorporated into drafts
                 return searchFiltered.filter(t => t.used_in_draft)
             case 'history':
                 return [] // History tab shows search history, not topics
@@ -347,8 +353,8 @@ export default function ResearchPage() {
                                 <HugeiconsIcon icon={Search01Icon} className="mx-auto mb-2 h-6 w-6 text-white/15" />
                                 <p className="text-sm text-white/25">
                                     {activeResearchSection === 'in-queue' && 'No topics in queue yet. Mark a saved topic to add it here.'}
-                                    {activeResearchSection === 'saved' && 'Search for topics above to save them here.'}
-                                    {activeResearchSection === 'discover' && 'Search above to discover trending topics.'}
+                                    {activeResearchSection === 'saved' && 'Search for topics to save them here.'}
+                                    {activeResearchSection === 'discover' && 'AI-curated topics refresh every 4 hours based on your brand kit and stances.'}
                                     {activeResearchSection === 'used' && 'Topics used in drafts will appear here.'}
                                 </p>
                             </div>
