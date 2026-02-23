@@ -1,7 +1,5 @@
 import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     ArrowDown01Icon,
