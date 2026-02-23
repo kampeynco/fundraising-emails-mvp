@@ -32,6 +32,11 @@ export default defineConfig({
             "@": path.resolve(__dirname, "./src"),
         },
     },
+    server: {
+        watch: {
+            ignored: ['**/my-video/**', '**/trigger/**', '**/.agent/**'],
+        },
+    },
     build: {
         rollupOptions: {
             input: {
