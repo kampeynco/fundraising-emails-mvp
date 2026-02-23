@@ -7,6 +7,9 @@ Build a Postcards-style 4-panel drag-and-drop email editor that opens when a dra
 > [!IMPORTANT]
 > The editor replaces the normal `DashboardLayout` sidebar with its own module panel layout. It needs a dedicated layout component.
 
+> [!WARNING]
+> **Role-based right sidebar**: Regular users see a **comments/annotations** panel. Superadmin/manager can **toggle** between the properties panel and their own separate comments view via a comment icon. User and admin comments are separate views.
+
 ---
 
 ## Architecture
@@ -18,7 +21,9 @@ graph LR
     C --> D[ModuleSidebar - categories]
     C --> E[ModulePanel - variations]
     C --> F[EditorCanvas - drag & drop]
-    C --> G[PropertiesPanel - right sidebar]
+    C --> G{Role?}
+    G -->|user| H[CommentsPanel - highlights + pins]
+    G -->|superadmin| I[PropertiesPanel + comment toggle]
 ```
 
 ### 4-Panel Layout
@@ -28,7 +33,19 @@ graph LR
 | **Module Sidebar** | 64px icon rail | Category icons: Menu, Header, Content, Donation Ask, CTA, P.S., Footer |
 | **Module Panel** | 280px, slides in/out | Shows numbered template variations for the selected category |
 | **Editor Canvas** | Flex remaining | Drop zone + rendered email preview |
-| **Properties Panel** | 300px | Padding, width, font, background, links, image upload, mobile/desktop toggle |
+| **Right Sidebar** | 300px | **Role-dependent** — see below |
+
+#### Right Sidebar by Role
+
+| Role | Default View | Toggle |
+|------|-------------|--------|
+| `user` | Comments/Annotations panel | N/A (comments only) |
+| `manager` / `superadmin` | Properties panel (padding, font, etc.) | Comment icon toggles to admin comments view |
+
+- The comment icon toggle is **only visible** to `manager` and `superadmin` roles
+- User comments and admin comments are **separate threads** (users cannot see admin-side comments and vice versa)
+- Annotations include both **text highlights** (like Google Docs) and **pin-based annotations** (numbered pins on the canvas)
+- Comments support **threading** (replies) and **resolve** actions
 
 ---
 
@@ -54,6 +71,17 @@ Each variation auto-applies brand kit: colors, logo URL, org name, font preferen
 - `email_drafts.body_html` — stores the final composed HTML
 - `brand_kits` — provides colors, logo, tone, disclaimers
 
+### New Column: `auth.users` role
+
+```sql
+ALTER TABLE auth.users ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'user';
+-- Possible values: 'user', 'manager', 'superadmin'
+-- Manually assigned by app creator
+```
+
+> [!NOTE]
+> If Supabase doesn't allow modifying `auth.users` directly, we'll use `user_metadata` or a `profiles` table with a `role` column instead.
+
 ### New Table: `draft_versions`
 
 ```sql
@@ -66,7 +94,44 @@ CREATE TABLE public.draft_versions (
 );
 ```
 
-Purpose: version history for rollback. Created on each save.
+### New Table: `draft_comments`
+
+```sql
+CREATE TABLE public.draft_comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  draft_id UUID NOT NULL REFERENCES public.email_drafts(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  parent_id UUID REFERENCES public.draft_comments(id) ON DELETE CASCADE,  -- threading
+  comment_text TEXT NOT NULL,
+  highlight_selector TEXT,          -- CSS selector or text range for highlight
+  highlight_text TEXT,              -- the highlighted text snippet
+  resolved BOOLEAN DEFAULT false,
+  resolved_by UUID REFERENCES auth.users(id),
+  resolved_at TIMESTAMPTZ,
+  view_scope TEXT NOT NULL DEFAULT 'user',  -- 'user' or 'admin'
+  created_at TIMESTAMPTZ DEFAULT now(),
+  updated_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### New Table: `draft_annotations`
+
+```sql
+CREATE TABLE public.draft_annotations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  draft_id UUID NOT NULL REFERENCES public.email_drafts(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  pin_number INT NOT NULL,           -- numbered pin (1, 2, 3...)
+  position_x FLOAT NOT NULL,         -- % from left
+  position_y FLOAT NOT NULL,         -- % from top
+  comment_text TEXT NOT NULL,
+  resolved BOOLEAN DEFAULT false,
+  view_scope TEXT NOT NULL DEFAULT 'user',  -- 'user' or 'admin'
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+Purpose: `view_scope` separates user and admin comment threads. Users only query `view_scope = 'user'`, admins see `view_scope = 'admin'`.
 
 ---
 
@@ -106,8 +171,21 @@ Purpose: version history for rollback. Created on each save.
 
 ##### [NEW] `src/components/editor/PropertiesPanel.tsx`
 - Right sidebar showing properties for the selected block
+- **Only rendered for `manager` / `superadmin` roles** (or when toggled to properties view)
 - Phase 1: padding (4-sided), background color, width
 - Mobile/Desktop preview toggle
+
+##### [NEW] `src/components/editor/CommentsPanel.tsx`
+- Right sidebar for comments and annotations
+- **Rendered for `user` role by default**, accessible to admins via toggle
+- Shows list of comments with highlighted text or pin reference
+- Add comment form at bottom
+- Thread expansion (click to reply)
+- Resolve button per comment
+
+##### [NEW] `src/hooks/useUserRole.ts`
+- Hook that reads the user's role from `user_metadata` or profiles table
+- Returns `{ role, isAdmin, isManager }` for gating UI
 
 ##### [MODIFY] `src/App.tsx`
 - Add route: `/dashboard/drafts/:id/edit` → `DraftEditorPage`
@@ -185,7 +263,48 @@ interface ModuleTemplate {
 
 ---
 
-### Phase 4: Persistence
+### Phase 3.5: Comments & Annotations
+> Role-based right sidebar, text highlights, pin annotations, threaded comments
+
+#### Files
+
+##### [NEW] Supabase migrations
+- `draft_comments` table (as defined in Data Model)
+- `draft_annotations` table (as defined in Data Model)
+- Add `role` to user profiles/metadata
+- RLS policies: users see own `view_scope='user'` comments, admins see `view_scope='admin'`
+
+##### [MODIFY] `src/components/editor/CommentsPanel.tsx`
+- Full implementation with real Supabase queries
+- List comments filtered by `view_scope` matching the current user's role
+- Threaded replies (click reply → nested reply form)
+- Resolve action (marks `resolved = true`, records `resolved_by`)
+- Linked highlight comments: clicking a comment scrolls to / highlights the referenced text
+- Linked pin comments: clicking a comment highlights the pin on canvas
+
+##### [NEW] `src/components/editor/HighlightLayer.tsx`
+- Overlay on `EditorCanvas` that renders yellow highlight ranges
+- When user selects text, show "Add Comment" tooltip
+- Clicking creates a new `draft_comments` row with `highlight_selector` + `highlight_text`
+
+##### [NEW] `src/components/editor/PinLayer.tsx`
+- Overlay on `EditorCanvas` for numbered pin annotations
+- Click anywhere on canvas → drops a numbered pin
+- Opens inline comment form attached to the pin
+- Pins stored in `draft_annotations` with `position_x`, `position_y`
+
+##### [MODIFY] `src/components/editor/EditorLayout.tsx`
+- Add comment icon toggle button (only visible to `manager`/`superadmin`)
+- Toggle switches right sidebar between `PropertiesPanel` and `CommentsPanel`
+- For `user` role, right sidebar is always `CommentsPanel`
+
+##### [MODIFY] `src/components/editor/EditorCanvas.tsx`
+- Integrate `HighlightLayer` and `PinLayer` overlays
+- Render highlights and pins from Supabase data
+
+---
+
+### Phase 5: Persistence
 > Save, auto-save, version history
 
 #### Files
@@ -208,7 +327,7 @@ interface ModuleTemplate {
 
 ---
 
-### Phase 5: Polish
+### Phase 6: Polish
 > Animations, slide-in panel, hover effects, keyboard shortcuts
 
 #### Enhancements
@@ -220,6 +339,7 @@ interface ModuleTemplate {
 - **Keyboard shortcuts**: `Cmd+S` save, `Cmd+Z` undo, `Cmd+Shift+Z` redo, `Delete` remove block
 - **Smooth transitions**: block reorder animations via `@dnd-kit` transitions
 - **Loading skeleton**: shimmer skeleton while draft + brand kit load
+- **Comment animations**: smooth slide-in for new comments, resolve checkmark animation
 
 ---
 
@@ -232,11 +352,12 @@ interface ModuleTemplate {
 ### Manual (per phase)
 | Phase | Verification |
 |-------|-------------|
-| P1 | Click draft → editor loads with body_html in canvas. Drag module from panel → drops into canvas. Properties panel shows for selected block. |
+| P1 | Click draft → editor loads with body_html in canvas. Drag module from panel → drops into canvas. Right sidebar shows properties (admin) or comments (user). |
 | P2 | All 7 categories show variations. Modules render with user's brand colors/logo. |
 | P3 | Edit text inline. Upload image. Edit button URL. Mobile preview works. |
-| P4 | Save persists to Supabase. Auto-save triggers. Version history lists & restores. |
-| P5 | Panel slide animation. Hover effects. Keyboard shortcuts. Undo/redo. |
+| P3.5 | Highlight text → add comment. Drop pin → add annotation. Thread replies. Resolve comments. User/admin views are separated. |
+| P5 | Save persists to Supabase. Auto-save triggers. Version history lists & restores. |
+| P6 | Panel slide animation. Hover effects. Keyboard shortcuts. Undo/redo. |
 
 ---
 
