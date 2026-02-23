@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
+import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     ArrowDown01Icon,
@@ -127,7 +129,25 @@ function formatWeek(weekOf: string) {
 }
 
 export default function DraftsPage() {
+    const { user } = useAuth()
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
+    const [dropDay, setDropDay] = useState('Thursday')
+
+    useEffect(() => {
+        if (!user) return
+        const fetchDay = async () => {
+            const { data } = await supabase
+                .from('profiles')
+                .select('delivery_days')
+                .eq('id', user.id)
+                .maybeSingle()
+            if (data?.delivery_days?.length) {
+                const day = data.delivery_days[0]
+                setDropDay(day.charAt(0).toUpperCase() + day.slice(1))
+            }
+        }
+        fetchDay()
+    }, [user])
 
     const toggleSection = (status: DraftStatus) => {
         setCollapsedSections(prev => {
@@ -295,16 +315,16 @@ export default function DraftsPage() {
                 })}
             </div>
 
-            {/* ── Thursday Drop Info ── */}
+            {/* ── Drop Day Info ── */}
             <div className="mx-8 mb-8 rounded-xl border border-white/[0.06] bg-gradient-to-r from-[#e8614d]/5 to-transparent p-5">
                 <div className="flex items-center gap-3">
                     <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e8614d]/10">
                         <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 text-[#e8614d]" />
                     </div>
                     <div>
-                        <p className="text-sm font-medium text-white/80">The Thursday Drop</p>
+                        <p className="text-sm font-medium text-white/80">The {dropDay} Drop</p>
                         <p className="text-xs text-white/30">
-                            New drafts are generated every Thursday at 6:00 AM CT based on your subscription tier.
+                            New drafts are generated every {dropDay} at 6:00 AM CT based on your subscription tier.
                         </p>
                     </div>
                 </div>
