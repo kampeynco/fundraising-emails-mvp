@@ -465,7 +465,7 @@ function IntegrationsSection() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleDisconnect(integration.provider)}
-                                    className="cursor-pointer border-red-500/20 text-xs text-red-400/60 hover:border-red-500/40 hover:text-red-400"
+                                    className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-xs text-[#e8614d] hover:bg-[#e8614d] hover:text-white"
                                 >
                                     Disconnect
                                 </Button>
