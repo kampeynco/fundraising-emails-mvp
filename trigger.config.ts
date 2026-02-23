@@ -5,6 +5,7 @@ export default defineConfig({
     dirs: ["./trigger"],
     runtime: "node",
     logLevel: "info",
+    maxDuration: 300, // 5 minutes max per task run
     retries: {
         enabledInDev: false,
         default: {
