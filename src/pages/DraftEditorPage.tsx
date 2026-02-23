@@ -8,6 +8,7 @@ import { EditorLayout } from '@/components/editor/EditorLayout'
 import type { EditorBlock } from '@/components/editor/types'
 import { DEFAULT_BLOCK_PROPS } from '@/components/editor/types'
 import { getModuleById } from '@/components/editor/modules/registry'
+import { useDraftPersistence } from '@/hooks/useDraftPersistence'
 
 export default function DraftEditorPage() {
     const { id } = useParams<{ id: string }>()
@@ -44,8 +45,10 @@ export default function DraftEditorPage() {
 
             setDraftSubject(draft.subject_line || 'Untitled Draft')
 
-            // Load existing body_html as a single raw block
-            if (draft.body_html) {
+            // Load structured blocks if available, otherwise fallback to raw HTML
+            if (draft.editor_blocks && Array.isArray(draft.editor_blocks) && draft.editor_blocks.length > 0) {
+                setBlocks(draft.editor_blocks as EditorBlock[])
+            } else if (draft.body_html) {
                 setBlocks([{
                     id: 'raw-' + crypto.randomUUID(),
                     type: 'raw-html',
@@ -126,7 +129,13 @@ export default function DraftEditorPage() {
                 return arrayMove(prev, oldIndex, newIndex)
             })
         }
-    }, [blocks])
+    }, [blocks, brandKit])
+
+    // Persistence (save, auto-save, versions)
+    const { save, saving, lastSaved, hasUnsavedChanges, versions, restoreVersion } = useDraftPersistence({
+        draftId: id!,
+        blocks,
+    })
 
     if (loading) {
         return (
@@ -153,6 +162,12 @@ export default function DraftEditorPage() {
                 selectedBlockId={selectedBlockId}
                 onSelectBlock={setSelectedBlockId}
                 brandKit={brandKit}
+                onSave={() => save('Manual save')}
+                saving={saving}
+                lastSaved={lastSaved}
+                hasUnsavedChanges={hasUnsavedChanges}
+                versions={versions}
+                onRestoreVersion={restoreVersion}
             />
             <DragOverlay>
                 {null /* Phase 2: render drag preview */}
