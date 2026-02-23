@@ -239,11 +239,11 @@ const INTEGRATIONS: Integration[] = [
     { name: 'Action Network', provider: 'action_network', desc: 'Send approved emails directly to your Action Network list', logo: 'https://cdn.brandfetch.io/actionnetwork.org/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
     { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', logo: 'https://cdn.brandfetch.io/hubspot.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'oauth' },
     { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', logo: 'https://cdn.brandfetch.io/activecampaign.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
+    { name: 'Campaigner', provider: 'campaigner', desc: 'Create and send campaigns via Campaigner email marketing', logo: 'https://cdn.brandfetch.io/campaigner.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
     { name: 'Constant Contact', provider: 'constant_contact', desc: 'Send through Constant Contact campaigns', logo: 'https://cdn.brandfetch.io/constantcontact.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'SendGrid', provider: 'sendgrid', desc: 'Deliver emails via SendGrid transactional API', logo: 'https://cdn.brandfetch.io/sendgrid.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
-    { name: 'NationBuilder', provider: 'nationbuilder', desc: 'Sync emails with your NationBuilder nation', logo: 'https://cdn.brandfetch.io/nationbuilder.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'GetResponse', provider: 'getresponse', desc: 'Send emails through GetResponse marketing automation', logo: 'https://cdn.brandfetch.io/getresponse.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'Brevo', provider: 'brevo', desc: 'Send emails through your Brevo (Sendinblue) campaigns', logo: 'https://cdn.brandfetch.io/brevo.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
-    { name: 'Campaigner', provider: 'campaigner', desc: 'Create and send campaigns via Campaigner email marketing', logo: 'https://cdn.brandfetch.io/campaigner.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
     { name: 'Klaviyo', provider: 'klaviyo', desc: 'Deliver emails via Klaviyo marketing automation', logo: 'https://cdn.brandfetch.io/klaviyo.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
 ]
 

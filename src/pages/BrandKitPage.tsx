@@ -464,16 +464,6 @@ export default function BrandKitPage() {
                             />
                         </div>
 
-                        <div>
-                            <label className="mb-2 block text-sm font-medium text-white/50">Official Address</label>
-                            <input
-                                type="text"
-                                value={data.address}
-                                onChange={(e) => updateField('address', e.target.value)}
-                                placeholder="1000 Main Street NW, Suite 100, Washington, DC 20001"
-                                className={inputClasses}
-                            />
-                        </div>
                     </section>
 
                     <hr className="border-white/[0.06]" />
@@ -516,7 +506,7 @@ export default function BrandKitPage() {
                     {/* ── CONTENT: LEGAL ── */}
                     <section id="legal" className="scroll-mt-20">
                         <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                            Content
+                            Compliance
                         </h2>
 
                         <div className="mb-6 mt-6">

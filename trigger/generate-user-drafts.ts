@@ -1,6 +1,7 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
+import { fetchRagContext, formatRagPromptSection, type RagContext } from "./lib/rag-context";
 
 // ── Clients ──
 const supabase = createClient(
@@ -122,7 +123,16 @@ export const generateUserDrafts = task({
             .order("created_at", { ascending: false })
             .limit(4);
 
-        // ── 4. Select templates (avoid repeating recent ones) ──
+        // ── 4. Fetch RAG context (similar emails + HTML formats + research) ──
+        const ragQueryText = `${bk.kit_name} ${bk.brand_summary || ""} ${researchTopics.map(t => t.title).join(" ")}`;
+        const ragContext = await fetchRagContext(userId, ragQueryText);
+        logger.info("RAG context loaded", {
+            similarEmails: ragContext.similarEmails.length,
+            htmlFormats: ragContext.htmlFormats.length,
+            similarResearch: ragContext.similarResearch.length,
+        });
+
+        // ── 5. Select templates (avoid repeating recent ones) ──
         const selectedTemplates = selectTemplates(emailsToGenerate, recentEmails || []);
 
         metadata.set("status", "generating_drafts");
@@ -140,7 +150,7 @@ export const generateUserDrafts = task({
             logger.info(`Generating draft ${i + 1}/${emailsToGenerate}`, { template });
 
             try {
-                const draft = await generateDraft(bk, template, topicsForThisDraft, weekOf);
+                const draft = await generateDraft(bk, template, topicsForThisDraft, weekOf, ragContext);
 
                 // Save to database
                 const { data: savedDraft, error: saveError } = await supabase
@@ -225,7 +235,8 @@ async function generateDraft(
     brandKit: BrandKit,
     template: EmailTemplate,
     topics: ResearchTopic[],
-    weekOf: string
+    weekOf: string,
+    ragContext?: RagContext
 ): Promise<GeneratedDraft> {
     const topicsContext =
         topics.length > 0
@@ -247,7 +258,7 @@ Week of: ${weekOf}
 
 CURRENT NEWS & TOPICS:
 ${topicsContext}
-
+${ragContext ? formatRagPromptSection(ragContext) : ""}
 RULES:
 1. Open with a compelling hook — never "Dear friend" or "I'm writing to..."
 2. ONE clear call-to-action per email

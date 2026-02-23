@@ -1,6 +1,7 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
 import { createClient } from "@supabase/supabase-js";
 import OpenAI from "openai";
+import { fetchRagContext, formatRagPromptSection } from "./lib/rag-context";
 
 const supabase = createClient(
     process.env.SUPABASE_URL!,
@@ -75,6 +76,14 @@ export const generateRapidDraft = task({
             ? sourceUrls.map((url) => `- Source: ${url}`).join("\n")
             : "No specific sources provided. Write based on the topic description.";
 
+        // 3.5. Fetch RAG context
+        const ragQueryText = `${topic} ${brandKit.kit_name} ${brandKit.brand_summary || ""} urgent rapid response`;
+        const ragContext = await fetchRagContext(userId, ragQueryText);
+        logger.info("RAG context loaded for rapid draft", {
+            similarEmails: ragContext.similarEmails.length,
+            htmlFormats: ragContext.htmlFormats.length,
+        });
+
         // 4. Generate the draft
         const systemPrompt = `You are an expert rapid-response fundraising email writer. Write URGENT emails that capitalize on breaking news moments.
 
@@ -89,7 +98,7 @@ URGENCY: ${urgency}
 
 SOURCES:
 ${sourcesContext}
-
+${formatRagPromptSection(ragContext)}
 CRITICAL RULES:
 1. Keep it SHORT: 100-200 words maximum
 2. Lead with the news hook — NO preamble
