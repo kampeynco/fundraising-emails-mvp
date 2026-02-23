@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -219,6 +220,7 @@ export default function DraftsPage() {
                                     {drafts.map((draft, idx) => (
                                         <div
                                             key={draft.id}
+                                            onClick={() => navigate(`/dashboard/drafts/${draft.id}/edit`)}
                                             className={`group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.03] cursor-pointer ${idx < drafts.length - 1 ? 'border-b border-white/[0.04]' : ''
                                                 }`}
                                         >
