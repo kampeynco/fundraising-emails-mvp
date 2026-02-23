@@ -129,6 +129,9 @@ function SortableBlock({
                         paddingLeft: block.props.paddingLeft,
                         backgroundColor: block.props.backgroundColor || undefined,
                         maxWidth: block.props.width || 600,
+                        fontFamily: block.props.fontFamily || undefined,
+                        fontSize: block.props.fontSize ? `${block.props.fontSize}px` : undefined,
+                        color: block.props.fontColor || undefined,
                     }}
                 />
 
