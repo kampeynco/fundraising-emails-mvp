@@ -10,16 +10,42 @@ type SettingsContext = { activeSettingsSection: string }
 
 // ── General Section ─────────────────────────────────────────
 function GeneralSection() {
+    const { user } = useAuth()
     const [timezone, setTimezone] = useState('America/Chicago')
     const [deliveryDays, setDeliveryDays] = useState<string[]>(['thursday'])
+    const [maxDays, setMaxDays] = useState<number>(1)
+
+    // Fetch user's subscription to get emails_per_week limit
+    useEffect(() => {
+        if (!user) return
+        const fetchPlanLimit = async () => {
+            const { data } = await supabase
+                .from('subscriptions')
+                .select('emails_per_week')
+                .eq('user_id', user.id)
+                .eq('status', 'active')
+                .maybeSingle()
+
+            if (data?.emails_per_week) {
+                setMaxDays(data.emails_per_week)
+            }
+        }
+        fetchPlanLimit()
+    }, [user])
 
     const toggleDay = (day: string) => {
-        setDeliveryDays(prev =>
-            prev.includes(day)
-                ? prev.filter(d => d !== day)
-                : [...prev, day]
-        )
+        setDeliveryDays(prev => {
+            if (prev.includes(day)) {
+                // Always allow deselecting
+                return prev.filter(d => d !== day)
+            }
+            // Only allow selecting if under the limit
+            if (prev.length >= maxDays) return prev
+            return [...prev, day]
+        })
     }
+
+    const atLimit = deliveryDays.length >= maxDays
 
     return (
         <div className="space-y-8">
@@ -43,20 +69,27 @@ function GeneralSection() {
                 </select>
             </div>
 
-            {/* Delivery Days (multi-select) */}
+            {/* Delivery Days (multi-select, limited by plan) */}
             <div className="space-y-2">
                 <label className="block text-sm font-medium text-white/70">Email Delivery Days</label>
-                <p className="text-xs text-white/30">Select which days approved emails should be sent. Drafts generate every Thursday.</p>
+                <p className="text-xs text-white/30">
+                    Your plan allows <span className="font-medium text-white/50">{maxDays} delivery {maxDays === 1 ? 'day' : 'days'}</span> per week.
+                    {' '}Drafts generate every Thursday.
+                </p>
                 <div className="flex flex-wrap gap-2 pt-1">
                     {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => {
                         const isSelected = deliveryDays.includes(day)
+                        const isDisabled = !isSelected && atLimit
                         return (
                             <button
                                 key={day}
                                 onClick={() => toggleDay(day)}
+                                disabled={isDisabled}
                                 className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium capitalize transition-all ${isSelected
                                     ? 'border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d]'
-                                    : 'border-white/[0.08] text-white/40 hover:border-white/15 hover:text-white/60'
+                                    : isDisabled
+                                        ? 'cursor-not-allowed border-white/[0.04] text-white/15'
+                                        : 'border-white/[0.08] text-white/40 hover:border-white/15 hover:text-white/60'
                                     }`}
                             >
                                 {day}
