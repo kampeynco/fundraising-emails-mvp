@@ -81,9 +81,9 @@ function SortableBlock({
 
     const handleBlur = useCallback(() => {
         if (contentRef.current) {
-            // Strip any injected <style> tags before saving
+            // Strip only the injected scoped <style> tag (contains data-block-id), preserve module styles like @media
             let newHtml = contentRef.current.innerHTML
-            newHtml = newHtml.replace(/<style>[\s\S]*?<\/style>/gi, '').trim()
+            newHtml = newHtml.replace(/<style>\s*\[data-block-id[\s\S]*?<\/style>/gi, '').trim()
             if (newHtml !== block.html) {
                 onHtmlChange(newHtml)
             }
@@ -186,7 +186,7 @@ function SortableBlock({
                     data-block-id={block.id}
                     dangerouslySetInnerHTML={{
                         __html: `<style>
-                            [data-block-id="${block.id}"] * {
+                            [data-block-id="${block.id}"] *:not(a) {
                                 font-family: ${block.props.fontFamily || 'Arial, Helvetica, sans-serif'} !important;
                                 font-size: ${block.props.fontSize ? `${block.props.fontSize}px` : '16px'} !important;
                                 color: ${block.props.fontColor || '#333333'} !important;
@@ -343,6 +343,17 @@ export function EditorCanvas({
                             items={blocks.map(b => b.id)}
                             strategy={verticalListSortingStrategy}
                         >
+                            {/* When in mobile preview, force mobile CSS rules since @media won't trigger */}
+                            {previewMode === 'mobile' && (
+                                <style dangerouslySetInnerHTML={{
+                                    __html: `
+                                    .don-btn-cell {
+                                        display: block !important;
+                                        width: 100% !important;
+                                        padding: 4px 0 !important;
+                                    }
+                                `}} />
+                            )}
                             <div>
                                 {blocks.map((block) => (
                                     <SortableBlock
