@@ -578,12 +578,12 @@ export default function BrandKitPage() {
 
                     <hr className="border-white/[0.06]" />
 
-                    {/* ── VISUALS: LOGOS ── */}
+                    {/* ── VISUALS: IMAGES ── */}
                     <section id="logos" className="scroll-mt-20">
                         <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                            Logos
+                            Images
                         </h2>
-                        <p className="mb-6 text-sm text-white/40">Add the logos that represent your brand.</p>
+                        <p className="mb-6 text-sm text-white/40">Add the images that represent your brand.</p>
 
                         {/* Hidden file inputs */}
                         <input ref={primaryLogoRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleLogoUpload(e, 'primary')} />
@@ -623,7 +623,7 @@ export default function BrandKitPage() {
                                 <p className="text-xs text-white/40">Your main logo, usually full-width</p>
                             </div>
 
-                            {/* Icon Logo */}
+                            {/* Signature */}
                             <div>
                                 <div className="relative">
                                     <div
@@ -631,13 +631,13 @@ export default function BrandKitPage() {
                                         className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-[#e8614d]/40 hover:bg-[#1e293b]/80"
                                     >
                                         {data.icon_logo_url ? (
-                                            <img src={data.icon_logo_url} alt="Icon logo" className="h-full w-full object-contain p-4" />
+                                            <img src={data.icon_logo_url} alt="Signature" className="h-full w-full object-contain p-4" />
                                         ) : (
                                             <div className="text-center">
                                                 <svg className="mx-auto mb-2 h-8 w-8 text-white/30" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
                                                 </svg>
-                                                <p className="text-xs text-white/30">Upload icon</p>
+                                                <p className="text-xs text-white/30">Upload signature</p>
                                             </div>
                                         )}
                                     </div>
@@ -652,8 +652,8 @@ export default function BrandKitPage() {
                                         </button>
                                     )}
                                 </div>
-                                <p className="mt-2 text-sm font-medium text-white">Icon</p>
-                                <p className="text-xs text-white/40">A simplified version</p>
+                                <p className="mt-2 text-sm font-medium text-white">Signature</p>
+                                <p className="text-xs text-white/40">Org leader's signature image</p>
                             </div>
                         </div>
                     </section>

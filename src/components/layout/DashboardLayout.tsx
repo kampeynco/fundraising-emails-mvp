@@ -56,7 +56,7 @@ const brandKitSections = [
         label: 'Content',
         items: [
             { icon: AlertSquareIcon, label: 'Stances', sectionId: 'stances' },
-            { icon: AlertSquareIcon, label: 'Content', sectionId: 'legal' },
+            { icon: AlertSquareIcon, label: 'Compliance', sectionId: 'legal' },
             { icon: Link02Icon, label: 'Links', sectionId: 'socials' },
         ],
     },
