@@ -179,7 +179,7 @@ function SortableBlock({
                 {/* Block content — editable */}
                 <div
                     ref={contentRef}
-                    className="cursor-text overflow-hidden bg-white"
+                    className="cursor-text overflow-hidden"
                     contentEditable
                     suppressContentEditableWarning
                     onBlur={handleBlur}
@@ -203,7 +203,6 @@ function SortableBlock({
                         paddingBottom: block.props.paddingBottom,
                         paddingLeft: block.props.paddingLeft,
                         backgroundColor: block.props.backgroundColor || undefined,
-                        maxWidth: block.props.width || 600,
                         lineHeight: 1.6,
                     }}
                 />

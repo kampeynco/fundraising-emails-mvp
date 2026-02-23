@@ -237,11 +237,12 @@ export function PropertiesPanel({ selectedBlock, onUpdate, brandKit, canvasOuter
             {/* Image sizing */}
             <PropertyGroup label="Images">
                 <NumberInput
-                    label="Image Width (%)"
+                    label="Image Width"
                     value={props.imageMaxHeight || 100}
                     onChange={(v) => onUpdate({ imageMaxHeight: v })}
                     min={10}
                     max={100}
+                    suffix="%"
                 />
                 <p className="text-[10px] text-white/20 leading-relaxed pt-1">
                     Scales images and logos as a percentage of block width.

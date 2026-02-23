@@ -11,23 +11,41 @@ export const donationModules: ModuleTemplate[] = [
         id: 'donation-1',
         name: 'Donation 1',
         category: 'donation',
-        thumbnailHtml: '<div style="padding:10px 12px;text-align:center;border-radius:4px;background:#faf8f5"><div style="display:grid;grid-template-columns:1fr 1fr;gap:3px"><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$10</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$25</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$50</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$100</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$250</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">Other</span></div></div>',
+        thumbnailHtml: '<div style="padding:10px 12px;text-align:center;border-radius:4px;background:#faf8f5"><div style="display:grid;grid-template-columns:1fr 1fr;gap:3px"><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$10</span><span style="background:#c0392b;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$25</span><span style="background:#1a3a5c;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$50</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$100</span><span style="background:#c0392b;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$250</span><span style="background:#1a3a5c;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">Other</span></div></div>',
         renderHtml: (bk) => {
-            const btnBg = c(bk, 'accent', '#e8614d')
-            const amounts = ['$10', '$25', '$50', '$100', '$250', 'Other']
+            const accent = c(bk, 'accent', '#e8614d')
+            const buttons = [
+                { label: '$10', href: '#donate-10', bg: accent },
+                { label: '$25', href: '#donate-25', bg: accent },
+                { label: '$50', href: '#donate-50', bg: accent },
+                { label: '$100', href: '#donate-100', bg: accent },
+                { label: '$250', href: '#donate-250', bg: accent },
+                { label: 'Other', href: '#donate-other', bg: accent },
+            ]
             const rows = []
-            for (let i = 0; i < amounts.length; i += 2) {
+            for (let i = 0; i < buttons.length; i += 2) {
+                const b1 = buttons[i]
+                const b2 = buttons[i + 1]
                 rows.push(`
                     <tr>
-                        <td style="padding:4px 4px 4px 0;width:50%;">
-                            <a href="#" style="display:block;background-color:${btnBg};color:white;padding:14px 0;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;text-align:center;">${amounts[i]}</a>
+                        <td class="don-btn-cell" style="padding:4px 4px 4px 0;width:50%;">
+                            <a href="${b1.href}" style="display:block;background-color:${b1.bg};color:white;padding:14px 0;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;text-align:center;">${b1.label}</a>
                         </td>
-                        <td style="padding:4px 0 4px 4px;width:50%;">
-                            <a href="#" style="display:block;background-color:${btnBg};color:white;padding:14px 0;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;text-align:center;">${amounts[i + 1]}</a>
+                        <td class="don-btn-cell" style="padding:4px 0 4px 4px;width:50%;">
+                            <a href="${b2.href}" style="display:block;background-color:${b2.bg};color:white;padding:14px 0;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;text-align:center;">${b2.label}</a>
                         </td>
                     </tr>`)
             }
             return `
+            <style>
+                @media only screen and (max-width: 480px) {
+                    .don-btn-cell {
+                        display: block !important;
+                        width: 100% !important;
+                        padding: 4px 0 !important;
+                    }
+                }
+            </style>
             <table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;">
                 <tr>
                     <td style="padding:24px 32px;">
