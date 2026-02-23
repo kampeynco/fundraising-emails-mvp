@@ -131,6 +131,7 @@ function formatWeek(weekOf: string) {
 
 export default function DraftsPage() {
     const { user } = useAuth()
+    const navigate = useNavigate()
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
     const [dropDay, setDropDay] = useState('Thursday')
 
