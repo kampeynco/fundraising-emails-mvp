@@ -45,6 +45,7 @@ interface RecentDraft {
 
 export default function DashboardPage() {
     const { user } = useAuth()
+    const navigate = useNavigate()
     const [stats, setStats] = useState<DraftStats>({ totalDrafts: 0, sentThisMonth: 0, pendingReview: 0, approvalRate: 0 })
     const [topicStats, setTopicStats] = useState<TopicStat[]>([])
     const [templateStats, setTemplateStats] = useState<TemplateStat[]>([])
@@ -68,8 +69,8 @@ export default function DashboardPage() {
                 const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString()
 
                 const sentThisMonth = drafts.filter(d => d.status === 'sent' && d.created_at >= monthStart).length
-                const pendingReview = drafts.filter(d => ['pending_review', 'revision_requested'].includes(d.status)).length
-                const completed = drafts.filter(d => ['sent', 'approved', 'scheduled'].includes(d.status)).length
+                const pendingReview = drafts.filter(d => ['pending_review', 'revision_requested'].includes(d.status || '')).length
+                const completed = drafts.filter(d => ['sent', 'approved', 'scheduled'].includes(d.status || '')).length
                 const approvalRate = drafts.length > 0 ? Math.round((completed / drafts.length) * 100) : 0
 
                 setStats({
@@ -82,7 +83,7 @@ export default function DashboardPage() {
                 setRecentDrafts(drafts.slice(0, 5).map(d => ({
                     id: d.id,
                     subject_line: d.subject_line || 'Untitled Draft',
-                    status: d.status,
+                    status: d.status || 'pending_review',
                     draft_type: d.draft_type,
                     created_at: d.created_at,
                 })))
@@ -92,7 +93,7 @@ export default function DashboardPage() {
                 const draftTypes = ['weekly', 'rapid_response']
                 draftTypes.forEach(t => {
                     const subset = drafts.filter(d => d.draft_type === t)
-                    const approved = subset.filter(d => ['sent', 'approved', 'scheduled'].includes(d.status)).length
+                    const approved = subset.filter(d => ['sent', 'approved', 'scheduled'].includes(d.status || '')).length
                     if (subset.length > 0) {
                         templateMap.set(t, { total: subset.length, approved })
                     }
@@ -110,19 +111,19 @@ export default function DashboardPage() {
             }
 
             // Fetch topic metrics
-            const { data: topics } = await supabase
+            const { data: topics } = await (supabase as any)
                 .from('topic_metrics')
                 .select('topic, status')
                 .eq('user_id', user.id)
 
             if (topics?.length) {
                 const topicMap = new Map<string, { total: number; approved: number }>()
-                topics.forEach(t => {
-                    const existing = topicMap.get(t.topic) || { total: 0, approved: 0 }
-                    existing.total++
-                    if (['sent', 'approved', 'scheduled'].includes(t.status)) existing.approved++
-                    topicMap.set(t.topic, existing)
-                })
+                    ; (topics as Array<{ topic: string; status: string }>).forEach((t) => {
+                        const existing = topicMap.get(t.topic) || { total: 0, approved: 0 }
+                        existing.total++
+                        if (['sent', 'approved', 'scheduled'].includes(t.status)) existing.approved++
+                        topicMap.set(t.topic, existing)
+                    })
                 setTopicStats(
                     Array.from(topicMap.entries())
                         .map(([topic, v]) => ({
