@@ -27,6 +27,8 @@ export type Database = {
           id: string
           kit_name: string
           primary_logo_url: string | null
+          show_footer: boolean
+          show_header: boolean
           socials: Json | null
           tone_of_voice: string | null
           updated_at: string
@@ -45,6 +47,8 @@ export type Database = {
           id?: string
           kit_name?: string
           primary_logo_url?: string | null
+          show_footer?: boolean
+          show_header?: boolean
           socials?: Json | null
           tone_of_voice?: string | null
           updated_at?: string
@@ -63,6 +67,8 @@ export type Database = {
           id?: string
           kit_name?: string
           primary_logo_url?: string | null
+          show_footer?: boolean
+          show_header?: boolean
           socials?: Json | null
           tone_of_voice?: string | null
           updated_at?: string
@@ -73,51 +79,91 @@ export type Database = {
       }
       email_drafts: {
         Row: {
+          ai_model: string | null
+          ai_prompt_hash: string | null
+          alt_subject_lines: string[] | null
           body_html: string | null
           body_text: string | null
+          brand_kit_id: string | null
           created_at: string
           delivered_at: string | null
+          draft_type: string
           feedback: string | null
           id: string
+          mailchimp_campaign_id: string | null
           preview_text: string | null
           request_id: string
+          research_topic_ids: string[] | null
+          scheduled_for: string | null
+          sent_at: string | null
           status: string | null
           subject_line: string | null
           updated_at: string
+          user_comments: string | null
           user_id: string
           version: number | null
+          week_of: string | null
         }
         Insert: {
+          ai_model?: string | null
+          ai_prompt_hash?: string | null
+          alt_subject_lines?: string[] | null
           body_html?: string | null
           body_text?: string | null
+          brand_kit_id?: string | null
           created_at?: string
           delivered_at?: string | null
+          draft_type?: string
           feedback?: string | null
           id?: string
+          mailchimp_campaign_id?: string | null
           preview_text?: string | null
           request_id: string
+          research_topic_ids?: string[] | null
+          scheduled_for?: string | null
+          sent_at?: string | null
           status?: string | null
           subject_line?: string | null
           updated_at?: string
+          user_comments?: string | null
           user_id: string
           version?: number | null
+          week_of?: string | null
         }
         Update: {
+          ai_model?: string | null
+          ai_prompt_hash?: string | null
+          alt_subject_lines?: string[] | null
           body_html?: string | null
           body_text?: string | null
+          brand_kit_id?: string | null
           created_at?: string
           delivered_at?: string | null
+          draft_type?: string
           feedback?: string | null
           id?: string
+          mailchimp_campaign_id?: string | null
           preview_text?: string | null
           request_id?: string
+          research_topic_ids?: string[] | null
+          scheduled_for?: string | null
+          sent_at?: string | null
           status?: string | null
           subject_line?: string | null
           updated_at?: string
+          user_comments?: string | null
           user_id?: string
           version?: number | null
+          week_of?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "email_drafts_brand_kit_id_fkey"
+            columns: ["brand_kit_id"]
+            isOneToOne: false
+            referencedRelation: "brand_kits"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "email_drafts_request_id_fkey"
             columns: ["request_id"]
@@ -133,6 +179,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      email_integrations: {
+        Row: {
+          access_token: string
+          connected_at: string | null
+          created_at: string | null
+          id: string
+          list_id: string | null
+          metadata: Json | null
+          provider: string
+          refresh_token: string | null
+          server_prefix: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          connected_at?: string | null
+          created_at?: string | null
+          id?: string
+          list_id?: string | null
+          metadata?: Json | null
+          provider: string
+          refresh_token?: string | null
+          server_prefix?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          connected_at?: string | null
+          created_at?: string | null
+          id?: string
+          list_id?: string | null
+          metadata?: Json | null
+          provider?: string
+          refresh_token?: string | null
+          server_prefix?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       email_requests: {
         Row: {
@@ -187,6 +275,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          delivery_days: string[] | null
           email: string
           full_name: string | null
           has_rapid_response: boolean | null
@@ -202,6 +291,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          delivery_days?: string[] | null
           email: string
           full_name?: string | null
           has_rapid_response?: boolean | null
@@ -217,6 +307,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          delivery_days?: string[] | null
           email?: string
           full_name?: string | null
           has_rapid_response?: boolean | null
@@ -229,6 +320,87 @@ export type Database = {
           stripe_customer_id?: string | null
           updated_at?: string
           weekly_sends?: number | null
+        }
+        Relationships: []
+      }
+      research_topics: {
+        Row: {
+          content_snippet: string | null
+          created_at: string | null
+          id: string
+          relevance_score: number | null
+          source_domain: string | null
+          source_url: string | null
+          suggested_by: string | null
+          summary: string | null
+          title: string
+          used_in_draft: boolean | null
+          user_id: string
+        }
+        Insert: {
+          content_snippet?: string | null
+          created_at?: string | null
+          id?: string
+          relevance_score?: number | null
+          source_domain?: string | null
+          source_url?: string | null
+          suggested_by?: string | null
+          summary?: string | null
+          title: string
+          used_in_draft?: boolean | null
+          user_id: string
+        }
+        Update: {
+          content_snippet?: string | null
+          created_at?: string | null
+          id?: string
+          relevance_score?: number | null
+          source_domain?: string | null
+          source_url?: string | null
+          suggested_by?: string | null
+          summary?: string | null
+          title?: string
+          used_in_draft?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      subscriptions: {
+        Row: {
+          created_at: string | null
+          emails_per_week: number | null
+          id: string
+          platform_tier: string
+          rapid_response: boolean
+          status: string
+          stripe_subscription_id: string | null
+          tier: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          emails_per_week?: number | null
+          id?: string
+          platform_tier?: string
+          rapid_response?: boolean
+          status?: string
+          stripe_subscription_id?: string | null
+          tier?: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          emails_per_week?: number | null
+          id?: string
+          platform_tier?: string
+          rapid_response?: boolean
+          status?: string
+          stripe_subscription_id?: string | null
+          tier?: number
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
