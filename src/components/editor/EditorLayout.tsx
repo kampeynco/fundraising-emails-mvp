@@ -41,7 +41,7 @@ export function EditorLayout({
             <ModuleSidebar
                 activeCategory={activeCategory}
                 onCategorySelect={(cat) => {
-                    setActiveCategory(prev => prev === cat ? null : cat)
+                    setActiveCategory((prev: ModuleCategory | null) => prev === cat ? null : cat)
                 }}
             />
 
@@ -81,8 +81,8 @@ export function EditorLayout({
                         <button
                             onClick={() => setShowComments(prev => !prev)}
                             className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${showComments
-                                    ? 'bg-[#e8614d]/10 text-[#e8614d]'
-                                    : 'text-white/40 hover:bg-white/[0.06] hover:text-white/60'
+                                ? 'bg-[#e8614d]/10 text-[#e8614d]'
+                                : 'text-white/40 hover:bg-white/[0.06] hover:text-white/60'
                                 }`}
                         >
                             <HugeiconsIcon icon={Comment01Icon} size={16} />
@@ -91,7 +91,7 @@ export function EditorLayout({
                     )}
                 </div>
 
-                {/* Canvas */}
+                {/* Canvas with built-in preview toggle */}
                 <EditorCanvas
                     blocks={blocks}
                     onBlocksChange={onBlocksChange}
@@ -108,7 +108,7 @@ export function EditorLayout({
                 ) : (
                     <PropertiesPanel
                         selectedBlock={selectedBlock}
-                        onUpdate={(props) => {
+                        onUpdate={(props: Partial<import('./types').ModuleProps>) => {
                             if (!selectedBlockId) return
                             onBlocksChange(
                                 blocks.map(b =>
