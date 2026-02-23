@@ -7,6 +7,9 @@ export interface ModuleProps {
     paddingLeft: number
     backgroundColor: string
     width: number
+    fontFamily?: string
+    fontSize?: number
+    fontColor?: string
 }
 
 export interface EditorBlock {
@@ -25,6 +28,9 @@ export const DEFAULT_BLOCK_PROPS: ModuleProps = {
     paddingLeft: 0,
     backgroundColor: '',
     width: 600,
+    fontFamily: 'Arial, Helvetica, sans-serif',
+    fontSize: 16,
+    fontColor: '#333333',
 }
 
 export interface ModuleTemplate {

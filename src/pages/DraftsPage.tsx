@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -48,12 +48,23 @@ function formatWeek(weekOf: string) {
 export default function DraftsPage() {
     const { user, loading: authLoading } = useAuth()
     const navigate = useNavigate()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [drafts, setDrafts] = useState<Draft[]>([])
     const [loadingDrafts, setLoadingDrafts] = useState(true)
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
     const [showNewDraft, setShowNewDraft] = useState(false)
     const [dropDay, setDropDay] = useState('Thursday')
 
+    // Auto-open dialog from sidebar ?new=regular param
+    useEffect(() => {
+        const newParam = searchParams.get('new')
+        if (newParam === 'regular' || newParam === 'rapid') {
+            setShowNewDraft(true)
+            // Clean up the query param so it doesn't re-trigger
+            searchParams.delete('new')
+            setSearchParams(searchParams, { replace: true })
+        }
+    }, [searchParams, setSearchParams])
     // ── Fetch drafts from Supabase ──
     useEffect(() => {
         if (authLoading || !user) return

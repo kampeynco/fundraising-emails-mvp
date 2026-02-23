@@ -8,6 +8,15 @@ interface PropertiesPanelProps {
     brandKit: any
 }
 
+const EMAIL_FONTS = [
+    { label: 'Arial', value: 'Arial, Helvetica, sans-serif' },
+    { label: 'Georgia', value: 'Georgia, Times, serif' },
+    { label: 'Verdana', value: 'Verdana, Geneva, sans-serif' },
+    { label: 'Trebuchet MS', value: '"Trebuchet MS", sans-serif' },
+    { label: 'Times New Roman', value: '"Times New Roman", Times, serif' },
+    { label: 'Courier New', value: '"Courier New", monospace' },
+]
+
 function PropertyGroup({ label, children }: { label: string; children: React.ReactNode }) {
     return (
         <div className="border-b border-white/[0.06] px-4 py-4">
@@ -68,6 +77,15 @@ export function PropertiesPanel({ selectedBlock, onUpdate, brandKit }: Propertie
 
     const props = selectedBlock.props
 
+    // Parse brand colors
+    const brandColors: string[] = brandKit?.colors
+        ? (Object.values(
+            typeof brandKit.colors === 'string'
+                ? JSON.parse(brandKit.colors)
+                : brandKit.colors
+        ) as string[]).slice(0, 6)
+        : []
+
     return (
         <div className="h-full overflow-y-auto">
             {/* Block info header */}
@@ -81,6 +99,72 @@ export function PropertiesPanel({ selectedBlock, onUpdate, brandKit }: Propertie
                     <p className="mt-0.5 text-[10px] text-white/25">{selectedBlock.moduleId}</p>
                 )}
             </div>
+
+            {/* Typography — font family, size, color */}
+            <PropertyGroup label="Typography">
+                <div className="space-y-3">
+                    {/* Font family */}
+                    <div className="space-y-1.5">
+                        <label className="text-xs text-white/40">Font Family</label>
+                        <select
+                            value={props.fontFamily || 'Arial, Helvetica, sans-serif'}
+                            onChange={(e) => onUpdate({ fontFamily: e.target.value })}
+                            className="h-8 w-full rounded border border-white/[0.08] bg-[#1e293b] px-2 text-xs text-white/70 outline-none transition-colors focus:border-[#e8614d]/40 cursor-pointer"
+                        >
+                            {EMAIL_FONTS.map((f) => (
+                                <option key={f.value} value={f.value}>
+                                    {f.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Font size */}
+                    <NumberInput
+                        label="Font Size"
+                        value={props.fontSize || 16}
+                        onChange={(v) => onUpdate({ fontSize: v })}
+                        min={10}
+                        max={72}
+                    />
+
+                    {/* Font color */}
+                    <div className="space-y-1.5">
+                        <label className="text-xs text-white/40">Font Color</label>
+                        <div className="flex items-center gap-2">
+                            <div
+                                className="h-7 w-7 shrink-0 rounded border border-white/[0.1]"
+                                style={{ backgroundColor: props.fontColor || '#333333' }}
+                            />
+                            <input
+                                type="text"
+                                value={props.fontColor || '#333333'}
+                                onChange={(e) => onUpdate({ fontColor: e.target.value })}
+                                placeholder="#333333"
+                                className="h-7 flex-1 rounded border border-white/[0.08] bg-[#1e293b] px-2 text-xs text-white/70 outline-none transition-colors focus:border-[#e8614d]/40"
+                            />
+                        </div>
+                        {/* Brand color swatches */}
+                        {brandColors.length > 0 && (
+                            <div className="flex gap-1 pt-1">
+                                {brandColors.map((color, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => onUpdate({ fontColor: color })}
+                                        className="h-5 w-5 rounded border border-white/[0.1] transition-transform hover:scale-110"
+                                        style={{ backgroundColor: color }}
+                                        title={color}
+                                    />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    <p className="text-[10px] text-white/20 leading-relaxed pt-1">
+                        Select text on the canvas to use the floating toolbar for bold, italic, underline, links, and text color.
+                    </p>
+                </div>
+            </PropertyGroup>
 
             {/* Spacing controls */}
             <PropertyGroup label="Spacing">
@@ -107,19 +191,15 @@ export function PropertiesPanel({ selectedBlock, onUpdate, brandKit }: Propertie
                         placeholder="#ffffff"
                         className="h-7 flex-1 rounded border border-white/[0.08] bg-[#1e293b] px-2 text-xs text-white/70 outline-none transition-colors focus:border-[#e8614d]/40"
                     />
-                    {brandKit?.colors && (
+                    {brandColors.length > 0 && (
                         <div className="flex gap-1">
-                            {Object.values(
-                                typeof brandKit.colors === 'string'
-                                    ? JSON.parse(brandKit.colors)
-                                    : brandKit.colors
-                            ).slice(0, 4).map((color, i) => (
+                            {brandColors.slice(0, 4).map((color, i) => (
                                 <button
                                     key={i}
-                                    onClick={() => onUpdate({ backgroundColor: color as string })}
+                                    onClick={() => onUpdate({ backgroundColor: color })}
                                     className="h-5 w-5 rounded border border-white/[0.1] transition-transform hover:scale-110"
-                                    style={{ backgroundColor: color as string }}
-                                    title={color as string}
+                                    style={{ backgroundColor: color }}
+                                    title={color}
                                 />
                             ))}
                         </div>
@@ -145,22 +225,13 @@ export function PropertiesPanel({ selectedBlock, onUpdate, brandKit }: Propertie
             <PropertyGroup label="Media">
                 <ImageUploader
                     onUpload={(url) => {
-                        // Insert image at cursor or append to block
                         const imgTag = `<img src="${url}" alt="Uploaded image" style="max-width:100%;height:auto;border-radius:4px;" />`
                         const currentHtml = selectedBlock.html
                         onUpdate({} as any)
-                        // Update parent with new HTML
                         const event = new CustomEvent('editor:insertHtml', { detail: { blockId: selectedBlock.id, html: imgTag, currentHtml } })
                         window.dispatchEvent(event)
                     }}
                 />
-            </PropertyGroup>
-
-            {/* Font size hint */}
-            <PropertyGroup label="Typography">
-                <p className="text-[10px] text-white/20 leading-relaxed">
-                    Select text on the canvas to use the floating toolbar for bold, italic, underline, links, and alignment.
-                </p>
             </PropertyGroup>
         </div>
     )

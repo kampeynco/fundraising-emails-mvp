@@ -23,8 +23,8 @@ function DropZoneIndicator({ isOver }: { isOver: boolean }) {
         >
             <div
                 className={`absolute inset-x-0 top-1/2 -translate-y-1/2 rounded-full transition-all ${isOver
-                        ? 'h-1 bg-[#e8614d] shadow-[0_0_12px_rgba(232,97,77,0.4)]'
-                        : 'h-px bg-white/20'
+                    ? 'h-1 bg-[#e8614d] shadow-[0_0_12px_rgba(232,97,77,0.4)]'
+                    : 'h-px bg-white/20'
                     }`}
             />
             {isOver && (
@@ -94,8 +94,8 @@ function SortableBlock({
                 }}
                 className={`group relative transition-all duration-150 ${isDragging ? 'z-50 scale-[1.02] opacity-60 shadow-2xl' : ''
                     } ${isSelected
-                        ? 'ring-2 ring-[#e8614d]/50 ring-offset-2 ring-offset-[#1a1a2e]'
-                        : 'hover:ring-1 hover:ring-white/20'
+                        ? 'ring-2 ring-[#e8614d]/50 ring-offset-2 ring-offset-white'
+                        : 'hover:ring-1 hover:ring-gray-200'
                     }`}
             >
                 {/* Drag handle */}
@@ -244,7 +244,7 @@ export function EditorCanvas({
             {/* Canvas area */}
             <div
                 ref={canvasRef}
-                className="group/canvas relative flex-1 overflow-y-auto bg-[#1a1a2e] p-8"
+                className="group/canvas relative flex-1 overflow-y-auto bg-white p-8"
                 onClick={() => onSelectBlock(null)}
             >
                 {/* Floating toolbar */}
@@ -255,7 +255,7 @@ export function EditorCanvas({
                     className={`mx-auto min-h-[600px] rounded-lg border-2 border-dashed p-8 transition-all duration-200 ${isOver
                         ? 'border-[#e8614d]/40 bg-[#e8614d]/5'
                         : blocks.length === 0
-                            ? 'border-white/[0.1]'
+                            ? 'border-gray-200'
                             : 'border-transparent'
                         }`}
                     style={{
@@ -266,14 +266,14 @@ export function EditorCanvas({
                     {blocks.length === 0 ? (
                         <div className={`flex flex-col items-center justify-center py-32 text-center transition-transform duration-200 ${isOver ? 'scale-105' : ''}`}>
                             <div className={`mb-4 rounded-xl p-4 transition-colors duration-200 ${isOver ? 'bg-[#e8614d]/10' : ''}`}>
-                                <svg className={`h-12 w-12 transition-colors duration-200 ${isOver ? 'text-[#e8614d]/40' : 'text-white/15'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
+                                <svg className={`h-12 w-12 transition-colors duration-200 ${isOver ? 'text-[#e8614d]/40' : 'text-gray-300'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1}>
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                                 </svg>
                             </div>
-                            <p className="text-lg font-medium text-white/30">
+                            <p className="text-lg font-medium text-gray-400">
                                 {isOver ? 'Drop here to add' : 'Drag & drop modules'}
                             </p>
-                            <p className="mt-1 text-sm text-white/20">
+                            <p className="mt-1 text-sm text-gray-300">
                                 {isOver ? '' : 'from the left panel'}
                             </p>
                         </div>

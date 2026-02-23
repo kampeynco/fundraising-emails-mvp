@@ -45,7 +45,7 @@ export function EditorLayout({
 }: EditorLayoutProps) {
     const { isAdminOrManager } = useUserRole()
     const [activeCategory, setActiveCategory] = useState<ModuleCategory | null>(null)
-    const [showComments, setShowComments] = useState(!isAdminOrManager)
+    const [showComments, setShowComments] = useState(false)
     const [showVersions, setShowVersions] = useState(false)
 
     const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null
@@ -123,19 +123,17 @@ export function EditorLayout({
 
                         <div className="h-5 w-px bg-white/[0.08]" />
 
-                        {/* Admin comment toggle */}
-                        {isAdminOrManager && (
-                            <button
-                                onClick={() => setShowComments(prev => !prev)}
-                                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${showComments
-                                    ? 'bg-[#e8614d]/10 text-[#e8614d]'
-                                    : 'text-white/40 hover:bg-white/[0.06] hover:text-white/60'
-                                    }`}
-                            >
-                                <HugeiconsIcon icon={Comment01Icon} size={16} />
-                                Comments
-                            </button>
-                        )}
+                        {/* Comments toggle — all roles */}
+                        <button
+                            onClick={() => setShowComments(prev => !prev)}
+                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${showComments
+                                ? 'bg-[#e8614d]/10 text-[#e8614d]'
+                                : 'text-white/40 hover:bg-white/[0.06] hover:text-white/60'
+                                }`}
+                        >
+                            <HugeiconsIcon icon={Comment01Icon} size={16} />
+                            Comments
+                        </button>
                     </div>
                 </div>
 
