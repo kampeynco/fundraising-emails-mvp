@@ -453,9 +453,7 @@ function IntegrationsSection() {
                                         )}
                                     </div>
                                     <p className="mt-0.5 text-xs text-white/40">
-                                        {connected?.account_name
-                                            ? `${connected.account_name}${connected.list_name ? ` · ${connected.list_name}` : ''}`
-                                            : integration.desc}
+                                        {integration.desc}
                                     </p>
                                 </div>
                             </div>
@@ -518,7 +516,7 @@ function IntegrationsSection() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => { setApiKeyDialogProvider(null); setApiKeyInput(''); setApiKeyError('') }}
-                                    className="cursor-pointer border-white/10 text-xs text-white/50 hover:text-white"
+                                    className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-xs text-[#e8614d] hover:bg-[#e8614d] hover:text-white"
                                 >
                                     Cancel
                                 </Button>
