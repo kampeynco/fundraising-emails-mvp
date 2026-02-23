@@ -5,8 +5,9 @@ import { ModulePanel } from './ModulePanel'
 import { EditorCanvas } from './EditorCanvas'
 import { PropertiesPanel } from './PropertiesPanel'
 import { CommentsPanel } from './CommentsPanel'
+import { VersionHistoryPanel } from './VersionHistoryPanel'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Comment01Icon, ArrowLeft02Icon } from '@hugeicons/core-free-icons'
+import { Comment01Icon, ArrowLeft02Icon, FloppyDiskIcon, Clock01Icon } from '@hugeicons/core-free-icons'
 import { Link } from 'react-router-dom'
 import type { EditorBlock, ModuleCategory } from './types'
 
@@ -18,6 +19,13 @@ interface EditorLayoutProps {
     selectedBlockId: string | null
     onSelectBlock: (id: string | null) => void
     brandKit: any
+    // Persistence
+    onSave?: () => void
+    saving?: boolean
+    lastSaved?: Date | null
+    hasUnsavedChanges?: boolean
+    versions?: { id: string; version_number: number; label: string | null; created_at: string }[]
+    onRestoreVersion?: (versionId: string) => Promise<EditorBlock[] | null>
 }
 
 export function EditorLayout({
@@ -28,6 +36,12 @@ export function EditorLayout({
     selectedBlockId,
     onSelectBlock,
     brandKit,
+    onSave,
+    saving,
+    lastSaved,
+    hasUnsavedChanges,
+    versions = [],
+    onRestoreVersion,
 }: EditorLayoutProps) {
     const { isAdminOrManager } = useUserRole()
     const [activeCategory, setActiveCategory] = useState<ModuleCategory | null>(null)
@@ -76,19 +90,52 @@ export function EditorLayout({
                         </p>
                     </div>
 
-                    {/* Right side: admin comment toggle */}
-                    {isAdminOrManager && (
+                    <div className="flex items-center gap-2">
+                        {/* Save indicator */}
+                        {lastSaved && (
+                            <span className="text-[10px] text-white/20">
+                                Saved {lastSaved.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                            </span>
+                        )}
+                        {hasUnsavedChanges && (
+                            <span className="h-2 w-2 rounded-full bg-amber-400" title="Unsaved changes" />
+                        )}
+
+                        {/* Save button */}
                         <button
-                            onClick={() => setShowComments(prev => !prev)}
-                            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${showComments
-                                ? 'bg-[#e8614d]/10 text-[#e8614d]'
-                                : 'text-white/40 hover:bg-white/[0.06] hover:text-white/60'
-                                }`}
+                            onClick={onSave}
+                            disabled={saving || !hasUnsavedChanges}
+                            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors bg-[#e8614d] text-white hover:bg-[#e8614d]/80 disabled:opacity-30"
                         >
-                            <HugeiconsIcon icon={Comment01Icon} size={16} />
-                            Comments
+                            <HugeiconsIcon icon={FloppyDiskIcon} size={14} />
+                            {saving ? 'Saving...' : 'Save'}
                         </button>
-                    )}
+
+                        {/* Version history toggle */}
+                        <button
+                            onClick={() => setShowVersions(v => !v)}
+                            className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-white/40 transition-colors hover:bg-white/[0.06] hover:text-white/60"
+                            title="Version history"
+                        >
+                            <HugeiconsIcon icon={Clock01Icon} size={16} />
+                        </button>
+
+                        <div className="h-5 w-px bg-white/[0.08]" />
+
+                        {/* Admin comment toggle */}
+                        {isAdminOrManager && (
+                            <button
+                                onClick={() => setShowComments(prev => !prev)}
+                                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm transition-colors ${showComments
+                                    ? 'bg-[#e8614d]/10 text-[#e8614d]'
+                                    : 'text-white/40 hover:bg-white/[0.06] hover:text-white/60'
+                                    }`}
+                            >
+                                <HugeiconsIcon icon={Comment01Icon} size={16} />
+                                Comments
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Canvas with built-in preview toggle */}
