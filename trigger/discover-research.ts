@@ -284,7 +284,11 @@ function extractStanceKeywords(summary: string | undefined): string[] {
 }
 
 /**
- * Call Perplexity Sonar API (chat completions endpoint)
+ * Call Perplexity Sonar API and extract REAL citations from the response.
+ *
+ * Key insight: Sonar's `citations` array contains verified URLs.
+ * The LLM content references them with [1], [2] markers.
+ * We parse the content into topics and map citations to real URLs.
  */
 async function sonarSearch(query: string): Promise<ScoredTopic[]> {
     const apiKey = process.env.PERPLEXITY_API_KEY;
@@ -306,7 +310,7 @@ async function sonarSearch(query: string): Promise<ScoredTopic[]> {
                     {
                         role: "system",
                         content:
-                            "You are a political research assistant. Search the web for current news. Return ONLY a valid JSON array of objects, each with keys: title, summary, source_url. Include 5-10 distinct news stories. If exact matches are scarce, broaden to related political news in the same region or policy area. No markdown formatting, no explanation text, just the raw JSON array.",
+                            "You are a political news researcher. Write a numbered list of 5-10 recent, distinct news stories. For each item write: the headline, a 1-2 sentence summary, and cite your source using [number] notation matching the citations provided. Example format:\n1. **Headline here** — Summary of the story. [1]\n2. **Another headline** — Summary text. [3]",
                     },
                     {
                         role: "user",
@@ -328,34 +332,106 @@ async function sonarSearch(query: string): Promise<ScoredTopic[]> {
         const data = (await response.json()) as SonarResponse;
         const content = data.choices?.[0]?.message?.content || "";
 
-        // Parse JSON from response
-        const parsed = parseJsonArray(content);
-        if (!parsed || parsed.length === 0) {
-            logger.warn("Could not parse Sonar response", { content: content.slice(0, 200) });
+        // Extract REAL citations from the API response (not from LLM text)
+        const citations: string[] = [];
+        if (Array.isArray(data.citations)) {
+            for (const c of data.citations) {
+                if (typeof c === "string") citations.push(c);
+                else if (c && typeof c === "object" && "url" in c) citations.push(c.url);
+            }
+        }
+
+        logger.info("Sonar response", {
+            contentLength: content.length,
+            citationCount: citations.length,
+            sampleCitations: citations.slice(0, 3),
+        });
+
+        if (citations.length === 0) {
+            logger.warn("No citations in Sonar response — cannot produce verified results");
             return [];
         }
 
-        // Score and return
-        return parsed
-            .filter((item: Record<string, string>) => item.title && item.summary)
-            .map((item: Record<string, string>) => {
-                const domain = extractDomain(item.source_url || "");
-                const score = scoreResult(item.title, item.summary, domain, query);
+        // Parse numbered items from the content
+        const topics = parseNumberedList(content, citations);
 
-                return {
-                    title: item.title,
-                    summary: item.summary,
-                    source_url: item.source_url || "",
-                    source_domain: domain,
-                    content_snippet: (item.summary || "").slice(0, 300),
-                    relevance_score: score,
-                };
-            })
-            .sort((a: ScoredTopic, b: ScoredTopic) => b.relevance_score - a.relevance_score);
+        // Score and sort
+        return topics
+            .map((topic) => ({
+                ...topic,
+                relevance_score: scoreResult(topic.title, topic.summary, topic.source_domain, ""),
+            }))
+            .sort((a, b) => b.relevance_score - a.relevance_score);
     } catch (err) {
         logger.error("Sonar search failed", { error: (err as Error).message });
         return [];
     }
+}
+
+/**
+ * Parse numbered list items from Sonar content and map citation markers to real URLs.
+ *
+ * Input format:  "1. **Headline** — Summary [1][3]\n2. **Another** — Text [2]"
+ * Citations:     ["https://real-url-1.com", "https://real-url-2.com", "https://real-url-3.com"]
+ */
+function parseNumberedList(content: string, citations: string[]): Omit<ScoredTopic, "relevance_score">[] {
+    const results: Omit<ScoredTopic, "relevance_score">[] = [];
+
+    // Split by numbered items: "1. ", "2. ", etc.
+    const items = content.split(/\n?\d+\.\s+/).filter((s) => s.trim().length > 10);
+
+    for (const item of items) {
+        // Extract title: look for **bold** text or first sentence
+        let title = "";
+        let summary = item.trim();
+
+        const boldMatch = item.match(/\*\*(.+?)\*\*/);
+        if (boldMatch) {
+            title = boldMatch[1].trim();
+            // Summary is everything after the title, cleaned up
+            summary = item
+                .replace(/\*\*(.+?)\*\*/, "")
+                .replace(/^\s*[—–-]\s*/, "")
+                .trim();
+        } else {
+            // Use first sentence as title
+            const firstSentence = item.split(/[.!?]/)[0];
+            title = firstSentence?.trim() || item.slice(0, 80);
+            summary = item.slice(title.length).trim();
+        }
+
+        // Extract citation numbers [1], [2], [3] from the item
+        const citationMatches = item.match(/\[(\d+)\]/g);
+        let sourceUrl = "";
+
+        if (citationMatches && citationMatches.length > 0) {
+            // Use the first citation number, convert to 0-indexed
+            const citNum = parseInt(citationMatches[0].replace(/[\[\]]/g, ""), 10) - 1;
+            if (citNum >= 0 && citNum < citations.length) {
+                sourceUrl = citations[citNum];
+            }
+        }
+
+        // Clean up summary: remove citation markers
+        summary = summary.replace(/\[\d+\]/g, "").trim();
+        // Remove trailing dashes/colons
+        summary = summary.replace(/^[—–:\s]+/, "").replace(/[—–:\s]+$/, "");
+
+        if (!title || title.length < 5) continue;
+        if (!sourceUrl) continue; // Skip items without a verified citation
+
+        const domain = extractDomain(sourceUrl);
+
+        results.push({
+            title: title.slice(0, 200),
+            summary: summary.slice(0, 500) || title,
+            source_url: sourceUrl,
+            source_domain: domain,
+            content_snippet: summary.slice(0, 300) || title,
+        });
+    }
+
+    return results;
 }
 
 /**
@@ -380,27 +456,6 @@ function scoreResult(title: string, summary: string, domain: string, _query: str
     return Math.min(Math.round(score * 100) / 100, 10);
 }
 
-/**
- * Parse a JSON array from potentially messy LLM output
- */
-function parseJsonArray(content: string): Record<string, string>[] | null {
-    try {
-        // Try direct parse first
-        const parsed = JSON.parse(content);
-        if (Array.isArray(parsed)) return parsed;
-    } catch {
-        // Try extracting JSON from markdown code blocks
-        const match = content.match(/\[[\s\S]*\]/);
-        if (match) {
-            try {
-                return JSON.parse(match[0]);
-            } catch {
-                return null;
-            }
-        }
-    }
-    return null;
-}
 
 function extractDomain(url: string): string {
     try {
