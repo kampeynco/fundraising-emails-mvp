@@ -296,6 +296,7 @@ export default function DashboardPage() {
                                 return (
                                     <div
                                         key={draft.id}
+                                        onClick={() => navigate(`/dashboard/drafts/${draft.id}/edit`)}
                                         className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-5 py-4 transition-colors hover:bg-white/[0.04] cursor-pointer"
                                     >
                                         <div className="flex items-center gap-2">
