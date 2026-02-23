@@ -21,23 +21,6 @@ var supabase = createClient(
 );
 var TIER_1 = ["nytimes.com", "washingtonpost.com", "reuters.com", "apnews.com"];
 var TIER_2 = ["politico.com", "thehill.com", "cnn.com", "npr.org", "axios.com", "nbcnews.com", "bbc.com", "usatoday.com"];
-var POLITICAL_DOMAINS = [
-  "nytimes.com",
-  "washingtonpost.com",
-  "politico.com",
-  "thehill.com",
-  "cnn.com",
-  "reuters.com",
-  "apnews.com",
-  "npr.org",
-  "axios.com",
-  "nbcnews.com",
-  "bbc.com",
-  "usatoday.com",
-  "foxnews.com",
-  "abcnews.go.com",
-  "cbsnews.com"
-].join(",");
 var discoverResearch = schedules_exports.task({
   id: "discover-research",
   machine: { preset: "small-1x" },
@@ -174,7 +157,6 @@ async function newsApiSearch(query) {
   try {
     const params = new URLSearchParams({
       q: query,
-      domains: POLITICAL_DOMAINS,
       sortBy: "publishedAt",
       pageSize: "10",
       language: "en",

@@ -48,14 +48,6 @@ interface ScoredTopic {
 const TIER_1 = ["nytimes.com", "washingtonpost.com", "reuters.com", "apnews.com"];
 const TIER_2 = ["politico.com", "thehill.com", "cnn.com", "npr.org", "axios.com", "nbcnews.com", "bbc.com", "usatoday.com"];
 
-// Political news domains for NewsAPI filtering
-const POLITICAL_DOMAINS = [
-    "nytimes.com", "washingtonpost.com", "politico.com", "thehill.com",
-    "cnn.com", "reuters.com", "apnews.com", "npr.org", "axios.com",
-    "nbcnews.com", "bbc.com", "usatoday.com", "foxnews.com",
-    "abcnews.go.com", "cbsnews.com",
-].join(",");
-
 /**
  * Discover Research — Scheduled Task (every 4 hours)
  *
@@ -263,7 +255,6 @@ async function newsApiSearch(query: string): Promise<ScoredTopic[]> {
     try {
         const params = new URLSearchParams({
             q: query,
-            domains: POLITICAL_DOMAINS,
             sortBy: "publishedAt",
             pageSize: "10",
             language: "en",
