@@ -25,6 +25,9 @@ import {
     SparklesIcon,
     SentIcon,
     Clock01Icon,
+    TextAlignLeftIcon,
+    Mic01Icon,
+    AiSearch02Icon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -32,7 +35,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 const mainNavItems = [
     { icon: Home07Icon, label: 'Overview', href: '/dashboard' },
     { icon: LicenseDraftIcon, label: 'Drafts', href: '/dashboard/drafts' },
-    { icon: Search01Icon, label: 'Research', href: '/dashboard/research' },
+    { icon: AiSearch02Icon, label: 'Research', href: '/dashboard/research' },
     { icon: SwatchIcon, label: 'Brand Kit', href: '/dashboard/brand-kit' },
     { icon: Settings02Icon, label: 'Settings', href: '/dashboard/settings' },
 ]
@@ -40,9 +43,11 @@ const mainNavItems = [
 // ── Inner sidebar items for Brand Kit ───────────────────────
 const brandKitSections = [
     {
-        label: null,
+        label: 'Identity',
         items: [
             { icon: ProfileIcon, label: 'Details', sectionId: 'brand-details' },
+            { icon: TextAlignLeftIcon, label: 'Mission', sectionId: 'mission' },
+            { icon: Mic01Icon, label: 'Voice', sectionId: 'voice' },
         ],
     },
     {

@@ -21,6 +21,11 @@ export interface BrandKitColors {
 export interface BrandKitData {
     id?: string
     kit_name: string
+    org_type: string
+    org_level: string
+    office_sought: string
+    state: string
+    district: string
     website: string
     brand_summary: string
     address: string
@@ -48,6 +53,11 @@ const DEFAULT_COLORS: BrandKitColors = {
 
 const DEFAULT_BRAND_KIT: BrandKitData = {
     kit_name: '',
+    org_type: '',
+    org_level: '',
+    office_sought: '',
+    state: '',
+    district: '',
     website: '',
     brand_summary: '',
     address: '',
@@ -96,6 +106,11 @@ export function useBrandKit() {
                 setData({
                     id: row.id,
                     kit_name: row.kit_name || '',
+                    org_type: (row as any).org_type || '',
+                    org_level: (row as any).org_level || '',
+                    office_sought: (row as any).office_sought || '',
+                    state: (row as any).state || '',
+                    district: (row as any).district || '',
                     website: row.website || '',
                     brand_summary: row.brand_summary || '',
                     address: row.address || '',
@@ -129,6 +144,11 @@ export function useBrandKit() {
         const payload = {
             user_id: user.id,
             kit_name: data.kit_name,
+            org_type: data.org_type,
+            org_level: data.org_level,
+            office_sought: data.office_sought,
+            state: data.state,
+            district: data.district,
             website: data.website,
             brand_summary: data.brand_summary,
             address: data.address,

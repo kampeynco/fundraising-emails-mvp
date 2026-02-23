@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { useOutletContext } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -9,7 +10,6 @@ import {
     Globe02Icon,
     InformationCircleIcon,
     Search01Icon,
-    SparklesIcon,
 } from '@hugeicons/core-free-icons'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -25,6 +25,16 @@ interface ResearchTopic {
     suggested_by: 'user' | 'ai'
     used_in_draft: boolean
     created_at: string
+}
+
+interface ResearchContext {
+    activeResearchSection: string
+}
+
+interface SearchHistoryEntry {
+    query: string
+    resultCount: number
+    timestamp: string
 }
 
 function formatDate(dateStr: string) {
@@ -69,14 +79,24 @@ function ScoreBadge({ score }: { score: number }) {
     )
 }
 
+// Tab metadata
+const TAB_META: Record<string, { title: string; subtitle: string }> = {
+    'in-queue': { title: 'In Queue', subtitle: 'Topics marked for draft generation' },
+    'saved': { title: 'Saved', subtitle: 'Bookmarked topics for future emails' },
+    'discover': { title: 'Discover', subtitle: 'Search for trending news and topics' },
+    'used': { title: 'Used', subtitle: 'Topics already incorporated into drafts' },
+    'history': { title: 'History', subtitle: 'Your past searches' },
+}
+
 export default function ResearchPage() {
     const { user } = useAuth()
+    const { activeResearchSection } = useOutletContext<ResearchContext>()
     const [searchQuery, setSearchQuery] = useState('')
-    const [showUsed, setShowUsed] = useState(false)
     const [topics, setTopics] = useState<ResearchTopic[]>([])
     const [isSearching, setIsSearching] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
     const [searchMessage, setSearchMessage] = useState<string | null>(null)
+    const [searchHistory, setSearchHistory] = useState<SearchHistoryEntry[]>([])
 
     // Load existing topics from Supabase on mount
     const loadTopics = useCallback(async () => {
@@ -100,21 +120,34 @@ export default function ResearchPage() {
         loadTopics()
     }, [loadTopics])
 
-    // Filter topics by search query (client-side filtering of existing topics)
-    const displayTopics = searchQuery.trim()
-        ? topics.filter(t =>
-            t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            t.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            t.source_domain.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-        : topics
+    // Filter topics based on active tab
+    const getFilteredTopics = () => {
+        // Client-side filtering by search query first
+        const searchFiltered = searchQuery.trim()
+            ? topics.filter(t =>
+                t.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                t.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                t.source_domain.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+            : topics
 
-    const filteredTopics = displayTopics.filter(t =>
-        showUsed ? true : !t.used_in_draft
-    )
+        switch (activeResearchSection) {
+            case 'in-queue':
+                return searchFiltered.filter(t => t.used_in_draft)
+            case 'saved':
+                return searchFiltered.filter(t => !t.used_in_draft)
+            case 'discover':
+                return searchFiltered.filter(t => !t.used_in_draft)
+            case 'used':
+                return searchFiltered.filter(t => t.used_in_draft)
+            case 'history':
+                return [] // History tab shows search history, not topics
+            default:
+                return searchFiltered
+        }
+    }
 
-    const availableTopics = filteredTopics.filter(t => !t.used_in_draft)
-    const usedTopics = filteredTopics.filter(t => t.used_in_draft)
+    const filteredTopics = getFilteredTopics()
 
     const handleSearch = async () => {
         if (!searchQuery.trim()) return
@@ -141,6 +174,13 @@ export default function ResearchPage() {
             }
 
             const newTopics = (data?.topics || []) as ResearchTopic[]
+
+            // Add to search history
+            setSearchHistory(prev => [{
+                query: searchQuery.trim(),
+                resultCount: newTopics.length,
+                timestamp: new Date().toISOString(),
+            }, ...prev])
 
             if (newTopics.length > 0) {
                 // Add new topics to the top of the list (avoid duplicates by id)
@@ -188,6 +228,8 @@ export default function ResearchPage() {
         setSearchMessage(null)
     }
 
+    const meta = TAB_META[activeResearchSection] || TAB_META['saved']
+
     return (
         <div className="h-full overflow-y-auto">
             {/* ── Header ── */}
@@ -195,51 +237,58 @@ export default function ResearchPage() {
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                            Research
+                            {meta.title}
                         </h1>
                         <p className="mt-1 text-sm text-white/40">
-                            Discover topics and news for your fundraising emails
+                            {meta.subtitle}
                         </p>
                     </div>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <button className="rounded-lg p-2 text-white/20 transition-colors hover:bg-white/5 hover:text-white/40 cursor-help">
-                                <HugeiconsIcon icon={InformationCircleIcon} className="h-4 w-4" />
-                            </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="left" className="max-w-[260px]">
-                            <p className="font-semibold">How Research Works</p>
-                            <p className="mt-1 text-xs text-white/60">
-                                Search for topics relevant to your campaign. AI scores each result by recency, relevance, and source quality.
-                                Mark topics to include them in your next email draft.
-                            </p>
-                        </TooltipContent>
-                    </Tooltip>
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs text-white/20">
+                            {filteredTopics.length} topic{filteredTopics.length !== 1 ? 's' : ''}
+                        </span>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button className="rounded-lg p-2 text-white/20 transition-colors hover:bg-white/5 hover:text-white/40 cursor-help">
+                                    <HugeiconsIcon icon={InformationCircleIcon} className="h-4 w-4" />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent side="left" className="max-w-[260px]">
+                                <p className="font-semibold">How Research Works</p>
+                                <p className="mt-1 text-xs text-white/60">
+                                    Search for topics relevant to your campaign. AI scores each result by recency, relevance, and source quality.
+                                    Mark topics to include them in your next email draft.
+                                </p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </div>
                 </div>
 
-                {/* Search bar */}
-                <div className="mt-4 flex gap-3">
-                    <div className="relative flex-1">
-                        <HugeiconsIcon icon={Search01Icon} className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            placeholder="Search for topics, news, or issues..."
-                            className="w-full rounded-xl border border-white/[0.08] bg-[#1e293b] py-3 pl-10 pr-4 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
-                        />
+                {/* Search bar — always visible on Discover tab, compact on others */}
+                {(activeResearchSection === 'discover' || activeResearchSection === 'saved') && (
+                    <div className="mt-4 flex gap-3">
+                        <div className="relative flex-1">
+                            <HugeiconsIcon icon={Search01Icon} className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/30" />
+                            <input
+                                type="text"
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Search for topics, news, or issues..."
+                                className="w-full rounded-xl border border-white/[0.08] bg-[#1e293b] py-3 pl-10 pr-4 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
+                            />
+                        </div>
+                        <Button
+                            onClick={handleSearch}
+                            disabled={isSearching || !searchQuery.trim()}
+                            className="bg-[#e8614d] text-white hover:bg-[#e8614d]/90 cursor-pointer px-5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            size="default"
+                        >
+                            <HugeiconsIcon icon={Search01Icon} className="mr-1.5 h-4 w-4" />
+                            {isSearching ? 'Searching...' : 'Search'}
+                        </Button>
                     </div>
-                    <Button
-                        onClick={handleSearch}
-                        disabled={isSearching || !searchQuery.trim()}
-                        className="bg-[#e8614d] text-white hover:bg-[#e8614d]/90 cursor-pointer px-5 disabled:opacity-50 disabled:cursor-not-allowed"
-                        size="default"
-                    >
-                        <HugeiconsIcon icon={Search01Icon} className="mr-1.5 h-4 w-4" />
-                        {isSearching ? 'Searching...' : 'Search'}
-                    </Button>
-                </div>
+                )}
 
                 {/* Search status */}
                 {searchMessage && (
@@ -255,62 +304,66 @@ export default function ResearchPage() {
                 )}
             </div>
 
-            {/* ── Topics ── */}
-            <div className="px-8 py-6 space-y-6">
-                <section>
-                    <div className="mb-3 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <HugeiconsIcon icon={SparklesIcon} className="h-4 w-4 text-amber-400" />
-                            <h2 className="text-sm font-semibold text-white">Research Topics</h2>
-                            <span className="text-xs text-white/30">
-                                {filteredTopics.length} topic{filteredTopics.length !== 1 ? 's' : ''}
-                            </span>
-                        </div>
-                        <button
-                            onClick={() => setShowUsed(!showUsed)}
-                            className="text-xs text-white/30 transition-colors hover:text-white/60 cursor-pointer"
-                        >
-                            {showUsed ? 'Hide used' : 'Show used'}
-                        </button>
+            {/* ── Content ── */}
+            <div className="px-8 py-6">
+                {activeResearchSection === 'history' ? (
+                    /* History tab */
+                    <div className="space-y-2">
+                        {searchHistory.length === 0 ? (
+                            <div className="rounded-xl border border-dashed border-white/[0.08] p-8 text-center">
+                                <HugeiconsIcon icon={Search01Icon} className="mx-auto mb-2 h-6 w-6 text-white/15" />
+                                <p className="text-sm text-white/25">
+                                    Your search history will appear here
+                                </p>
+                            </div>
+                        ) : (
+                            searchHistory.map((entry, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:bg-white/[0.04]"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <HugeiconsIcon icon={Search01Icon} className="h-4 w-4 text-white/30" />
+                                        <div>
+                                            <p className="text-sm font-medium text-white">{entry.query}</p>
+                                            <p className="mt-0.5 text-xs text-white/30">
+                                                {entry.resultCount} result{entry.resultCount !== 1 ? 's' : ''} · {formatDate(entry.timestamp)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
-
+                ) : (
+                    /* Topic cards for all other tabs */
                     <div className="space-y-2">
                         {isLoading ? (
                             <div className="rounded-xl border border-dashed border-white/[0.08] p-8 text-center">
-                                <p className="text-sm text-white/25">Loading research topics…</p>
+                                <p className="text-sm text-white/25">Loading…</p>
+                            </div>
+                        ) : filteredTopics.length === 0 ? (
+                            <div className="rounded-xl border border-dashed border-white/[0.08] p-8 text-center">
+                                <HugeiconsIcon icon={Search01Icon} className="mx-auto mb-2 h-6 w-6 text-white/15" />
+                                <p className="text-sm text-white/25">
+                                    {activeResearchSection === 'in-queue' && 'No topics in queue yet. Mark a saved topic to add it here.'}
+                                    {activeResearchSection === 'saved' && 'Search for topics above to save them here.'}
+                                    {activeResearchSection === 'discover' && 'Search above to discover trending topics.'}
+                                    {activeResearchSection === 'used' && 'Topics used in drafts will appear here.'}
+                                </p>
                             </div>
                         ) : (
-                            <>
-                                {availableTopics.map(topic => (
-                                    <TopicCard
-                                        key={topic.id}
-                                        topic={topic}
-                                        onMarkForDraft={handleMarkForDraft}
-                                        onRemove={handleRemoveTopic}
-                                    />
-                                ))}
-
-                                {showUsed && usedTopics.map(topic => (
-                                    <TopicCard
-                                        key={topic.id}
-                                        topic={topic}
-                                        onMarkForDraft={handleMarkForDraft}
-                                        onRemove={handleRemoveTopic}
-                                    />
-                                ))}
-
-                                {availableTopics.length === 0 && !showUsed && (
-                                    <div className="rounded-xl border border-dashed border-white/[0.08] p-8 text-center">
-                                        <HugeiconsIcon icon={Search01Icon} className="mx-auto mb-2 h-6 w-6 text-white/15" />
-                                        <p className="text-sm text-white/25">
-                                            Search for a topic above to discover research for your emails
-                                        </p>
-                                    </div>
-                                )}
-                            </>
+                            filteredTopics.map(topic => (
+                                <TopicCard
+                                    key={topic.id}
+                                    topic={topic}
+                                    onMarkForDraft={handleMarkForDraft}
+                                    onRemove={handleRemoveTopic}
+                                />
+                            ))
                         )}
                     </div>
-                </section>
+                )}
             </div>
         </div>
     )
