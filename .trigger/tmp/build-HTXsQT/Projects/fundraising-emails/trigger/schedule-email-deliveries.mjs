@@ -70,7 +70,15 @@ var scheduleEmailDeliveries = task({
       );
     }
     const deliveryDays = profile.delivery_days || ["thursday"];
-    logger.info("Delivery days", { deliveryDays });
+    const { data: integration, error: intError } = await supabase.from("email_integrations").select("provider").eq("user_id", userId).limit(1).single();
+    if (intError || !integration) {
+      throw new AbortTaskRunError(
+        `No email platform connected: ${intError?.message || "no integration"}`
+      );
+    }
+    const provider = integration.provider;
+    const sendTaskId = provider === "action_network" ? "send-to-action-network" : "send-to-mailchimp";
+    logger.info("Delivery config", { deliveryDays, provider, sendTaskId });
     const { data: drafts, error: draftsError } = await supabase.from("email_drafts").select("id, subject_line").eq("user_id", userId).eq("status", "approved").is("scheduled_for", null).order("created_at", { ascending: true });
     if (draftsError) {
       throw new Error(`Failed to fetch drafts: ${draftsError.message}`);
@@ -118,13 +126,13 @@ var scheduleEmailDeliveries = task({
       }
       try {
         const { tasks } = await import("../../../v3-ZXUOLJWS.mjs");
-        await tasks.trigger("send-to-mailchimp", {
+        await tasks.trigger(sendTaskId, {
           draftId: draft.id,
           userId,
           scheduleTime: scheduledFor
         });
         scheduled.push({ draftId: draft.id, scheduledFor });
-        logger.info(`Scheduled draft`, {
+        logger.info(`Scheduled draft via ${provider}`, {
           draftId: draft.id,
           subject: draft.subject_line,
           scheduledFor

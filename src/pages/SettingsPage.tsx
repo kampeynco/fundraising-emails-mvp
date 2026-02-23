@@ -10,7 +10,6 @@ type SettingsContext = { activeSettingsSection: string }
 
 // ── General Section ─────────────────────────────────────────
 function GeneralSection() {
-    const [orgName, setOrgName] = useState('My Campaign')
     const [timezone, setTimezone] = useState('America/Chicago')
     const [deliveryDays, setDeliveryDays] = useState<string[]>(['thursday'])
 
@@ -25,19 +24,8 @@ function GeneralSection() {
     return (
         <div className="space-y-8">
             <div>
-                <h3 className="text-base font-semibold text-white">Organization</h3>
-                <p className="mt-1 text-sm text-white/40">Basic information about your campaign</p>
-            </div>
-
-            {/* Org Name */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-white/70">Organization Name</label>
-                <input
-                    type="text"
-                    value={orgName}
-                    onChange={e => setOrgName(e.target.value)}
-                    className="w-full max-w-md rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
-                />
+                <h3 className="text-base font-semibold text-white">General</h3>
+                <p className="mt-1 text-sm text-white/40">Configure your delivery preferences</p>
             </div>
 
             {/* Timezone */}
@@ -186,12 +174,6 @@ function StancesSection() {
 
 // ── Billing Section ─────────────────────────────────────────
 function BillingSection() {
-    const plans = [
-        { name: 'Starter', price: '$49', emails: '2 emails/week', current: false },
-        { name: 'Growth', price: '$99', emails: '5 emails/week', current: true },
-        { name: 'Full Send', price: '$199', emails: 'Unlimited emails', current: false },
-    ]
-
     return (
         <div className="space-y-8">
             <div>
@@ -199,51 +181,67 @@ function BillingSection() {
                 <p className="mt-1 text-sm text-white/40">Manage your subscription and payment method</p>
             </div>
 
-            {/* Current plan */}
+            {/* Current plan summary */}
             <div className="rounded-xl border border-[#e8614d]/20 bg-[#e8614d]/5 p-5">
                 <div className="flex items-center justify-between">
                     <div>
                         <p className="text-xs font-medium uppercase tracking-wider text-[#e8614d]">Current Plan</p>
-                        <p className="mt-1 text-2xl font-bold text-white">Growth</p>
-                        <p className="mt-0.5 text-sm text-white/40">$99/month · 5 emails/week · Billed monthly</p>
+                        <p className="mt-1 text-2xl font-bold text-white">$498<span className="text-sm font-normal text-white/40">/month</span></p>
+                        <p className="mt-0.5 text-sm text-white/40">1 email/week · Base platform · Billed monthly</p>
                     </div>
-                    <Button variant="outline" className="border-white/10 text-white/60 hover:text-white">
+                    <Button variant="outline" className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white">
                         Manage Billing
                         <HugeiconsIcon icon={ArrowRight01Icon} size={14} className="ml-1" />
                     </Button>
                 </div>
             </div>
 
-            {/* Plan comparison */}
-            <div className="grid grid-cols-3 gap-4">
-                {plans.map(plan => (
-                    <div
-                        key={plan.name}
-                        className={`rounded-xl border p-5 transition-all ${plan.current
-                            ? 'border-[#e8614d]/30 bg-[#e8614d]/5'
-                            : 'border-white/[0.06] bg-white/[0.02] hover:border-white/10'
-                            }`}
-                    >
-                        <p className="text-sm font-semibold text-white">{plan.name}</p>
-                        <p className="mt-1 text-2xl font-bold text-white">
-                            {plan.price}
-                            <span className="text-sm font-normal text-white/30">/mo</span>
-                        </p>
-                        <p className="mt-2 text-xs text-white/40">{plan.emails}</p>
-                        {plan.current ? (
-                            <p className="mt-4 text-xs font-medium text-[#e8614d]">Current plan</p>
-                        ) : (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="mt-4 w-full cursor-pointer border-white/10 text-xs text-white/50 hover:text-white"
-                            >
-                                Switch
-                            </Button>
-                        )}
+            {/* Line items matching pricing page */}
+            <div className="space-y-3">
+                {/* Email Writing */}
+                <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+                    <div>
+                        <p className="text-sm font-semibold text-white">Email Writing Service</p>
+                        <p className="mt-0.5 text-xs text-white/40">Done-for-you fundraising emails, delivered weekly via the Thursday Drop</p>
                     </div>
-                ))}
+                    <div className="text-right">
+                        <p className="text-lg font-bold text-white">$249<span className="text-xs font-normal text-white/30">/mo</span></p>
+                        <p className="text-[10px] uppercase tracking-wider text-white/30">1 email/wk</p>
+                    </div>
+                </div>
+
+                {/* Platform */}
+                <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold text-white">Platform</p>
+                            <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white/40">Base</span>
+                        </div>
+                        <p className="mt-0.5 text-xs text-white/40">Dashboard and client portal access</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-lg font-bold text-white">$249<span className="text-xs font-normal text-white/30">/mo</span></p>
+                        <p className="text-[10px] uppercase tracking-wider text-white/30">Base tier</p>
+                    </div>
+                </div>
+
+                {/* Rapid Response */}
+                <div className="flex items-center justify-between rounded-xl border border-dashed border-white/[0.06] bg-white/[0.01] p-5 opacity-50">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm font-semibold text-white">Rapid Response Service</p>
+                            <span className="text-[10px] font-medium text-[#e8614d]">⚡ Available at 3+ emails/wk</span>
+                        </div>
+                        <p className="mt-0.5 text-xs text-white/40">24-hour turnaround for breaking news, opposition hits, deadline surprises</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-lg font-bold text-white/40">$995<span className="text-xs font-normal text-white/20">/mo</span></p>
+                        <p className="text-[10px] uppercase tracking-wider text-white/20">Add-on</p>
+                    </div>
+                </div>
             </div>
+
+            <p className="text-center text-xs italic text-white/25">Pause or cancel anytime. Keep everything we've written.</p>
         </div>
     )
 }
@@ -254,44 +252,30 @@ interface Integration {
     provider: string
     desc: string
     icon: string
-    hasOAuth: boolean
+    authType: 'oauth' | 'apikey' | 'none' // oauth=redirect, apikey=paste key, none=coming soon
 }
 
 const INTEGRATIONS: Integration[] = [
-    {
-        name: 'Mailchimp',
-        provider: 'mailchimp',
-        desc: 'Send approved emails directly to your Mailchimp audience',
-        icon: '📬',
-        hasOAuth: true,
-    },
-    {
-        name: 'Gmail',
-        provider: 'gmail',
-        desc: 'Send emails from your campaign Gmail account',
-        icon: '📧',
-        hasOAuth: false,
-    },
-    {
-        name: 'Stripe',
-        provider: 'stripe',
-        desc: 'Track donation conversions from email campaigns',
-        icon: '💳',
-        hasOAuth: false,
-    },
-    {
-        name: 'ActBlue',
-        provider: 'actblue',
-        desc: 'Embed ActBlue donation links in fundraising emails',
-        icon: '🗳️',
-        hasOAuth: false,
-    },
+    { name: 'Mailchimp', provider: 'mailchimp', desc: 'Send approved emails directly to your Mailchimp audience', icon: '📬', authType: 'oauth' },
+    { name: 'Action Network', provider: 'action_network', desc: 'Sync with your Action Network email lists', icon: '📢', authType: 'apikey' },
+    { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', icon: '🔶', authType: 'none' },
+    { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', icon: '⚡', authType: 'none' },
+    { name: 'Constant Contact', provider: 'constant_contact', desc: 'Send through Constant Contact campaigns', icon: '✉️', authType: 'none' },
+    { name: 'SendGrid', provider: 'sendgrid', desc: 'Deliver emails via SendGrid transactional API', icon: '📤', authType: 'none' },
+    { name: 'NationBuilder', provider: 'nationbuilder', desc: 'Sync emails with your NationBuilder nation', icon: '🏗️', authType: 'none' },
 ]
 
 function IntegrationsSection() {
     const { user } = useAuth()
     const [connectedProviders, setConnectedProviders] = useState<Record<string, { account_name?: string; list_name?: string }>>({})
     const [connecting, setConnecting] = useState<string | null>(null)
+    const [apiKeyDialogProvider, setApiKeyDialogProvider] = useState<string | null>(null)
+    const [apiKeyInput, setApiKeyInput] = useState('')
+    const [apiKeyError, setApiKeyError] = useState('')
+    const [apiKeyLoading, setApiKeyLoading] = useState(false)
+
+    // Check if any platform is already connected
+    const hasConnectedPlatform = Object.keys(connectedProviders).length > 0
 
     // Fetch connected integrations on mount
     const fetchIntegrations = useCallback(async () => {
@@ -319,7 +303,17 @@ function IntegrationsSection() {
     }, [fetchIntegrations])
 
     const handleConnect = async (integration: Integration) => {
-        if (!integration.hasOAuth) return
+        if (integration.authType === 'none') return
+
+        // API key flow — show dialog
+        if (integration.authType === 'apikey') {
+            setApiKeyDialogProvider(integration.provider)
+            setApiKeyInput('')
+            setApiKeyError('')
+            return
+        }
+
+        // OAuth flow (Mailchimp)
         setConnecting(integration.provider)
 
         try {
@@ -351,6 +345,56 @@ function IntegrationsSection() {
         }
     }
 
+    const handleApiKeySubmit = async () => {
+        if (!user || !apiKeyDialogProvider || !apiKeyInput.trim()) return
+        setApiKeyLoading(true)
+        setApiKeyError('')
+
+        try {
+            // Validate the API key by making a test call
+            const testResponse = await fetch('https://actionnetwork.org/api/v2/', {
+                headers: { 'OSDI-API-Token': apiKeyInput.trim() },
+            })
+
+            if (!testResponse.ok) {
+                setApiKeyError('Invalid API key. Please check and try again.')
+                setApiKeyLoading(false)
+                return
+            }
+
+            const testData = await testResponse.json()
+            const orgName = testData?.motd || 'Action Network'
+
+            // Save to email_integrations
+            const { error } = await supabase
+                .from('email_integrations')
+                .upsert({
+                    user_id: user.id,
+                    provider: apiKeyDialogProvider,
+                    access_token: apiKeyInput.trim(),
+                    metadata: { account_name: orgName },
+                    connected_at: new Date().toISOString(),
+                }, { onConflict: 'user_id,provider' })
+
+            if (error) {
+                setApiKeyError(`Failed to save: ${error.message}`)
+                setApiKeyLoading(false)
+                return
+            }
+
+            setConnectedProviders(prev => ({
+                ...prev,
+                [apiKeyDialogProvider]: { account_name: orgName },
+            }))
+            setApiKeyDialogProvider(null)
+            setApiKeyInput('')
+        } catch (err) {
+            setApiKeyError('Connection failed. Please try again.')
+        } finally {
+            setApiKeyLoading(false)
+        }
+    }
+
     const handleDisconnect = async (provider: string) => {
         if (!user) return
         await supabase
@@ -371,14 +415,22 @@ function IntegrationsSection() {
             <div>
                 <h3 className="text-base font-semibold text-white">Integrations</h3>
                 <p className="mt-1 text-sm text-white/40">
-                    Connect your email platform and payment processor
+                    Connect your email marketing platform
                 </p>
             </div>
+
+            {hasConnectedPlatform && (
+                <p className="text-xs text-amber-400/60">
+                    Only one platform can be connected at a time. Disconnect your current platform to switch.
+                </p>
+            )}
 
             <div className="space-y-3">
                 {INTEGRATIONS.map(integration => {
                     const connected = connectedProviders[integration.provider]
                     const isConnecting = connecting === integration.provider
+                    const isAvailable = integration.authType !== 'none'
+                    const isLockedOut = hasConnectedPlatform && !connected
 
                     return (
                         <div
@@ -423,20 +475,68 @@ function IntegrationsSection() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    disabled={!integration.hasOAuth || isConnecting}
+                                    disabled={!isAvailable || isConnecting || isLockedOut}
                                     onClick={() => handleConnect(integration)}
-                                    className={`cursor-pointer border-white/10 text-xs text-white/50 ${integration.hasOAuth
-                                        ? 'hover:border-[#e8614d]/50 hover:text-[#e8614d]'
-                                        : 'cursor-not-allowed opacity-40'
+                                    className={`cursor-pointer text-xs ${isLockedOut
+                                            ? 'cursor-not-allowed border-white/5 text-white/20 opacity-40'
+                                            : isAvailable
+                                                ? 'border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white'
+                                                : 'border-[#e8614d]/30 bg-[#e8614d]/5 text-[#e8614d]/50'
                                         }`}
                                 >
-                                    {isConnecting ? 'Connecting…' : integration.hasOAuth ? 'Connect' : 'Coming Soon'}
+                                    {isConnecting ? 'Connecting…' : isLockedOut ? 'Locked' : isAvailable ? 'Connect' : 'Coming Soon'}
                                 </Button>
                             )}
                         </div>
                     )
                 })}
             </div>
+
+            {/* API Key Dialog */}
+            {apiKeyDialogProvider && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="mx-4 w-full max-w-md rounded-2xl border border-white/[0.08] bg-[#0f1724] p-6 shadow-2xl">
+                        <h3 className="text-lg font-semibold text-white">
+                            Connect {INTEGRATIONS.find(i => i.provider === apiKeyDialogProvider)?.name}
+                        </h3>
+                        <p className="mt-1 text-sm text-white/40">
+                            Paste your API key below. You can find it in your Action Network dashboard under Settings → API Keys.
+                        </p>
+                        <div className="mt-4 space-y-3">
+                            <input
+                                type="text"
+                                value={apiKeyInput}
+                                onChange={e => setApiKeyInput(e.target.value)}
+                                placeholder="Paste your API key here…"
+                                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
+                                onKeyDown={e => e.key === 'Enter' && handleApiKeySubmit()}
+                                autoFocus
+                            />
+                            {apiKeyError && (
+                                <p className="text-xs text-red-400">{apiKeyError}</p>
+                            )}
+                            <div className="flex justify-end gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => { setApiKeyDialogProvider(null); setApiKeyInput(''); setApiKeyError('') }}
+                                    className="cursor-pointer border-white/10 text-xs text-white/50 hover:text-white"
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    size="sm"
+                                    disabled={!apiKeyInput.trim() || apiKeyLoading}
+                                    onClick={handleApiKeySubmit}
+                                    className="cursor-pointer bg-[#e8614d] text-xs text-white hover:bg-[#d4553f]"
+                                >
+                                    {apiKeyLoading ? 'Validating…' : 'Connect'}
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

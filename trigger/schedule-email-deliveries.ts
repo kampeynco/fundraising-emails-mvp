@@ -102,7 +102,27 @@ export const scheduleEmailDeliveries = task({
 
         const deliveryDays: string[] = profile.delivery_days || ["thursday"];
 
-        logger.info("Delivery days", { deliveryDays });
+        // 1b. Detect which email platform is connected
+        const { data: integration, error: intError } = await supabase
+            .from("email_integrations")
+            .select("provider")
+            .eq("user_id", userId)
+            .limit(1)
+            .single();
+
+        if (intError || !integration) {
+            throw new AbortTaskRunError(
+                `No email platform connected: ${intError?.message || "no integration"}`
+            );
+        }
+
+        const provider = integration.provider;
+        const sendTaskId =
+            provider === "action_network"
+                ? "send-to-action-network"
+                : "send-to-mailchimp";
+
+        logger.info("Delivery config", { deliveryDays, provider, sendTaskId });
 
         // 2. Fetch approved but unscheduled drafts
         const { data: drafts, error: draftsError } = await supabase
@@ -140,7 +160,7 @@ export const scheduleEmailDeliveries = task({
             });
         }
 
-        // 4. Assign each draft to a delivery date and trigger send
+        // 4. Assign each draft to a delivery date and trigger correct send task
         metadata.set("status", "scheduling");
         const scheduled: Array<{ draftId: string; scheduledFor: string }> = [];
 
@@ -172,10 +192,10 @@ export const scheduleEmailDeliveries = task({
                 continue;
             }
 
-            // Trigger send-to-mailchimp with schedule time
+            // Trigger the appropriate send task based on connected provider
             try {
                 const { tasks } = await import("@trigger.dev/sdk");
-                await tasks.trigger("send-to-mailchimp", {
+                await tasks.trigger(sendTaskId, {
                     draftId: draft.id,
                     userId,
                     scheduleTime: scheduledFor,
@@ -183,7 +203,7 @@ export const scheduleEmailDeliveries = task({
 
                 scheduled.push({ draftId: draft.id, scheduledFor });
 
-                logger.info(`Scheduled draft`, {
+                logger.info(`Scheduled draft via ${provider}`, {
                     draftId: draft.id,
                     subject: draft.subject_line,
                     scheduledFor,

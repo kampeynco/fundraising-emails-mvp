@@ -126,7 +126,7 @@ export default function BrandKitPage() {
                         </h2>
 
                         <div className="mb-6">
-                            <label className="mb-2 block text-sm font-medium text-white/50">Committee Name</label>
+                            <label className="mb-2 block text-sm font-medium text-white/50">Organization Name</label>
                             <input
                                 type="text"
                                 value={data.kit_name}
