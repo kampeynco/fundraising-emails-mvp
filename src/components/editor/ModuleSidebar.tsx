@@ -4,7 +4,7 @@ import {
     TextIcon,
     ParagraphIcon,
     MoneyReceiveSquareIcon,
-    CursorClick01Icon,
+    Cursor01Icon,
     Edit02Icon,
     Mail01Icon,
 } from '@hugeicons/core-free-icons'
@@ -21,7 +21,7 @@ const CATEGORIES: Array<{ id: ModuleCategory; label: string; icon: any }> = [
     { id: 'header', label: 'Header', icon: TextIcon },
     { id: 'content', label: 'Content', icon: ParagraphIcon },
     { id: 'donation', label: 'Donation Ask', icon: MoneyReceiveSquareIcon },
-    { id: 'cta', label: 'Call to Action', icon: CursorClick01Icon },
+    { id: 'cta', label: 'Call to Action', icon: Cursor01Icon },
     { id: 'ps', label: 'P.S. Block', icon: Edit02Icon },
     { id: 'footer', label: 'Footer', icon: Mail01Icon },
 ]
@@ -37,8 +37,8 @@ export function ModuleSidebar({ activeCategory, onCategorySelect }: ModuleSideba
                             <button
                                 onClick={() => onCategorySelect(cat.id)}
                                 className={`flex h-10 w-10 items-center justify-center rounded-lg transition-all cursor-pointer ${isActive
-                                        ? 'bg-[#e8614d]/15 text-[#e8614d]'
-                                        : 'text-white/40 hover:bg-white/[0.06] hover:text-white/70'
+                                    ? 'bg-[#e8614d]/15 text-[#e8614d]'
+                                    : 'text-white/40 hover:bg-white/[0.06] hover:text-white/70'
                                     }`}
                             >
                                 <HugeiconsIcon icon={cat.icon} size={20} />
