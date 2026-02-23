@@ -3,17 +3,15 @@ import { useNavigate } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
+import { HugeiconsIcon } from '@hugeicons/react'
 import {
     LicenseDraftIcon,
     SentIcon,
     ChartRoseIcon,
     PercentIcon,
-    ArrowUp01Icon,
-    ArrowDown01Icon,
     FlashIcon,
     CheckmarkBadge01Icon,
     Clock01Icon,
-    Cancel01Icon,
 } from '@hugeicons/core-free-icons'
 
 interface DraftStats {
