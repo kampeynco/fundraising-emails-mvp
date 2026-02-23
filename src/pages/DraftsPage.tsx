@@ -18,6 +18,7 @@ import {
     ViewIcon,
 } from '@hugeicons/core-free-icons'
 import { type Draft, type DraftStatus, DRAFT_STATUS_CONFIG } from '@/types/draft'
+import { NewDraftDialog } from '@/components/drafts/NewDraftDialog'
 
 // ── Status order for swimlanes ──
 const STATUS_ORDER: DraftStatus[] = [
@@ -50,6 +51,7 @@ export default function DraftsPage() {
     const [drafts, setDrafts] = useState<Draft[]>([])
     const [loadingDrafts, setLoadingDrafts] = useState(true)
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
+    const [showNewDraft, setShowNewDraft] = useState(false)
     const [dropDay, setDropDay] = useState('Thursday')
 
     // ── Fetch drafts from Supabase ──
@@ -163,6 +165,17 @@ export default function DraftsPage() {
                             {' · '}{totalDrafts} total
                         </p>
                     </div>
+
+                    {/* New Draft button */}
+                    <button
+                        onClick={() => setShowNewDraft(true)}
+                        className="flex items-center gap-2 rounded-lg bg-[#e8614d] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#e8614d]/80 active:scale-[0.98]"
+                    >
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        New Draft
+                    </button>
                 </div>
             </div>
             <div className="px-8 py-6 space-y-2">
@@ -311,5 +324,9 @@ export default function DraftsPage() {
                 </div>
             </div>
         </div>
+
+            {/* New Draft Dialog */ }
+    <NewDraftDialog open={showNewDraft} onOpenChange={setShowNewDraft} />
+        </div >
     )
 }
