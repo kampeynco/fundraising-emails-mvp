@@ -452,7 +452,7 @@ export default function BrandKitPage() {
 
                         <div className="mb-6">
                             <div className="mb-2 flex items-center justify-between">
-                                <label className="block text-sm font-medium text-white/50">Tell us about your committee</label>
+                                <label className="block text-sm font-medium text-white/50">Tell us your story</label>
                                 <ImportFromUrlButton onImport={(bio) => updateField('brand_summary', bio)} />
                             </div>
                             <textarea

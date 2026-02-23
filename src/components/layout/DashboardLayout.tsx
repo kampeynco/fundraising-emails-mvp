@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     Mail01Icon,
@@ -15,7 +16,6 @@ import {
     Link02Icon,
     ProfileIcon,
     EdgeStyleIcon,
-    Search01Icon,
     Settings02Icon,
     UserIcon,
     CreditCardPosIcon,
@@ -28,14 +28,16 @@ import {
     TextAlignLeftIcon,
     Mic01Icon,
     AiSearch02Icon,
+    FlashIcon,
+    NoteIcon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 // ── Icon sidebar nav items ──────────────────────────────────
 const mainNavItems = [
     { icon: Home07Icon, label: 'Overview', href: '/dashboard' },
-    { icon: LicenseDraftIcon, label: 'Drafts', href: '/dashboard/drafts' },
     { icon: AiSearch02Icon, label: 'Research', href: '/dashboard/research' },
+    { icon: LicenseDraftIcon, label: 'Drafts', href: '/dashboard/drafts' },
     { icon: SwatchIcon, label: 'Brand Kit', href: '/dashboard/brand-kit' },
     { icon: Settings02Icon, label: 'Settings', href: '/dashboard/settings' },
 ]
@@ -112,7 +114,36 @@ const settingsSections = [
 export function DashboardLayout() {
     const { user, signOut } = useAuth()
     const location = useLocation()
-    const [activeSection, setActiveSection] = useState('brand-details')
+    const [activeSection, setActiveSection] = useState<string | null>(null)
+    const [plusMenuOpen, setPlusMenuOpen] = useState(false)
+    const [hasRapidResponse, setHasRapidResponse] = useState(false)
+    const plusMenuRef = useRef<HTMLDivElement>(null)
+
+    // Fetch subscription to check rapid response eligibility
+    useEffect(() => {
+        if (!user) return
+        const checkPlan = async () => {
+            const { data } = await supabase
+                .from('subscriptions')
+                .select('emails_per_week')
+                .eq('user_id', user.id)
+                .eq('status', 'active')
+                .maybeSingle()
+            setHasRapidResponse((data?.emails_per_week ?? 0) >= 3)
+        }
+        checkPlan()
+    }, [user])
+
+    // Click outside to close plus menu
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (plusMenuRef.current && !plusMenuRef.current.contains(e.target as Node)) {
+                setPlusMenuOpen(false)
+            }
+        }
+        if (plusMenuOpen) document.addEventListener('mousedown', handleClick)
+        return () => document.removeEventListener('mousedown', handleClick)
+    }, [plusMenuOpen])
     const [activeSettingsSection, setActiveSettingsSection] = useState('general')
     const isBrandKit = location.pathname.startsWith('/dashboard/brand-kit')
     const isSettings = location.pathname.startsWith('/dashboard/settings')
@@ -135,17 +166,42 @@ export function DashboardLayout() {
                 </Link>
 
                 {/* New Request */}
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <button
-                            className="mb-4 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-[#e8614d] text-white transition-all hover:bg-[#d4553f] hover:shadow-lg hover:shadow-[#e8614d]/20 active:scale-95"
-                            onClick={() => {/* TODO: open new request modal */ }}
-                        >
-                            <HugeiconsIcon icon={Add01Icon} size={18} />
-                        </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="right" sideOffset={12}>New Request</TooltipContent>
-                </Tooltip>
+                <div ref={plusMenuRef} className="relative">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <button
+                                className="mb-4 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-[#e8614d] text-white transition-all hover:bg-[#d4553f] hover:shadow-lg hover:shadow-[#e8614d]/20 active:scale-95"
+                                onClick={() => setPlusMenuOpen(prev => !prev)}
+                            >
+                                <HugeiconsIcon icon={Add01Icon} size={18} />
+                            </button>
+                        </TooltipTrigger>
+                        {!plusMenuOpen && <TooltipContent side="right" sideOffset={12}>New Draft</TooltipContent>}
+                    </Tooltip>
+
+                    {plusMenuOpen && (
+                        <div className="absolute left-full top-0 ml-3 z-50 w-52 rounded-xl border border-white/[0.08] bg-[#0f1724] p-1.5 shadow-2xl shadow-black/40">
+                            <Link
+                                to="/dashboard/drafts?new=regular"
+                                className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white"
+                                onClick={() => setPlusMenuOpen(false)}
+                            >
+                                <HugeiconsIcon icon={NoteIcon} size={16} className="text-white/50" />
+                                Regular Draft
+                            </Link>
+                            {hasRapidResponse && (
+                                <Link
+                                    to="/dashboard/drafts?new=rapid"
+                                    className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm text-white/80 transition-colors hover:bg-white/[0.06] hover:text-white"
+                                    onClick={() => setPlusMenuOpen(false)}
+                                >
+                                    <HugeiconsIcon icon={FlashIcon} size={16} className="text-amber-400" />
+                                    Rapid Response
+                                </Link>
+                            )}
+                        </div>
+                    )}
+                </div>
 
                 {/* Separator */}
                 <div className="mb-3 h-px w-8 bg-white/10" />

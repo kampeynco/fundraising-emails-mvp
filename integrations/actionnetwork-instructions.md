@@ -10,9 +10,10 @@ Action Network uses **API key** authentication (no OAuth).
 ## 1. Get Your API Key
 
 1. Log in to your Action Network account
-2. Go to **Settings** → **API & Sync** → **Your API Key**
-3. If you don't see an API key section, you may need to request API access from Action Network support
-4. Copy the API key
+2. Go to **Details** → **API & Sync** → **Your API Key**
+3. Go to Your API Key accordion and click it.
+4. Click Generate a new API Key button.
+5. Copy the API key
 
 ## 2. Connect in Kampeyn
 

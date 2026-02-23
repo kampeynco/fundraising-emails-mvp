@@ -165,31 +165,8 @@ export default function DraftsPage() {
                             {' · '}{totalDrafts} total
                         </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="border-white/10 bg-white/5 text-white/60 hover:bg-white/10 hover:text-white cursor-pointer"
-                                >
-                                    <HugeiconsIcon icon={FlashIcon} className="mr-1.5 h-3.5 w-3.5 text-amber-400" />
-                                    Rapid Response
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent side="bottom" className="max-w-[260px]">
-                                <p className="font-semibold">⚡ Rapid Response</p>
-                                <p className="mt-1 text-xs text-white/60">
-                                    Generate an urgent fundraising email for breaking news, opposition attacks, or flash donation matches.
-                                    Available on plans with 3+ emails/week. 24-hour turnaround.
-                                </p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </div>
                 </div>
             </div>
-
-            {/* ── Swimlane Sections ── */}
             <div className="px-8 py-6 space-y-2">
                 {STATUS_ORDER.map(status => {
                     const config = DRAFT_STATUS_CONFIG[status]
