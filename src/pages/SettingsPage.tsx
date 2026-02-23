@@ -238,7 +238,7 @@ const INTEGRATIONS: Integration[] = [
     { name: 'Mailchimp', provider: 'mailchimp', desc: 'Send approved emails directly to your Mailchimp audience', logo: 'https://cdn.brandfetch.io/mailchimp.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'oauth' },
     { name: 'Action Network', provider: 'action_network', desc: 'Send approved emails directly to your Action Network list', logo: 'https://cdn.brandfetch.io/actionnetwork.org/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
     { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', logo: 'https://cdn.brandfetch.io/hubspot.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'oauth' },
-    { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', logo: 'https://cdn.brandfetch.io/activecampaign.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', logo: 'https://cdn.brandfetch.io/activecampaign.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
     { name: 'Constant Contact', provider: 'constant_contact', desc: 'Send through Constant Contact campaigns', logo: 'https://cdn.brandfetch.io/constantcontact.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'SendGrid', provider: 'sendgrid', desc: 'Deliver emails via SendGrid transactional API', logo: 'https://cdn.brandfetch.io/sendgrid.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'NationBuilder', provider: 'nationbuilder', desc: 'Sync emails with your NationBuilder nation', logo: 'https://cdn.brandfetch.io/nationbuilder.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
@@ -252,6 +252,7 @@ function IntegrationsSection() {
     const [connecting, setConnecting] = useState<string | null>(null)
     const [apiKeyDialogProvider, setApiKeyDialogProvider] = useState<string | null>(null)
     const [apiKeyInput, setApiKeyInput] = useState('')
+    const [accountUrlInput, setAccountUrlInput] = useState('')
     const [apiKeyError, setApiKeyError] = useState('')
     const [apiKeyLoading, setApiKeyLoading] = useState(false)
 
@@ -341,19 +342,45 @@ function IntegrationsSection() {
         setApiKeyError('')
 
         try {
-            // Validate the API key by making a test call
-            const testResponse = await fetch('https://actionnetwork.org/api/v2/', {
-                headers: { 'OSDI-API-Token': apiKeyInput.trim() },
-            })
+            let orgName = ''
 
-            if (!testResponse.ok) {
-                setApiKeyError('Invalid API key. Please check and try again.')
-                setApiKeyLoading(false)
-                return
+            if (apiKeyDialogProvider === 'action_network') {
+                // Action Network: validate via OSDI endpoint
+                const testResponse = await fetch('https://actionnetwork.org/api/v2/', {
+                    headers: { 'OSDI-API-Token': apiKeyInput.trim() },
+                })
+                if (!testResponse.ok) {
+                    setApiKeyError('Invalid API key. Please check and try again.')
+                    setApiKeyLoading(false)
+                    return
+                }
+                const testData = await testResponse.json()
+                orgName = testData?.motd || 'Action Network'
+
+            } else if (apiKeyDialogProvider === 'active_campaign') {
+                // Active Campaign: needs account URL + API key
+                if (!accountUrlInput.trim()) {
+                    setApiKeyError('Please enter your Active Campaign account URL.')
+                    setApiKeyLoading(false)
+                    return
+                }
+                // Normalize the URL
+                let baseUrl = accountUrlInput.trim().replace(/\/$/, '')
+                if (!baseUrl.startsWith('https://')) baseUrl = `https://${baseUrl}`
+
+                const testResponse = await fetch(`${baseUrl}/api/3/users/me`, {
+                    headers: { 'Api-Token': apiKeyInput.trim() },
+                })
+                if (!testResponse.ok) {
+                    setApiKeyError('Invalid API key or account URL. Please check and try again.')
+                    setApiKeyLoading(false)
+                    return
+                }
+                const testData = await testResponse.json()
+                orgName = testData?.user?.firstName
+                    ? `${testData.user.firstName} ${testData.user.lastName || ''}`.trim()
+                    : 'Active Campaign'
             }
-
-            const testData = await testResponse.json()
-            const orgName = testData?.motd || 'Action Network'
 
             // Save to email_integrations
             const { error } = await supabase
@@ -362,6 +389,7 @@ function IntegrationsSection() {
                     user_id: user.id,
                     provider: apiKeyDialogProvider,
                     access_token: apiKeyInput.trim(),
+                    server_prefix: apiKeyDialogProvider === 'active_campaign' ? accountUrlInput.trim().replace(/\/$/, '') : null,
                     metadata: { account_name: orgName },
                     connected_at: new Date().toISOString(),
                 }, { onConflict: 'user_id,provider' })
@@ -378,6 +406,7 @@ function IntegrationsSection() {
             }))
             setApiKeyDialogProvider(null)
             setApiKeyInput('')
+            setAccountUrlInput('')
         } catch (err) {
             setApiKeyError('Connection failed. Please try again.')
         } finally {
@@ -488,9 +517,22 @@ function IntegrationsSection() {
                             Connect {INTEGRATIONS.find(i => i.provider === apiKeyDialogProvider)?.name}
                         </h3>
                         <p className="mt-1 text-sm text-white/40">
-                            Paste your API key below. You can find it in your Action Network dashboard under Settings → API Keys.
+                            {apiKeyDialogProvider === 'active_campaign'
+                                ? 'Enter your Active Campaign account URL and API key. Find them under Settings → Developer.'
+                                : `Paste your API key below. You can find it in your ${INTEGRATIONS.find(i => i.provider === apiKeyDialogProvider)?.name} dashboard under Settings → API Keys.`
+                            }
                         </p>
                         <div className="mt-4 space-y-3">
+                            {apiKeyDialogProvider === 'active_campaign' && (
+                                <input
+                                    type="text"
+                                    value={accountUrlInput}
+                                    onChange={e => setAccountUrlInput(e.target.value)}
+                                    placeholder="yourname.api-us1.com"
+                                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
+                                    autoFocus
+                                />
+                            )}
                             <input
                                 type="text"
                                 value={apiKeyInput}
@@ -498,7 +540,7 @@ function IntegrationsSection() {
                                 placeholder="Paste your API key here…"
                                 className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
                                 onKeyDown={e => e.key === 'Enter' && handleApiKeySubmit()}
-                                autoFocus
+                                autoFocus={apiKeyDialogProvider !== 'active_campaign'}
                             />
                             {apiKeyError && (
                                 <p className="text-xs text-red-400">{apiKeyError}</p>
@@ -507,7 +549,7 @@ function IntegrationsSection() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    onClick={() => { setApiKeyDialogProvider(null); setApiKeyInput(''); setApiKeyError('') }}
+                                    onClick={() => { setApiKeyDialogProvider(null); setApiKeyInput(''); setAccountUrlInput(''); setApiKeyError('') }}
                                     className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-xs text-[#e8614d] hover:bg-[#e8614d] hover:text-white"
                                 >
                                     Cancel
