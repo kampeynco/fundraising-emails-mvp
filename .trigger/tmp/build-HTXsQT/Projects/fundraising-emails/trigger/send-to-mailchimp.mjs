@@ -67,8 +67,8 @@ var sendToMailchimp = task({
     maxTimeoutInMs: 3e4
   },
   run: /* @__PURE__ */ __name(async (payload) => {
-    const { draftId, userId } = payload;
-    logger.info("📬 Send to Mailchimp starting", { draftId, userId });
+    const { draftId, userId, scheduleTime } = payload;
+    logger.info("📬 Send to Mailchimp starting", { draftId, userId, scheduleTime: scheduleTime || "immediate" });
     metadata.set("status", "fetching_draft").set("draftId", draftId);
     const { data: draft, error: draftError } = await supabase.from("email_drafts").select("id, subject_line, body_html, body_text, status, user_id").eq("id", draftId).eq("user_id", userId).single();
     if (draftError || !draft) {
@@ -173,20 +173,38 @@ var sendToMailchimp = task({
         `Mailchimp send checklist failed: ${errorDetails || "Unknown error"}`
       );
     }
-    metadata.set("status", "step_4_sending");
-    logger.info("Step 4: Sending campaign");
-    await mailchimpFetch(
-      mc.server_prefix,
-      mc.access_token,
-      `/campaigns/${campaignId}/actions/send`,
-      { method: "POST" }
-    );
-    const sentAt = (/* @__PURE__ */ new Date()).toISOString();
-    logger.info("🎉 Campaign sent successfully!", { campaignId, sentAt });
+    if (scheduleTime) {
+      metadata.set("status", "step_4_scheduling");
+      logger.info("Step 4: Scheduling campaign", { scheduleTime });
+      await mailchimpFetch(
+        mc.server_prefix,
+        mc.access_token,
+        `/campaigns/${campaignId}/actions/schedule`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            schedule_time: scheduleTime
+          })
+        }
+      );
+      logger.info("📅 Campaign scheduled!", { campaignId, scheduleTime });
+    } else {
+      metadata.set("status", "step_4_sending");
+      logger.info("Step 4: Sending campaign immediately");
+      await mailchimpFetch(
+        mc.server_prefix,
+        mc.access_token,
+        `/campaigns/${campaignId}/actions/send`,
+        { method: "POST" }
+      );
+      logger.info("🎉 Campaign sent immediately!", { campaignId });
+    }
+    const sentAt = scheduleTime || (/* @__PURE__ */ new Date()).toISOString();
     metadata.set("status", "updating_draft");
     const { error: updateError } = await supabase.from("email_drafts").update({
-      status: "sent",
-      sent_at: sentAt,
+      status: scheduleTime ? "scheduled" : "sent",
+      sent_at: scheduleTime ? null : sentAt,
+      scheduled_for: scheduleTime || null,
       mailchimp_campaign_id: campaignId
     }).eq("id", draftId);
     if (updateError) {
@@ -199,7 +217,8 @@ var sendToMailchimp = task({
     return {
       draftId,
       campaignId,
-      sentAt,
+      sentAt: scheduleTime ? null : sentAt,
+      scheduledFor: scheduleTime || null,
       subject: draft.subject_line,
       fromName,
       replyTo

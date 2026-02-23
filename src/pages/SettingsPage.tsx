@@ -12,7 +12,15 @@ type SettingsContext = { activeSettingsSection: string }
 function GeneralSection() {
     const [orgName, setOrgName] = useState('My Campaign')
     const [timezone, setTimezone] = useState('America/Chicago')
-    const [deliveryDay, setDeliveryDay] = useState('thursday')
+    const [deliveryDays, setDeliveryDays] = useState<string[]>(['thursday'])
+
+    const toggleDay = (day: string) => {
+        setDeliveryDays(prev =>
+            prev.includes(day)
+                ? prev.filter(d => d !== day)
+                : [...prev, day]
+        )
+    }
 
     return (
         <div className="space-y-8">
@@ -47,24 +55,33 @@ function GeneralSection() {
                 </select>
             </div>
 
-            {/* Delivery Day */}
+            {/* Delivery Days (multi-select) */}
             <div className="space-y-2">
-                <label className="block text-sm font-medium text-white/70">Email Delivery Day</label>
-                <p className="text-xs text-white/30">Which day of the week should drafts be delivered?</p>
+                <label className="block text-sm font-medium text-white/70">Email Delivery Days</label>
+                <p className="text-xs text-white/30">Select which days approved emails should be sent. Drafts generate every Thursday.</p>
                 <div className="flex flex-wrap gap-2 pt-1">
-                    {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => (
-                        <button
-                            key={day}
-                            onClick={() => setDeliveryDay(day)}
-                            className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium capitalize transition-all ${deliveryDay === day
-                                ? 'border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d]'
-                                : 'border-white/[0.08] text-white/40 hover:border-white/15 hover:text-white/60'
-                                }`}
-                        >
-                            {day}
-                        </button>
-                    ))}
+                    {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => {
+                        const isSelected = deliveryDays.includes(day)
+                        return (
+                            <button
+                                key={day}
+                                onClick={() => toggleDay(day)}
+                                className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium capitalize transition-all ${isSelected
+                                    ? 'border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d]'
+                                    : 'border-white/[0.08] text-white/40 hover:border-white/15 hover:text-white/60'
+                                    }`}
+                            >
+                                {day}
+                                {isSelected && (
+                                    <HugeiconsIcon icon={Tick01Icon} size={12} className="ml-1.5 inline-block" />
+                                )}
+                            </button>
+                        )
+                    })}
                 </div>
+                {deliveryDays.length === 0 && (
+                    <p className="text-xs text-amber-400/60">Select at least one delivery day</p>
+                )}
             </div>
 
             <div className="pt-2">
@@ -73,7 +90,7 @@ function GeneralSection() {
                     Save Changes
                 </Button>
             </div>
-        </div>
+        </div >
     )
 }
 
@@ -367,8 +384,8 @@ function IntegrationsSection() {
                         <div
                             key={integration.name}
                             className={`flex items-center justify-between rounded-xl border p-5 transition-colors ${connected
-                                    ? 'border-emerald-500/20 bg-emerald-500/5'
-                                    : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
+                                ? 'border-emerald-500/20 bg-emerald-500/5'
+                                : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
                                 }`}
                         >
                             <div className="flex items-center gap-4">
@@ -409,8 +426,8 @@ function IntegrationsSection() {
                                     disabled={!integration.hasOAuth || isConnecting}
                                     onClick={() => handleConnect(integration)}
                                     className={`cursor-pointer border-white/10 text-xs text-white/50 ${integration.hasOAuth
-                                            ? 'hover:border-[#e8614d]/50 hover:text-[#e8614d]'
-                                            : 'cursor-not-allowed opacity-40'
+                                        ? 'hover:border-[#e8614d]/50 hover:text-[#e8614d]'
+                                        : 'cursor-not-allowed opacity-40'
                                         }`}
                                 >
                                     {isConnecting ? 'Connecting…' : integration.hasOAuth ? 'Connect' : 'Coming Soon'}

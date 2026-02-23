@@ -98,10 +98,10 @@ export const sendToMailchimp = task({
         minTimeoutInMs: 3000,
         maxTimeoutInMs: 30_000,
     },
-    run: async (payload: { draftId: string; userId: string }) => {
-        const { draftId, userId } = payload;
+    run: async (payload: { draftId: string; userId: string; scheduleTime?: string }) => {
+        const { draftId, userId, scheduleTime } = payload;
 
-        logger.info("📬 Send to Mailchimp starting", { draftId, userId });
+        logger.info("📬 Send to Mailchimp starting", { draftId, userId, scheduleTime: scheduleTime || "immediate" });
         metadata.set("status", "fetching_draft").set("draftId", draftId);
 
         // ── 1. Fetch the approved draft ──
@@ -274,21 +274,42 @@ export const sendToMailchimp = task({
         }
 
         // ══════════════════════════════════════════════
-        // STEP 4: Send!
-        // POST /campaigns/{id}/actions/send
+        // STEP 4: Send or Schedule
+        // POST /campaigns/{id}/actions/send   (immediate)
+        // POST /campaigns/{id}/actions/schedule (scheduled)
         // ══════════════════════════════════════════════
-        metadata.set("status", "step_4_sending");
-        logger.info("Step 4: Sending campaign");
+        if (scheduleTime) {
+            metadata.set("status", "step_4_scheduling");
+            logger.info("Step 4: Scheduling campaign", { scheduleTime });
 
-        await mailchimpFetch(
-            mc.server_prefix,
-            mc.access_token,
-            `/campaigns/${campaignId}/actions/send`,
-            { method: "POST" }
-        );
+            await mailchimpFetch(
+                mc.server_prefix,
+                mc.access_token,
+                `/campaigns/${campaignId}/actions/schedule`,
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        schedule_time: scheduleTime,
+                    }),
+                }
+            );
 
-        const sentAt = new Date().toISOString();
-        logger.info("🎉 Campaign sent successfully!", { campaignId, sentAt });
+            logger.info("📅 Campaign scheduled!", { campaignId, scheduleTime });
+        } else {
+            metadata.set("status", "step_4_sending");
+            logger.info("Step 4: Sending campaign immediately");
+
+            await mailchimpFetch(
+                mc.server_prefix,
+                mc.access_token,
+                `/campaigns/${campaignId}/actions/send`,
+                { method: "POST" }
+            );
+
+            logger.info("🎉 Campaign sent immediately!", { campaignId });
+        }
+
+        const sentAt = scheduleTime || new Date().toISOString();
 
         // ── Update draft status in Supabase ──
         metadata.set("status", "updating_draft");
@@ -296,8 +317,9 @@ export const sendToMailchimp = task({
         const { error: updateError } = await supabase
             .from("email_drafts")
             .update({
-                status: "sent",
-                sent_at: sentAt,
+                status: scheduleTime ? "scheduled" : "sent",
+                sent_at: scheduleTime ? null : sentAt,
+                scheduled_for: scheduleTime || null,
                 mailchimp_campaign_id: campaignId,
             })
             .eq("id", draftId);
@@ -315,7 +337,8 @@ export const sendToMailchimp = task({
         return {
             draftId,
             campaignId,
-            sentAt,
+            sentAt: scheduleTime ? null : sentAt,
+            scheduledFor: scheduleTime || null,
             subject: draft.subject_line,
             fromName,
             replyTo,
