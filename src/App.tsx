@@ -9,6 +9,7 @@ import DashboardPage from '@/pages/DashboardPage'
 import DraftsPage from '@/pages/DraftsPage'
 import ResearchPage from '@/pages/ResearchPage'
 import BrandKitPage from '@/pages/BrandKitPage'
+import SettingsPage from '@/pages/SettingsPage'
 
 export default function App() {
   return (
@@ -33,6 +34,7 @@ export default function App() {
               <Route path="/dashboard/drafts" element={<DraftsPage />} />
               <Route path="/dashboard/research" element={<ResearchPage />} />
               <Route path="/dashboard/brand-kit" element={<BrandKitPage />} />
+              <Route path="/dashboard/settings" element={<SettingsPage />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/dashboard" replace />} />

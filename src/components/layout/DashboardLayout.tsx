@@ -17,6 +17,9 @@ import {
     EdgeStyleIcon,
     Search01Icon,
     Settings02Icon,
+    UserIcon,
+    CreditCardPosIcon,
+    Plug02Icon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -54,11 +57,36 @@ const brandKitSections = [
     },
 ]
 
+// ── Inner sidebar items for Settings ────────────────────────
+const settingsSections = [
+    {
+        label: null,
+        items: [
+            { icon: UserIcon, label: 'General', sectionId: 'general' },
+        ],
+    },
+    {
+        label: 'Campaign',
+        items: [
+            { icon: AlertSquareIcon, label: 'Stances', sectionId: 'stances' },
+        ],
+    },
+    {
+        label: 'Account',
+        items: [
+            { icon: CreditCardPosIcon, label: 'Billing', sectionId: 'billing' },
+            { icon: Plug02Icon, label: 'Integrations', sectionId: 'integrations' },
+        ],
+    },
+]
+
 export function DashboardLayout() {
     const { user, signOut } = useAuth()
     const location = useLocation()
     const [activeSection, setActiveSection] = useState('brand-details')
+    const [activeSettingsSection, setActiveSettingsSection] = useState('general')
     const isBrandKit = location.pathname.startsWith('/dashboard/brand-kit')
+    const isSettings = location.pathname.startsWith('/dashboard/settings')
 
     // Get user initial for avatar
     const userInitial = user?.email?.[0]?.toUpperCase() || 'U'
@@ -140,17 +168,19 @@ export function DashboardLayout() {
                 </div>
             </aside>
 
-            {/* ── Inner sidebar (Brand Kit only) ── */}
-            {isBrandKit && (
+            {/* ── Inner sidebar (Brand Kit or Settings) ── */}
+            {(isBrandKit || isSettings) && (
                 <aside className="flex w-56 flex-col border-r border-white/[0.06] bg-[#142d48]">
                     {/* Title */}
                     <div className="px-5 py-5">
-                        <h2 className="text-sm font-semibold tracking-wide text-white">Brand Kit</h2>
+                        <h2 className="text-sm font-semibold tracking-wide text-white">
+                            {isSettings ? 'Settings' : 'Brand Kit'}
+                        </h2>
                     </div>
 
                     {/* Navigation sections */}
                     <nav className="flex-1 space-y-5 px-3">
-                        {brandKitSections.map((section, sIdx) => (
+                        {(isSettings ? settingsSections : brandKitSections).map((section, sIdx) => (
                             <div key={sIdx}>
                                 {section.label && (
                                     <p className="mb-2 px-2 text-[11px] font-medium uppercase tracking-wider text-white/40">
@@ -159,16 +189,21 @@ export function DashboardLayout() {
                                 )}
                                 <div className="space-y-0.5">
                                     {section.items.map((item) => {
-                                        const isActive = activeSection === item.sectionId
+                                        const currentActive = isSettings ? activeSettingsSection : activeSection
+                                        const isItemActive = currentActive === item.sectionId
 
                                         return (
                                             <button
                                                 key={item.sectionId}
                                                 onClick={() => {
-                                                    setActiveSection(item.sectionId)
-                                                    document.getElementById(item.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                                    if (isSettings) {
+                                                        setActiveSettingsSection(item.sectionId)
+                                                    } else {
+                                                        setActiveSection(item.sectionId)
+                                                        document.getElementById(item.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                                    }
                                                 }}
-                                                className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isActive
+                                                className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isItemActive
                                                     ? 'bg-[#e8614d] text-white'
                                                     : 'text-white/60 hover:bg-white/8 hover:text-white/90'
                                                     }`}
@@ -187,7 +222,7 @@ export function DashboardLayout() {
 
             {/* ── Main content area ── */}
             <main className="flex-1 overflow-hidden">
-                <Outlet />
+                <Outlet context={{ activeSettingsSection }} />
             </main>
         </div>
     )
