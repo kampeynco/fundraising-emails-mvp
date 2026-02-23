@@ -381,6 +381,17 @@ function IntegrationsSection() {
                 orgName = testData?.user?.firstName
                     ? `${testData.user.firstName} ${testData.user.lastName || ''}`.trim()
                     : 'Active Campaign'
+            } else if (apiKeyDialogProvider === 'campaigner') {
+                // Campaigner: validate via lists endpoint with IntegrationKey header
+                const testResponse = await fetch('https://api.campaigner.com/v1/Lists', {
+                    headers: { 'IntegrationKey': apiKeyInput.trim() },
+                })
+                if (!testResponse.ok) {
+                    setApiKeyError('Invalid Integration Key. Please check and try again.')
+                    setApiKeyLoading(false)
+                    return
+                }
+                orgName = 'Campaigner'
             }
 
             // Save to email_integrations
