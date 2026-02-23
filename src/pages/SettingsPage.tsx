@@ -317,29 +317,27 @@ function IntegrationsSection() {
         setConnecting(integration.provider)
 
         try {
-            const { data: { session } } = await supabase.auth.getSession()
-            if (!session) return
+            const { data, error } = await supabase.functions.invoke('get-mailchimp-oauth-url')
 
-            const response = await fetch(
-                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-mailchimp-oauth-url`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${session.access_token}`,
-                        'Content-Type': 'application/json',
-                    },
-                }
-            )
-
-            const { url, error } = await response.json()
             if (error) {
                 console.error('OAuth URL error:', error)
+                alert('Failed to start Mailchimp connection. Please try again.')
                 return
             }
 
-            // Redirect to Mailchimp authorization page
-            window.location.href = url
+            if (data?.error) {
+                console.error('OAuth URL error:', data.error)
+                alert(`Mailchimp OAuth error: ${data.error}`)
+                return
+            }
+
+            if (data?.url) {
+                // Redirect to Mailchimp authorization page
+                window.location.href = data.url
+            }
         } catch (err) {
             console.error('Connect failed:', err)
+            alert('Connection failed. Please try again.')
         } finally {
             setConnecting(null)
         }
@@ -478,10 +476,10 @@ function IntegrationsSection() {
                                     disabled={isConnecting}
                                     onClick={() => { if (!isLockedOut && isAvailable) handleConnect(integration) }}
                                     className={`text-xs ${isLockedOut
-                                            ? 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
-                                            : isAvailable
-                                                ? 'cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white'
-                                                : 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
+                                        ? 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
+                                        : isAvailable
+                                            ? 'cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white'
+                                            : 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
                                         }`}
                                 >
                                     {isConnecting ? 'Connecting…' : isLockedOut ? 'Locked' : isAvailable ? 'Connect' : 'Coming Soon'}
