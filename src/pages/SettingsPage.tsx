@@ -230,18 +230,20 @@ interface Integration {
     name: string
     provider: string
     desc: string
-    icon: string
-    authType: 'oauth' | 'apikey' | 'none' // oauth=redirect, apikey=paste key, none=coming soon
+    logo: string
+    authType: 'oauth' | 'apikey' | 'none'
 }
 
 const INTEGRATIONS: Integration[] = [
-    { name: 'Mailchimp', provider: 'mailchimp', desc: 'Send approved emails directly to your Mailchimp audience', icon: '📬', authType: 'oauth' },
-    { name: 'Action Network', provider: 'action_network', desc: 'Send approved emails directly to your Action Network list', icon: '📢', authType: 'apikey' },
-    { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', icon: '🔶', authType: 'none' },
-    { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', icon: '⚡', authType: 'none' },
-    { name: 'Constant Contact', provider: 'constant_contact', desc: 'Send through Constant Contact campaigns', icon: '✉️', authType: 'none' },
-    { name: 'SendGrid', provider: 'sendgrid', desc: 'Deliver emails via SendGrid transactional API', icon: '📤', authType: 'none' },
-    { name: 'NationBuilder', provider: 'nationbuilder', desc: 'Sync emails with your NationBuilder nation', icon: '🏗️', authType: 'none' },
+    { name: 'Mailchimp', provider: 'mailchimp', desc: 'Send approved emails directly to your Mailchimp audience', logo: 'https://cdn.brandfetch.io/mailchimp.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'oauth' },
+    { name: 'Action Network', provider: 'action_network', desc: 'Send approved emails directly to your Action Network list', logo: 'https://cdn.brandfetch.io/actionnetwork.org/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
+    { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', logo: 'https://cdn.brandfetch.io/hubspot.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', logo: 'https://cdn.brandfetch.io/activecampaign.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'Constant Contact', provider: 'constant_contact', desc: 'Send through Constant Contact campaigns', logo: 'https://cdn.brandfetch.io/constantcontact.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'SendGrid', provider: 'sendgrid', desc: 'Deliver emails via SendGrid transactional API', logo: 'https://cdn.brandfetch.io/sendgrid.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'NationBuilder', provider: 'nationbuilder', desc: 'Sync emails with your NationBuilder nation', logo: 'https://cdn.brandfetch.io/nationbuilder.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'Brevo', provider: 'brevo', desc: 'Send emails through your Brevo (Sendinblue) campaigns', logo: 'https://cdn.brandfetch.io/brevo.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'Klaviyo', provider: 'klaviyo', desc: 'Deliver emails via Klaviyo marketing automation', logo: 'https://cdn.brandfetch.io/klaviyo.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
 ]
 
 function IntegrationsSection() {
@@ -418,8 +420,8 @@ function IntegrationsSection() {
                                 }`}
                         >
                             <div className="flex items-center gap-4">
-                                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 text-xl">
-                                    {integration.icon}
+                                <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-white/5">
+                                    <img src={integration.logo} alt={integration.name} className="h-7 w-7 rounded object-contain" />
                                 </span>
                                 <div>
                                     <div className="flex items-center gap-2">
