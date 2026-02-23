@@ -243,6 +243,7 @@ const INTEGRATIONS: Integration[] = [
     { name: 'SendGrid', provider: 'sendgrid', desc: 'Deliver emails via SendGrid transactional API', logo: 'https://cdn.brandfetch.io/sendgrid.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'NationBuilder', provider: 'nationbuilder', desc: 'Sync emails with your NationBuilder nation', logo: 'https://cdn.brandfetch.io/nationbuilder.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'Brevo', provider: 'brevo', desc: 'Send emails through your Brevo (Sendinblue) campaigns', logo: 'https://cdn.brandfetch.io/brevo.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'Campaigner', provider: 'campaigner', desc: 'Create and send campaigns via Campaigner email marketing', logo: 'https://cdn.brandfetch.io/campaigner.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
     { name: 'Klaviyo', provider: 'klaviyo', desc: 'Deliver emails via Klaviyo marketing automation', logo: 'https://cdn.brandfetch.io/klaviyo.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
 ]
 
@@ -519,7 +520,9 @@ function IntegrationsSection() {
                         <p className="mt-1 text-sm text-white/40">
                             {apiKeyDialogProvider === 'active_campaign'
                                 ? 'Enter your Active Campaign account URL and API key. Find them under Settings → Developer.'
-                                : `Paste your API key below. You can find it in your ${INTEGRATIONS.find(i => i.provider === apiKeyDialogProvider)?.name} dashboard under Settings → API Keys.`
+                                : apiKeyDialogProvider === 'campaigner'
+                                    ? 'Enter your Campaigner Integration Key. Find it under Account Settings → Integration Keys.'
+                                    : `Paste your API key below. You can find it in your ${INTEGRATIONS.find(i => i.provider === apiKeyDialogProvider)?.name} dashboard under Settings → API Keys.`
                             }
                         </p>
                         <div className="mt-4 space-y-3">
