@@ -14,7 +14,7 @@ import { useUndoRedo } from '@/hooks/useUndoRedo'
 export default function DraftEditorPage() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
-    const { user } = useAuth()
+    const { user, loading: authLoading } = useAuth()
 
     const { state: blocks, push: pushBlocks, undo, redo, reset: resetBlocks } = useUndoRedo<EditorBlock[]>([])
     const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null)
@@ -36,8 +36,11 @@ export default function DraftEditorPage() {
     }, [blocks, pushBlocks])
 
     // ── Fetch draft and brand kit on mount ──
+    // Guard: don't fetch until auth is fully resolved
     useEffect(() => {
-        if (!user || !id) return
+        if (authLoading || !user || !id) return
+
+        let cancelled = false
 
         const fetchData = async () => {
             setLoading(true)
@@ -47,11 +50,13 @@ export default function DraftEditorPage() {
                 .select('*')
                 .eq('id', id)
                 .eq('user_id', user.id)
-                .single()
+                .maybeSingle()
+
+            if (cancelled) return
 
             if (draftError || !draft) {
                 console.error('Draft not found:', draftError)
-                navigate('/dashboard/drafts')
+                navigate('/dashboard/drafts', { replace: true })
                 return
             }
 
@@ -73,14 +78,18 @@ export default function DraftEditorPage() {
                 .from('brand_kits')
                 .select('*')
                 .eq('user_id', user.id)
-                .single()
+                .maybeSingle()
 
-            setBrandKit(bk)
-            setLoading(false)
+            if (!cancelled) {
+                setBrandKit(bk)
+                setLoading(false)
+            }
         }
 
         fetchData()
-    }, [user, id, navigate, resetBlocks])
+
+        return () => { cancelled = true }
+    }, [authLoading, user, id, navigate, resetBlocks])
 
     // ── Keyboard shortcuts ──
     useEffect(() => {
@@ -226,7 +235,7 @@ export default function DraftEditorPage() {
     }
 
     // ── Loading skeleton ──
-    if (loading) {
+    if (loading || authLoading) {
         return (
             <div className="flex h-screen w-screen bg-[#0f172a] overflow-hidden">
                 {/* Sidebar skeleton */}
