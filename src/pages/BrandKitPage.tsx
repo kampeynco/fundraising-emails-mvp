@@ -2,8 +2,9 @@ import { useRef, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { HexColorPickerField } from '@/components/ui/hex-color-picker'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { BlueskyIcon, Globe02Icon, ThreadsIcon } from '@hugeicons/core-free-icons'
+import { BlueskyIcon, Globe02Icon, ThreadsIcon, Link02Icon, Loading03Icon } from '@hugeicons/core-free-icons'
 import { useBrandKit, type BrandKitSocial } from '@/hooks/useBrandKit'
+import { supabase } from '@/lib/supabase'
 
 const toneOptions = [
     'Inspirational',
@@ -46,7 +47,87 @@ const hugeIconMap: Record<string, any> = {
     Threads: ThreadsIcon,
 }
 
-// ── StancesSection (moved from SettingsPage) ──
+// ── Import from URL button ──
+function ImportFromUrlButton({ onImport }: { onImport: (bio: string) => void }) {
+    const [showInput, setShowInput] = useState(false)
+    const [url, setUrl] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState('')
+
+    const handleImport = async () => {
+        if (!url.trim()) return
+        setLoading(true)
+        setError('')
+
+        try {
+            const { data, error: fnError } = await supabase.functions.invoke('scrape-bio', {
+                body: { url: url.trim() },
+            })
+
+            if (fnError || data?.error) {
+                setError(data?.error || fnError?.message || 'Failed to scrape URL')
+                return
+            }
+
+            if (data?.bio) {
+                onImport(data.bio)
+                setShowInput(false)
+                setUrl('')
+            } else {
+                setError('No content found at that URL')
+            }
+        } catch {
+            setError('Failed to connect')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    if (!showInput) {
+        return (
+            <button
+                onClick={() => setShowInput(true)}
+                className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-[#e8614d] transition-colors hover:bg-[#e8614d]/10"
+            >
+                <HugeiconsIcon icon={Link02Icon} size={13} />
+                Import from URL
+            </button>
+        )
+    }
+
+    return (
+        <div className="flex items-center gap-2">
+            <input
+                type="url"
+                value={url}
+                onChange={(e) => { setUrl(e.target.value); setError('') }}
+                onKeyDown={(e) => e.key === 'Enter' && handleImport()}
+                placeholder="https://example.com/about"
+                autoFocus
+                className="h-8 w-56 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 text-xs text-white placeholder:text-white/25 outline-none focus:border-[#e8614d]/50"
+            />
+            <button
+                onClick={handleImport}
+                disabled={loading || !url.trim()}
+                className="flex h-8 items-center gap-1.5 rounded-lg bg-[#e8614d] px-3 text-xs font-medium text-white transition-colors hover:bg-[#d4553f] disabled:opacity-50"
+            >
+                {loading ? (
+                    <><HugeiconsIcon icon={Loading03Icon} size={13} className="animate-spin" /> Scraping...</>
+                ) : (
+                    'Import'
+                )}
+            </button>
+            <button
+                onClick={() => { setShowInput(false); setUrl(''); setError('') }}
+                className="text-xs text-white/30 hover:text-white/60"
+            >
+                Cancel
+            </button>
+            {error && <p className="text-xs text-red-400">{error}</p>}
+        </div>
+    )
+}
+
 function StancesSection({ inputClasses }: { inputClasses: string }) {
     const [stances, setStances] = useState([
         { issue: 'Healthcare', position: 'Support universal coverage through public option expansion', priority: 'high' },
@@ -370,7 +451,10 @@ export default function BrandKitPage() {
                         </p>
 
                         <div className="mb-6">
-                            <label className="mb-2 block text-sm font-medium text-white/50">Tell us about your committee</label>
+                            <div className="mb-2 flex items-center justify-between">
+                                <label className="block text-sm font-medium text-white/50">Tell us about your committee</label>
+                                <ImportFromUrlButton onImport={(bio) => updateField('brand_summary', bio)} />
+                            </div>
                             <textarea
                                 value={data.brand_summary}
                                 onChange={(e) => updateField('brand_summary', e.target.value)}
