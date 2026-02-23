@@ -63,7 +63,7 @@ const brandKitSections = [
     {
         label: 'Visuals',
         items: [
-            { icon: ImageUploadIcon, label: 'Logos', sectionId: 'logos' },
+            { icon: ImageUploadIcon, label: 'Images', sectionId: 'logos' },
             { icon: DropletIcon, label: 'Color', sectionId: 'color' },
             { icon: EdgeStyleIcon, label: 'Formatting', sectionId: 'email-format' },
         ],
