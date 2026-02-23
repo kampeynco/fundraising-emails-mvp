@@ -104,7 +104,7 @@ export function EditorLayout({
             {/* Right Sidebar — Properties or Comments based on role */}
             <div className="w-[300px] border-l border-white/[0.06] bg-[#111827] overflow-y-auto">
                 {showComments ? (
-                    <CommentsPanel draftId={draftId} />
+                    <CommentsPanel draftId={draftId} viewScope={isAdminOrManager ? 'admin' : 'user'} />
                 ) : (
                     <PropertiesPanel
                         selectedBlock={selectedBlock}
