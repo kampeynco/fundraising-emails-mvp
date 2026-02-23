@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
@@ -13,6 +13,8 @@ import {
     SparklesIcon,
     TextIcon,
 } from '@hugeicons/core-free-icons'
+import { useAuth } from '@/hooks/useAuth'
+import { supabase } from '@/lib/supabase'
 
 interface ResearchTopic {
     id: string
@@ -27,63 +29,17 @@ interface ResearchTopic {
     created_at: string
 }
 
-// ── Mock data with real, valid URLs ──
-const mockTopics: ResearchTopic[] = [
-    {
-        id: 'topic-1',
-        title: 'FEC Q1 Filing Deadline Approaching for All Federal Committees',
-        summary: 'All federal committees must file their Q1 reports by April 15, 2026. This deadline is a critical fundraising moment.',
-        source_url: 'https://www.fec.gov/help-candidates-and-committees/dates-and-deadlines/',
-        source_domain: 'fec.gov',
-        content_snippet: 'Federal Election Commission reminds all campaign committees that quarterly reports for Q1 2026 are due by April 15.',
-        relevance_score: 9.2,
-        suggested_by: 'ai',
-        used_in_draft: false,
-        created_at: '2026-02-21T10:00:00Z',
-    },
-    {
-        id: 'topic-2',
-        title: 'Small Dollar Fundraising Hits Record Numbers in 2026 Cycle',
-        summary: 'Average small-dollar donations are up 23% compared to the same period in 2024, driven by digital-first campaigns.',
-        source_url: 'https://www.politico.com/news/2024/10/21/harris-trump-fundraising-final-stretch-00184591',
-        source_domain: 'politico.com',
-        content_snippet: 'Small-dollar donors — those giving under $200 — are making up a larger share of total fundraising than ever before.',
-        relevance_score: 7.8,
-        suggested_by: 'ai',
-        used_in_draft: false,
-        created_at: '2026-02-20T14:00:00Z',
-    },
-    {
-        id: 'topic-3',
-        title: 'New Data: Email Open Rates Highest on Tuesdays and Thursdays',
-        summary: 'Campaign email analytics reveal optimal send times for fundraising asks, with Tuesday evenings showing highest engagement.',
-        source_url: 'https://www.axios.com/2024/01/16/email-marketing-trends-2024',
-        source_domain: 'axios.com',
-        content_snippet: 'Campaigns that send fundraising appeals between 6-8pm on Tuesdays see 18% higher open rates than the daily average.',
-        relevance_score: 6.5,
-        suggested_by: 'ai',
-        used_in_draft: true,
-        created_at: '2026-02-19T09:00:00Z',
-    },
-    {
-        id: 'topic-4',
-        title: 'Infrastructure Bill Vote Expected Next Week — Key Talking Point',
-        summary: 'Congress is set to vote on a major infrastructure package. This could be a strong fundraising hook for committees focused on local issues.',
-        source_url: 'https://thehill.com/policy/transportation/infrastructure/',
-        source_domain: 'thehill.com',
-        content_snippet: 'The upcoming infrastructure vote presents an opportunity for down-ballot candidates to connect federal policy to local impact.',
-        relevance_score: 8.1,
-        suggested_by: 'user',
-        used_in_draft: false,
-        created_at: '2026-02-18T16:00:00Z',
-    },
-]
-
 function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-    })
+    const date = new Date(dateStr)
+    const now = new Date()
+    const diffMs = now.getTime() - date.getTime()
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60))
+    if (diffHours < 1) return 'Just now'
+    if (diffHours < 24) return `${diffHours}h ago`
+    const diffDays = Math.floor(diffHours / 24)
+    if (diffDays === 1) return 'Yesterday'
+    if (diffDays < 7) return `${diffDays}d ago`
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 
 function getScoreLabel(score: number): string {
@@ -116,11 +72,35 @@ function ScoreBadge({ score }: { score: number }) {
 }
 
 export default function ResearchPage() {
+    const { user } = useAuth()
     const [searchQuery, setSearchQuery] = useState('')
     const [showUsed, setShowUsed] = useState(false)
-    const [topics, setTopics] = useState<ResearchTopic[]>(mockTopics)
+    const [topics, setTopics] = useState<ResearchTopic[]>([])
     const [isSearching, setIsSearching] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [searchMessage, setSearchMessage] = useState<string | null>(null)
+
+    // Load existing topics from Supabase on mount
+    const loadTopics = useCallback(async () => {
+        if (!user) return
+        setIsLoading(true)
+
+        const { data, error } = await supabase
+            .from('research_topics')
+            .select('*')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(50)
+
+        if (!error && data) {
+            setTopics(data as ResearchTopic[])
+        }
+        setIsLoading(false)
+    }, [user])
+
+    useEffect(() => {
+        loadTopics()
+    }, [loadTopics])
 
     // Filter topics by search query (client-side filtering of existing topics)
     const displayTopics = searchQuery.trim()
@@ -138,31 +118,71 @@ export default function ResearchPage() {
     const availableTopics = filteredTopics.filter(t => !t.used_in_draft)
     const usedTopics = filteredTopics.filter(t => t.used_in_draft)
 
-    const handleSearch = () => {
+    const handleSearch = async () => {
         if (!searchQuery.trim()) return
 
         setIsSearching(true)
         setSearchMessage(null)
 
-        // Simulate Firecrawl search (will be replaced with real API call)
-        setTimeout(() => {
+        try {
+            const { data, error } = await supabase.functions.invoke('search-research', {
+                body: { query: searchQuery.trim() },
+            })
+
+            if (error) {
+                console.error('Search error:', error)
+                setSearchMessage('Search failed. Please try again.')
+                setIsSearching(false)
+                return
+            }
+
+            if (data?.error) {
+                setSearchMessage(`Search error: ${data.error}`)
+                setIsSearching(false)
+                return
+            }
+
+            const newTopics = (data?.topics || []) as ResearchTopic[]
+
+            if (newTopics.length > 0) {
+                // Add new topics to the top of the list (avoid duplicates by id)
+                setTopics(prev => {
+                    const existingIds = new Set(prev.map(t => t.id))
+                    const unique = newTopics.filter(t => !existingIds.has(t.id))
+                    return [...unique, ...prev]
+                })
+                setSearchMessage(`Found ${newTopics.length} result${newTopics.length !== 1 ? 's' : ''} for "${searchQuery}"`)
+            } else {
+                setSearchMessage(`No results found for "${searchQuery}"`)
+            }
+        } catch (err) {
+            console.error('Search failed:', err)
+            setSearchMessage('Search failed. Please try again.')
+        } finally {
             setIsSearching(false)
-            setSearchMessage(`Showing ${displayTopics.length} result${displayTopics.length !== 1 ? 's' : ''} for "${searchQuery}"`)
-        }, 800)
+        }
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter') handleSearch()
     }
 
-    const handleMarkForDraft = (topicId: string) => {
+    const handleMarkForDraft = async (topicId: string) => {
         setTopics(prev => prev.map(t =>
             t.id === topicId ? { ...t, used_in_draft: true } : t
         ))
+        await supabase
+            .from('research_topics')
+            .update({ used_in_draft: true })
+            .eq('id', topicId)
     }
 
-    const handleRemoveTopic = (topicId: string) => {
+    const handleRemoveTopic = async (topicId: string) => {
         setTopics(prev => prev.filter(t => t.id !== topicId))
+        await supabase
+            .from('research_topics')
+            .delete()
+            .eq('id', topicId)
     }
 
     const handleClearSearch = () => {
