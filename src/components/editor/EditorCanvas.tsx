@@ -11,6 +11,10 @@ interface EditorCanvasProps {
     selectedBlockId: string | null
     onSelectBlock: (id: string | null) => void
     brandKit: any
+    outerBg: string
+    innerBg: string
+    onOuterBgChange: (color: string) => void
+    onInnerBgChange: (color: string) => void
 }
 
 /* ─── Drop zone indicator between blocks ─── */
@@ -46,6 +50,8 @@ function SortableBlock({
     onDelete,
     onDuplicate,
     onHtmlChange,
+    onMoveUp,
+    onMoveDown,
 }: {
     block: EditorBlock
     isSelected: boolean
@@ -53,6 +59,8 @@ function SortableBlock({
     onDelete: () => void
     onDuplicate: () => void
     onHtmlChange: (html: string) => void
+    onMoveUp?: () => void
+    onMoveDown?: () => void
 }) {
     const {
         attributes,
@@ -73,7 +81,9 @@ function SortableBlock({
 
     const handleBlur = useCallback(() => {
         if (contentRef.current) {
-            const newHtml = contentRef.current.innerHTML
+            // Strip any injected <style> tags before saving
+            let newHtml = contentRef.current.innerHTML
+            newHtml = newHtml.replace(/<style>[\s\S]*?<\/style>/gi, '').trim()
             if (newHtml !== block.html) {
                 onHtmlChange(newHtml)
             }
@@ -98,20 +108,45 @@ function SortableBlock({
                         : 'hover:ring-1 hover:ring-gray-200'
                     }`}
             >
-                {/* Drag handle */}
-                <div
-                    {...attributes}
-                    {...listeners}
-                    className="absolute -left-8 top-1/2 -translate-y-1/2 cursor-grab rounded p-1 opacity-0 transition-opacity hover:bg-white/10 group-hover:opacity-100 active:cursor-grabbing"
-                >
-                    <svg className="h-4 w-4 text-white/30" viewBox="0 0 16 16" fill="currentColor">
-                        <circle cx="5" cy="4" r="1.5" />
-                        <circle cx="11" cy="4" r="1.5" />
-                        <circle cx="5" cy="8" r="1.5" />
-                        <circle cx="11" cy="8" r="1.5" />
-                        <circle cx="5" cy="12" r="1.5" />
-                        <circle cx="11" cy="12" r="1.5" />
-                    </svg>
+                {/* Drag handle + move buttons */}
+                <div className="absolute -left-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                    {/* Move up */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onMoveUp?.() }}
+                        className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                        title="Move up"
+                    >
+                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                        </svg>
+                    </button>
+
+                    {/* Drag handle */}
+                    <div
+                        {...attributes}
+                        {...listeners}
+                        className="cursor-grab rounded p-0.5 hover:bg-gray-100 active:cursor-grabbing transition-colors"
+                    >
+                        <svg className="h-4 w-4 text-gray-400" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="5" cy="4" r="1.5" />
+                            <circle cx="11" cy="4" r="1.5" />
+                            <circle cx="5" cy="8" r="1.5" />
+                            <circle cx="11" cy="8" r="1.5" />
+                            <circle cx="5" cy="12" r="1.5" />
+                            <circle cx="11" cy="12" r="1.5" />
+                        </svg>
+                    </div>
+
+                    {/* Move down */}
+                    <button
+                        onClick={(e) => { e.stopPropagation(); onMoveDown?.() }}
+                        className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                        title="Move down"
+                    >
+                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
                 </div>
 
                 {/* Block content — editable */}
@@ -121,7 +156,19 @@ function SortableBlock({
                     contentEditable
                     suppressContentEditableWarning
                     onBlur={handleBlur}
-                    dangerouslySetInnerHTML={{ __html: block.html }}
+                    data-block-id={block.id}
+                    dangerouslySetInnerHTML={{
+                        __html: `<style>
+                            [data-block-id="${block.id}"] * {
+                                font-family: ${block.props.fontFamily || 'Arial, Helvetica, sans-serif'} !important;
+                                font-size: ${block.props.fontSize ? `${block.props.fontSize}px` : '16px'} !important;
+                                color: ${block.props.fontColor || '#333333'} !important;
+                            }
+                            [data-block-id="${block.id}"] h1, [data-block-id="${block.id}"] h2 {
+                                font-size: ${block.props.fontSize ? `${Math.round(block.props.fontSize * 1.5)}px` : '24px'} !important;
+                            }
+                        </style>${block.html}`
+                    }}
                     style={{
                         paddingTop: block.props.paddingTop,
                         paddingRight: block.props.paddingRight,
@@ -129,9 +176,7 @@ function SortableBlock({
                         paddingLeft: block.props.paddingLeft,
                         backgroundColor: block.props.backgroundColor || undefined,
                         maxWidth: block.props.width || 600,
-                        fontFamily: block.props.fontFamily || undefined,
-                        fontSize: block.props.fontSize ? `${block.props.fontSize}px` : undefined,
-                        color: block.props.fontColor || undefined,
+                        lineHeight: 1.6,
                     }}
                 />
 
@@ -181,6 +226,8 @@ export function EditorCanvas({
     onBlocksChange,
     selectedBlockId,
     onSelectBlock,
+    outerBg,
+    innerBg,
 }: EditorCanvasProps) {
     const { setNodeRef, isOver } = useDroppable({
         id: 'editor-canvas',
@@ -211,6 +258,22 @@ export function EditorCanvas({
 
     const handleHtmlChange = useCallback((blockId: string, newHtml: string) => {
         onBlocksChange(blocks.map(b => b.id === blockId ? { ...b, html: newHtml } : b))
+    }, [blocks, onBlocksChange])
+
+    const handleMoveUp = useCallback((blockId: string) => {
+        const idx = blocks.findIndex(b => b.id === blockId)
+        if (idx <= 0) return
+        const next = [...blocks]
+            ;[next[idx - 1], next[idx]] = [next[idx], next[idx - 1]]
+        onBlocksChange(next)
+    }, [blocks, onBlocksChange])
+
+    const handleMoveDown = useCallback((blockId: string) => {
+        const idx = blocks.findIndex(b => b.id === blockId)
+        if (idx < 0 || idx >= blocks.length - 1) return
+        const next = [...blocks]
+            ;[next[idx], next[idx + 1]] = [next[idx + 1], next[idx]]
+        onBlocksChange(next)
     }, [blocks, onBlocksChange])
 
     return (
@@ -244,25 +307,28 @@ export function EditorCanvas({
                 </button>
             </div>
 
-            {/* Canvas area */}
+            {/* Outer canvas area */}
             <div
                 ref={canvasRef}
-                className="group/canvas relative flex-1 overflow-y-auto bg-white p-8"
+                className="group/canvas relative flex-1 overflow-y-auto p-8"
+                style={{ backgroundColor: outerBg || '#e5e7eb' }}
                 onClick={() => onSelectBlock(null)}
             >
                 {/* Floating toolbar */}
                 <RichTextToolbar containerRef={canvasRef} />
 
+                {/* Inner canvas — email body */}
                 <div
                     ref={setNodeRef}
                     className={`mx-auto min-h-[600px] rounded-lg border-2 border-dashed p-8 transition-all duration-200 ${isOver
-                        ? 'border-[#e8614d]/40 bg-[#e8614d]/5'
+                        ? 'border-[#e8614d]/40'
                         : blocks.length === 0
-                            ? 'border-gray-200'
+                            ? 'border-gray-300'
                             : 'border-transparent'
                         }`}
                     style={{
                         maxWidth: canvasWidth,
+                        backgroundColor: innerBg || '#ffffff',
                         transition: 'max-width 0.3s ease, border-color 0.2s ease, background-color 0.2s ease',
                     }}
                 >
@@ -295,6 +361,8 @@ export function EditorCanvas({
                                         onDelete={() => handleDelete(block.id)}
                                         onDuplicate={() => handleDuplicate(block.id)}
                                         onHtmlChange={(html) => handleHtmlChange(block.id, html)}
+                                        onMoveUp={() => handleMoveUp(block.id)}
+                                        onMoveDown={() => handleMoveDown(block.id)}
                                     />
                                 ))}
                             </div>

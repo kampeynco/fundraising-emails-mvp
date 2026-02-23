@@ -19,6 +19,11 @@ interface EditorLayoutProps {
     selectedBlockId: string | null
     onSelectBlock: (id: string | null) => void
     brandKit: any
+    // Canvas backgrounds
+    canvasOuterBg: string
+    canvasInnerBg: string
+    onCanvasOuterBgChange: (color: string) => void
+    onCanvasInnerBgChange: (color: string) => void
     // Persistence
     onSave?: () => void
     saving?: boolean
@@ -36,6 +41,10 @@ export function EditorLayout({
     selectedBlockId,
     onSelectBlock,
     brandKit,
+    canvasOuterBg,
+    canvasInnerBg,
+    onCanvasOuterBgChange,
+    onCanvasInnerBgChange,
     onSave,
     saving,
     lastSaved,
@@ -144,6 +153,10 @@ export function EditorLayout({
                     selectedBlockId={selectedBlockId}
                     onSelectBlock={onSelectBlock}
                     brandKit={brandKit}
+                    outerBg={canvasOuterBg}
+                    innerBg={canvasInnerBg}
+                    onOuterBgChange={onCanvasOuterBgChange}
+                    onInnerBgChange={onCanvasInnerBgChange}
                 />
             </div>
 
@@ -165,6 +178,10 @@ export function EditorLayout({
                             )
                         }}
                         brandKit={brandKit}
+                        canvasOuterBg={canvasOuterBg}
+                        canvasInnerBg={canvasInnerBg}
+                        onCanvasOuterBgChange={onCanvasOuterBgChange}
+                        onCanvasInnerBgChange={onCanvasInnerBgChange}
                     />
                 )}
             </div>

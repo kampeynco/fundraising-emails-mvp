@@ -22,6 +22,8 @@ export default function DraftEditorPage() {
     const [brandKit, setBrandKit] = useState<any>(null)
     const [loading, setLoading] = useState(true)
     const [activeDragId, setActiveDragId] = useState<string | null>(null)
+    const [canvasOuterBg, setCanvasOuterBg] = useState('#e5e7eb')
+    const [canvasInnerBg, setCanvasInnerBg] = useState('#ffffff')
 
     // Track the active drag module template for overlay preview
     const activeDragRef = useRef<{ moduleId: string; category: string } | null>(null)
@@ -308,6 +310,10 @@ export default function DraftEditorPage() {
                 selectedBlockId={selectedBlockId}
                 onSelectBlock={setSelectedBlockId}
                 brandKit={brandKit}
+                canvasOuterBg={canvasOuterBg}
+                canvasInnerBg={canvasInnerBg}
+                onCanvasOuterBgChange={setCanvasOuterBg}
+                onCanvasInnerBgChange={setCanvasInnerBg}
                 onSave={() => save('Manual save')}
                 saving={saving}
                 lastSaved={lastSaved}
