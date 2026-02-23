@@ -114,8 +114,22 @@ Return valid JSON:
   "alt_subject_lines": ["alt 1", "alt 2"],
   "preview_text": "40-90 chars",
   "body_html": "<div>...</div>",
-  "body_text": "plain text"
-}`;
+  "body_text": "plain text",
+  "editor_blocks": [
+    { "category": "header", "moduleId": "header-2", "html": "<table width='100%'...>urgent headline HTML</table>" },
+    { "category": "content", "moduleId": "content-1", "html": "<table width='100%'...>news hook + story HTML</table>" },
+    { "category": "cta", "moduleId": "cta-4", "html": "<table width='100%'...>urgent CTA button HTML</table>" },
+    { "category": "ps", "moduleId": "ps-1", "html": "<table width='100%'...>P.S. time-sensitive note HTML</table>" },
+    { "category": "footer", "moduleId": "footer-1", "html": "<table width='100%'...>footer HTML</table>" }
+  ]
+}
+
+IMPORTANT for editor_blocks:
+- Each block maps to a drag-and-drop editor module category
+- Use email-safe table-based HTML with inline styles
+- Use brand colors: primary=${brandKit.colors?.primary || '#1a3a5c'}, accent=${brandKit.colors?.accent || '#e8614d'}
+- Valid categories: header, content, donation, cta, ps, footer
+- body_html should be the concatenation of all editor_blocks HTML`;
 
         const response = await openai.chat.completions.create({
             model: "gpt-5.2-chat-latest",
@@ -158,6 +172,14 @@ Return valid JSON:
                 alt_subject_lines: draft.alt_subject_lines,
                 status: "pending_review",
                 ai_model: "gpt-5.2-chat-latest",
+                editor_blocks: draft.editor_blocks ? draft.editor_blocks.map((b: any, i: number) => ({
+                    id: `block-rapid-${Date.now()}-${i}`,
+                    type: "module" as const,
+                    category: b.category,
+                    moduleId: b.moduleId,
+                    html: b.html,
+                    props: { paddingTop: 0, paddingRight: 0, paddingBottom: 0, paddingLeft: 0, backgroundColor: "", width: 600 },
+                })) : null,
             })
             .select("id")
             .single();

@@ -52,6 +52,13 @@ interface GeneratedDraft {
     body_html: string;
     body_text: string;
     template_used: string;
+    editor_blocks?: EditorBlockPayload[];
+}
+
+interface EditorBlockPayload {
+    category: "header" | "content" | "donation" | "cta" | "ps" | "footer";
+    moduleId: string;
+    html: string;
 }
 
 /**
@@ -168,6 +175,14 @@ export const generateUserDrafts = task({
                         status: "pending_review",
                         ai_model: "gpt-5.2-chat-latest",
                         research_topic_ids: topicsForThisDraft.map((t) => t.id),
+                        editor_blocks: draft.editor_blocks ? draft.editor_blocks.map((b, i) => ({
+                            id: `block-gen-${Date.now()}-${i}`,
+                            type: "module" as const,
+                            category: b.category,
+                            moduleId: b.moduleId,
+                            html: b.html,
+                            props: { paddingTop: 0, paddingRight: 0, paddingBottom: 0, paddingLeft: 0, backgroundColor: "", width: 600 },
+                        })) : null,
                     })
                     .select("id")
                     .single();
@@ -275,8 +290,25 @@ Return valid JSON with this exact structure:
   "alt_subject_lines": ["alt 1", "alt 2"],
   "preview_text": "40-90 char preview text",
   "body_html": "<div>HTML email body</div>",
-  "body_text": "Plain text version"
-}`;
+  "body_text": "Plain text version",
+  "editor_blocks": [
+    { "category": "header", "moduleId": "header-1", "html": "<table width='100%'...>headline block HTML</table>" },
+    { "category": "content", "moduleId": "content-1", "html": "<table width='100%'...>content block HTML</table>" },
+    { "category": "donation", "moduleId": "donation-1", "html": "<table width='100%'...>donation buttons HTML</table>" },
+    { "category": "cta", "moduleId": "cta-1", "html": "<table width='100%'...>button CTA HTML</table>" },
+    { "category": "ps", "moduleId": "ps-1", "html": "<table width='100%'...>P.S. block HTML</table>" },
+    { "category": "footer", "moduleId": "footer-1", "html": "<table width='100%'...>footer HTML</table>" }
+  ]
+}
+
+IMPORTANT for editor_blocks:
+- Each block maps to a module category in the drag-and-drop editor
+- Use email-safe HTML (table-based layout, inline styles)
+- Use brand colors throughout: primary=${brandKit.colors?.primary || '#1a3a5c'}, accent=${brandKit.colors?.accent || '#e8614d'}
+- Valid categories: header, content, donation, cta, ps, footer
+- Valid moduleIds: header-1 through header-5, content-1 through content-5, donation-1 through donation-4, cta-1 through cta-5, ps-1 through ps-3, footer-1 through footer-3
+- Include at minimum: header + content + cta + footer blocks
+- The body_html should be the concatenation of all editor_blocks HTML`;
 
     const response = await openai.chat.completions.create({
         model: "gpt-5.2-chat-latest",
