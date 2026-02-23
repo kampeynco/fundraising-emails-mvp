@@ -237,7 +237,7 @@ interface Integration {
 const INTEGRATIONS: Integration[] = [
     { name: 'Mailchimp', provider: 'mailchimp', desc: 'Send approved emails directly to your Mailchimp audience', logo: 'https://cdn.brandfetch.io/mailchimp.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'oauth' },
     { name: 'Action Network', provider: 'action_network', desc: 'Send approved emails directly to your Action Network list', logo: 'https://cdn.brandfetch.io/actionnetwork.org/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'apikey' },
-    { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', logo: 'https://cdn.brandfetch.io/hubspot.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
+    { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', logo: 'https://cdn.brandfetch.io/hubspot.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'oauth' },
     { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', logo: 'https://cdn.brandfetch.io/activecampaign.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'Constant Contact', provider: 'constant_contact', desc: 'Send through Constant Contact campaigns', logo: 'https://cdn.brandfetch.io/constantcontact.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
     { name: 'SendGrid', provider: 'sendgrid', desc: 'Deliver emails via SendGrid transactional API', logo: 'https://cdn.brandfetch.io/sendgrid.com/theme/dark/h/64/w/64/icon?c=1idKdx0hyJdTmrt5Jal', authType: 'none' },
@@ -294,26 +294,37 @@ function IntegrationsSection() {
             return
         }
 
-        // OAuth flow (Mailchimp)
+        // OAuth flow — dispatch to provider-specific edge function
         setConnecting(integration.provider)
 
+        const oauthFunctionMap: Record<string, string> = {
+            mailchimp: 'get-mailchimp-oauth-url',
+            hubspot: 'get-hubspot-oauth-url',
+        }
+
+        const functionName = oauthFunctionMap[integration.provider]
+        if (!functionName) {
+            alert(`OAuth not configured for ${integration.name}`)
+            setConnecting(null)
+            return
+        }
+
         try {
-            const { data, error } = await supabase.functions.invoke('get-mailchimp-oauth-url')
+            const { data, error } = await supabase.functions.invoke(functionName)
 
             if (error) {
                 console.error('OAuth URL error:', error)
-                alert('Failed to start Mailchimp connection. Please try again.')
+                alert(`Failed to start ${integration.name} connection. Please try again.`)
                 return
             }
 
             if (data?.error) {
                 console.error('OAuth URL error:', data.error)
-                alert(`Mailchimp OAuth error: ${data.error}`)
+                alert(`${integration.name} OAuth error: ${data.error}`)
                 return
             }
 
             if (data?.url) {
-                // Redirect to Mailchimp authorization page
                 window.location.href = data.url
             }
         } catch (err) {
