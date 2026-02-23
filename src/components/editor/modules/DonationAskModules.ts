@@ -11,24 +11,33 @@ export const donationModules: ModuleTemplate[] = [
         id: 'donation-1',
         name: 'Donation 1',
         category: 'donation',
-        thumbnailHtml: '<div style="padding:10px 12px;text-align:center;border-radius:4px;background:#faf8f5"><div style="font-size:10px;font-weight:bold;color:#1a3a5c;margin-bottom:6px">Make Your Impact</div><div style="display:flex;gap:4px;justify-content:center"><span style="background:#e8614d;color:white;padding:3px 8px;border-radius:3px;font-size:8px;font-weight:bold">$25</span><span style="background:#e8614d;color:white;padding:3px 8px;border-radius:3px;font-size:8px;font-weight:bold">$50</span><span style="background:#e8614d;color:white;padding:3px 8px;border-radius:3px;font-size:8px;font-weight:bold">$100</span></div></div>',
-        renderHtml: (bk) => `
-            <table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;background-color:#faf8f5;">
+        thumbnailHtml: '<div style="padding:10px 12px;text-align:center;border-radius:4px;background:#faf8f5"><div style="display:grid;grid-template-columns:1fr 1fr;gap:3px"><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$10</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$25</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$50</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$100</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">$250</span><span style="background:#e8614d;color:white;padding:3px 0;border-radius:3px;font-size:7px;font-weight:bold;text-align:center">Other</span></div></div>',
+        renderHtml: (bk) => {
+            const btnBg = c(bk, 'accent', '#e8614d')
+            const amounts = ['$10', '$25', '$50', '$100', '$250', 'Other']
+            const rows = []
+            for (let i = 0; i < amounts.length; i += 2) {
+                rows.push(`
+                    <tr>
+                        <td style="padding:4px 4px 4px 0;width:50%;">
+                            <a href="#" style="display:block;background-color:${btnBg};color:white;padding:14px 0;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;text-align:center;">${amounts[i]}</a>
+                        </td>
+                        <td style="padding:4px 0 4px 4px;width:50%;">
+                            <a href="#" style="display:block;background-color:${btnBg};color:white;padding:14px 0;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;text-align:center;">${amounts[i + 1]}</a>
+                        </td>
+                    </tr>`)
+            }
+            return `
+            <table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;">
                 <tr>
-                    <td align="center" style="padding:32px;">
-                        <h2 style="margin:0 0 8px;font-size:22px;color:${c(bk, 'primary', '#1a3a5c')};font-weight:700;">Make Your Impact</h2>
-                        <p style="margin:0 0 20px;font-size:14px;color:#666;">Choose your gift amount:</p>
-                        <table cellpadding="0" cellspacing="0">
-                            <tr>
-                                <td style="padding:0 6px;"><a href="#" style="display:inline-block;background-color:${c(bk, 'accent', '#e8614d')};color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;">$25</a></td>
-                                <td style="padding:0 6px;"><a href="#" style="display:inline-block;background-color:${c(bk, 'accent', '#e8614d')};color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;">$50</a></td>
-                                <td style="padding:0 6px;"><a href="#" style="display:inline-block;background-color:${c(bk, 'accent', '#e8614d')};color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;">$100</a></td>
-                                <td style="padding:0 6px;"><a href="#" style="display:inline-block;background-color:${c(bk, 'accent', '#e8614d')};color:white;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:16px;">$250</a></td>
-                            </tr>
+                    <td style="padding:24px 32px;">
+                        <table width="100%" cellpadding="0" cellspacing="0">
+                            ${rows.join('')}
                         </table>
                     </td>
                 </tr>
-            </table>`,
+            </table>`
+        },
         defaultProps: { paddingTop: 0, paddingRight: 0, paddingBottom: 0, paddingLeft: 0, backgroundColor: '', width: 600 },
     },
     {

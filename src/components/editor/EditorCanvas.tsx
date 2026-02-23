@@ -108,51 +108,82 @@ function SortableBlock({
                         : 'hover:ring-1 hover:ring-gray-200'
                     }`}
             >
-                {/* Drag handle + move buttons */}
-                <div className="absolute -left-10 top-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-                    {/* Move up */}
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onMoveUp?.() }}
-                        className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-                        title="Move up"
-                    >
-                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                {/* Module label bar — drag handle */}
+                <div
+                    {...attributes}
+                    {...listeners}
+                    className={`flex items-center justify-between px-3 py-1 cursor-grab active:cursor-grabbing transition-colors ${isSelected
+                        ? 'bg-[#e8614d] text-white'
+                        : 'bg-gray-100 text-gray-500 opacity-0 group-hover:opacity-100'
+                        }`}
+                >
+                    <div className="flex items-center gap-1.5">
+                        {/* Grip icon */}
+                        <svg className="h-3.5 w-3.5 opacity-60" viewBox="0 0 16 16" fill="currentColor">
+                            <circle cx="4" cy="4" r="1.2" />
+                            <circle cx="9" cy="4" r="1.2" />
+                            <circle cx="4" cy="8" r="1.2" />
+                            <circle cx="9" cy="8" r="1.2" />
+                            <circle cx="4" cy="12" r="1.2" />
+                            <circle cx="9" cy="12" r="1.2" />
                         </svg>
-                    </button>
-
-                    {/* Drag handle */}
-                    <div
-                        {...attributes}
-                        {...listeners}
-                        className="cursor-grab rounded p-0.5 hover:bg-gray-100 active:cursor-grabbing transition-colors"
-                    >
-                        <svg className="h-4 w-4 text-gray-400" viewBox="0 0 16 16" fill="currentColor">
-                            <circle cx="5" cy="4" r="1.5" />
-                            <circle cx="11" cy="4" r="1.5" />
-                            <circle cx="5" cy="8" r="1.5" />
-                            <circle cx="11" cy="8" r="1.5" />
-                            <circle cx="5" cy="12" r="1.5" />
-                            <circle cx="11" cy="12" r="1.5" />
-                        </svg>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider">
+                            {block.category || 'Block'}
+                        </span>
                     </div>
 
-                    {/* Move down */}
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onMoveDown?.() }}
-                        className="flex h-5 w-5 items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
-                        title="Move down"
-                    >
-                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
+                    {/* Action buttons — prevent drag when clicking */}
+                    <div className="flex items-center gap-0.5" onPointerDown={(e) => e.stopPropagation()}>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onMoveUp?.() }}
+                            className={`flex h-5 w-5 items-center justify-center rounded transition-colors ${isSelected ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+                                }`}
+                            title="Move up"
+                        >
+                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onMoveDown?.() }}
+                            className={`flex h-5 w-5 items-center justify-center rounded transition-colors ${isSelected ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+                                }`}
+                            title="Move down"
+                        >
+                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+
+                        <div className={`mx-0.5 h-3 w-px ${isSelected ? 'bg-white/20' : 'bg-gray-300'}`} />
+
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onDuplicate() }}
+                            className={`flex h-5 w-5 items-center justify-center rounded transition-colors ${isSelected ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+                                }`}
+                            title="Duplicate block"
+                        >
+                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onDelete() }}
+                            className={`flex h-5 w-5 items-center justify-center rounded transition-colors ${isSelected ? 'text-white hover:bg-white/20' : 'text-red-400 hover:bg-red-50 hover:text-red-500'
+                                }`}
+                            title="Delete block"
+                        >
+                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Block content — editable */}
                 <div
                     ref={contentRef}
-                    className="cursor-text overflow-hidden rounded-lg bg-white"
+                    className="cursor-text overflow-hidden bg-white"
                     contentEditable
                     suppressContentEditableWarning
                     onBlur={handleBlur}
@@ -167,6 +198,7 @@ function SortableBlock({
                             [data-block-id="${block.id}"] h1, [data-block-id="${block.id}"] h2 {
                                 font-size: ${block.props.fontSize ? `${Math.round(block.props.fontSize * 1.5)}px` : '24px'} !important;
                             }
+                            ${block.props.imageMaxHeight ? `[data-block-id="${block.id}"] img { max-height: ${block.props.imageMaxHeight}px !important; width: auto !important; }` : ''}
                         </style>${block.html}`
                     }}
                     style={{
@@ -179,41 +211,6 @@ function SortableBlock({
                         lineHeight: 1.6,
                     }}
                 />
-
-                {/* Category label */}
-                {isSelected && block.category && (
-                    <div className="absolute -top-5 left-0 rounded-t bg-[#e8614d] px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-white">
-                        {block.category}
-                    </div>
-                )}
-
-                {/* Delete button */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        onDelete()
-                    }}
-                    className="absolute -right-3 -top-3 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white opacity-0 shadow-lg transition-opacity group-hover:opacity-100"
-                    title="Delete block"
-                >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-
-                {/* Duplicate button */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        onDuplicate()
-                    }}
-                    className="absolute -right-3 top-5 flex h-6 w-6 items-center justify-center rounded-full bg-[#1e293b] text-white/60 opacity-0 shadow-lg transition-opacity hover:bg-[#334155] hover:text-white group-hover:opacity-100"
-                    title="Duplicate block"
-                >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                        <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                    </svg>
-                </button>
             </div>
         </>
     )
@@ -320,7 +317,7 @@ export function EditorCanvas({
                 {/* Inner canvas — email body */}
                 <div
                     ref={setNodeRef}
-                    className={`mx-auto min-h-[600px] rounded-lg border-2 border-dashed p-8 transition-all duration-200 ${isOver
+                    className={`mx-auto min-h-[600px] border-2 border-dashed transition-all duration-200 ${isOver
                         ? 'border-[#e8614d]/40'
                         : blocks.length === 0
                             ? 'border-gray-300'

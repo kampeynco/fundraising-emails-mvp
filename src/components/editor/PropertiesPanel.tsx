@@ -234,6 +234,20 @@ export function PropertiesPanel({ selectedBlock, onUpdate, brandKit, canvasOuter
                 </div>
             </PropertyGroup>
 
+            {/* Image sizing */}
+            <PropertyGroup label="Images">
+                <NumberInput
+                    label="Max Height (px)"
+                    value={props.imageMaxHeight || 44}
+                    onChange={(v) => onUpdate({ imageMaxHeight: v })}
+                    min={20}
+                    max={200}
+                />
+                <p className="text-[10px] text-white/20 leading-relaxed pt-1">
+                    Controls the max height of images and logos within this block.
+                </p>
+            </PropertyGroup>
+
             {/* Spacing controls */}
             <PropertyGroup label="Spacing">
                 <div className="space-y-2.5">

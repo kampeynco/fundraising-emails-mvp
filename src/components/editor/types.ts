@@ -10,6 +10,7 @@ export interface ModuleProps {
     fontFamily?: string
     fontSize?: number
     fontColor?: string
+    imageMaxHeight?: number
 }
 
 export interface EditorBlock {

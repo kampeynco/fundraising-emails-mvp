@@ -99,4 +99,19 @@ export const menuModules: ModuleTemplate[] = [
             </table>`,
         defaultProps: { paddingTop: 0, paddingRight: 0, paddingBottom: 0, paddingLeft: 0, backgroundColor: '', width: 600 },
     },
+    {
+        id: 'menu-5',
+        name: 'Menu 5',
+        category: 'menu',
+        thumbnailHtml: '<div style="background:linear-gradient(135deg,#1a3a5c,#0f2137);color:white;padding:14px 12px;font-size:11px;text-align:center;border-radius:4px"><strong>LOGO</strong></div>',
+        renderHtml: (bk) => `
+            <table width="100%" cellpadding="0" cellspacing="0" style="background-color:${c(bk, 'primary', '#1a3a5c')};font-family:Arial,sans-serif;">
+                <tr>
+                    <td align="center" style="padding:24px;">
+                        ${logo(bk) ? `<img src="${logo(bk)}" alt="${orgName(bk)}" style="height:44px;max-width:220px;" />` : `<span style="color:white;font-size:22px;font-weight:bold;letter-spacing:1px;">${orgName(bk).toUpperCase()}</span>`}
+                    </td>
+                </tr>
+            </table>`,
+        defaultProps: { paddingTop: 0, paddingRight: 0, paddingBottom: 0, paddingLeft: 0, backgroundColor: '', width: 600 },
+    },
 ]
