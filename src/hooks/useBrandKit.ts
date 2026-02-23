@@ -180,13 +180,30 @@ export function useBrandKit() {
 
         setSaving(false)
     }, [user, data])
-
     // Upload logo to Supabase Storage
     const uploadLogo = useCallback(async (file: File, type: 'primary' | 'icon') => {
         if (!user) return
 
         const ext = file.name.split('.').pop()
-        const path = `${user.id}/${type}-logo.${ext}`
+        const prefix = `${user.id}/${type}-logo`
+
+        // Delete any existing logo files for this type (handles extension changes)
+        const { data: existingFiles } = await supabase.storage
+            .from('brand-assets')
+            .list(user.id, { search: `${type}-logo` })
+
+        if (existingFiles && existingFiles.length > 0) {
+            const filesToDelete = existingFiles
+                .filter(f => f.name.startsWith(`${type}-logo`))
+                .map(f => `${user.id}/${f.name}`)
+            if (filesToDelete.length > 0) {
+                await supabase.storage.from('brand-assets').remove(filesToDelete)
+            }
+        }
+
+        // Upload with timestamp to bust CDN/browser cache
+        const timestamp = Date.now()
+        const path = `${prefix}-${timestamp}.${ext}`
 
         const { error: uploadError } = await supabase.storage
             .from('brand-assets')
@@ -202,7 +219,8 @@ export function useBrandKit() {
             .from('brand-assets')
             .getPublicUrl(path)
 
-        const url = urlData.publicUrl
+        // Add cache-busting query param
+        const url = `${urlData.publicUrl}?t=${timestamp}`
         setData(prev => ({
             ...prev,
             [type === 'primary' ? 'primary_logo_url' : 'icon_logo_url']: url,
