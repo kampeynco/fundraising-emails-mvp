@@ -92,15 +92,16 @@ export const donationModules: ModuleTemplate[] = [
         id: 'donation-4',
         name: 'Donation 4',
         category: 'donation',
-        thumbnailHtml: '<div style="padding:10px 12px;border-radius:4px;background:#1a3a5c;text-align:center"><div style="font-size:10px;font-weight:bold;color:white;margin-bottom:4px">2X MATCH</div><div style="font-size:8px;color:rgba(255,255,255,0.6)">$1 = $2 through midnight</div></div>',
+        // Compliant: deadline urgency without match claims (ActBlue Matching Program Standards)
+        thumbnailHtml: '<div style="padding:10px 12px;border-radius:4px;background:#1a3a5c;text-align:center"><div style="font-size:10px;font-weight:bold;color:white;margin-bottom:4px">DEADLINE TONIGHT</div><div style="font-size:8px;color:rgba(255,255,255,0.6)">Help us reach our goal before midnight</div></div>',
         renderHtml: (bk) => `
             <table width="100%" cellpadding="0" cellspacing="0" style="font-family:Arial,sans-serif;background-color:${c(bk, 'primary', '#1a3a5c')};">
                 <tr>
                     <td align="center" style="padding:36px 32px;">
-                        <p style="margin:0 0 4px;font-size:14px;color:${c(bk, 'accent', '#e8614d')};text-transform:uppercase;letter-spacing:2px;font-weight:bold;">⚡ Limited Time</p>
-                        <h2 style="margin:0 0 10px;font-size:32px;color:white;font-weight:800;">2X MATCH ACTIVE</h2>
-                        <p style="margin:0 0 24px;font-size:16px;color:rgba(255,255,255,0.7);">Every dollar you give right now will be DOUBLED by an anonymous donor.</p>
-                        <a href="#" style="display:inline-block;background-color:${c(bk, 'accent', '#e8614d')};color:white;padding:14px 40px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:17px;">DOUBLE MY GIFT →</a>
+                        <p style="margin:0 0 4px;font-size:14px;color:${c(bk, 'accent', '#e8614d')};text-transform:uppercase;letter-spacing:2px;font-weight:bold;">⚡ Deadline Approaching</p>
+                        <h2 style="margin:0 0 10px;font-size:32px;color:white;font-weight:800;">We Need You Tonight</h2>
+                        <p style="margin:0 0 24px;font-size:16px;color:rgba(255,255,255,0.7);">Our fundraising deadline closes at midnight. Every grassroots contribution brings us closer to our goal.</p>
+                        <a href="#" style="display:inline-block;background-color:${c(bk, 'accent', '#e8614d')};color:white;padding:14px 40px;border-radius:6px;text-decoration:none;font-weight:bold;font-size:17px;">GIVE NOW →</a>
                     </td>
                 </tr>
             </table>`,

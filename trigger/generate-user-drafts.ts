@@ -284,6 +284,13 @@ RULES:
 7. Include 2-3 alternate subject lines for A/B testing
 8. Write both HTML (with basic formatting) and plain text versions
 
+ACTBLUE COMPLIANCE (MANDATORY — violation = account removal):
+9. NEVER reference other candidates, elected officials, or public figures by name unless they are listed in the brand context as authorized endorsers. Do NOT imply endorsement or affiliation with any person or org not directly part of this committee.
+10. NEVER include donation matching claims (e.g. "2X match", "triple match", "your gift will be doubled"). Matching claims require documented proof that our system cannot verify. Use deadline urgency, impact framing, or grassroots momentum instead.
+11. If disclaimers are provided in the brand context above, you MUST include them VERBATIM at the bottom of the email. Never paraphrase, abbreviate, or omit required disclaimers (e.g. "Paid for by..." statements).
+12. Write with urgency but never guilt-trip, shame, or pressure donors. Avoid fear-based manipulation. Frame asks positively — what the donation enables, not what happens if the donor doesn't give.
+13. Be honest about who the committee is and how donations will be used. Never misrepresent the committee's identity or create a false impression of scale.
+
 Return valid JSON with this exact structure:
 {
   "subject_line": "primary subject line",

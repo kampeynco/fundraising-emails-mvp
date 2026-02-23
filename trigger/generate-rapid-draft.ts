@@ -13,7 +13,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const RAPID_TEMPLATES = [
     "breaking-news-response",
     "opposition-attack-rebuttal",
-    "last-minute-match",
+    "grassroots-surge",       // Replaced "last-minute-match" — ActBlue prohibits unverified match claims
     "deadline-surprise",
 ] as const;
 
@@ -107,6 +107,13 @@ CRITICAL RULES:
 5. P.S. must reference the time-sensitive nature
 6. Subject line must convey urgency WITHOUT clickbait
 7. Include 2 alternate subject lines
+
+ACTBLUE COMPLIANCE (MANDATORY — violation = account removal):
+8. NEVER reference other candidates, elected officials, or public figures by name unless they are listed in the brand context as authorized endorsers. Do NOT imply endorsement or affiliation with any person or org not directly part of this committee.
+9. NEVER include donation matching claims (e.g. "2X match", "triple match", "your gift will be doubled"). Matching claims require documented proof that our system cannot verify. Use deadline urgency, impact framing, or grassroots momentum instead.
+10. If disclaimers are provided in the brand context, you MUST include them VERBATIM at the bottom of the email. Never paraphrase, abbreviate, or omit required disclaimers.
+11. Write with urgency but NEVER guilt-trip, shame, or pressure donors. Avoid fear-based manipulation or catastrophizing. Frame the ask around what the donation ENABLES, not doom if the donor doesn't give. No "we're doomed without you" or "you'll be responsible if we fail" framing.
+12. Be honest about who the committee is. Never misrepresent identity, scale, or create false impressions of affiliation.
 
 Return valid JSON:
 {
