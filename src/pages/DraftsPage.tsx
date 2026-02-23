@@ -325,8 +325,7 @@ export default function DraftsPage() {
             </div>
         </div>
 
-            {/* New Draft Dialog */ }
-    <NewDraftDialog open={showNewDraft} onOpenChange={setShowNewDraft} />
+            <NewDraftDialog open={showNewDraft} onOpenChange={setShowNewDraft} />
         </div >
     )
 }
