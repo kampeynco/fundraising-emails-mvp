@@ -45,7 +45,8 @@ export function EditorLayout({
 }: EditorLayoutProps) {
     const { isAdminOrManager } = useUserRole()
     const [activeCategory, setActiveCategory] = useState<ModuleCategory | null>(null)
-    const [showComments, setShowComments] = useState(!isAdminOrManager) // Users default to comments
+    const [showComments, setShowComments] = useState(!isAdminOrManager)
+    const [showVersions, setShowVersions] = useState(false)
 
     const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null
 
@@ -169,6 +170,16 @@ export function EditorLayout({
                     />
                 )}
             </div>
+
+            {/* Version history overlay */}
+            {showVersions && onRestoreVersion && (
+                <VersionHistoryPanel
+                    versions={versions}
+                    onRestore={onRestoreVersion}
+                    onBlocksChange={onBlocksChange}
+                    onClose={() => setShowVersions(false)}
+                />
+            )}
         </div>
     )
 }
