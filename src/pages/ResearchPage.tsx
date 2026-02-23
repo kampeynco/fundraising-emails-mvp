@@ -4,14 +4,12 @@ import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
-    Add01Icon,
     CheckmarkBadge01Icon,
     Delete02Icon,
     Globe02Icon,
     InformationCircleIcon,
     Search01Icon,
     SparklesIcon,
-    TextIcon,
 } from '@hugeicons/core-free-icons'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -259,15 +257,13 @@ export default function ResearchPage() {
 
             {/* ── Topics ── */}
             <div className="px-8 py-6 space-y-6">
-
-                {/* AI Recommended */}
                 <section>
                     <div className="mb-3 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <HugeiconsIcon icon={SparklesIcon} className="h-4 w-4 text-amber-400" />
-                            <h2 className="text-sm font-semibold text-white">AI Recommended</h2>
+                            <h2 className="text-sm font-semibold text-white">Research Topics</h2>
                             <span className="text-xs text-white/30">
-                                Topics discovered for your brand
+                                {filteredTopics.length} topic{filteredTopics.length !== 1 ? 's' : ''}
                             </span>
                         </div>
                         <button
@@ -279,67 +275,39 @@ export default function ResearchPage() {
                     </div>
 
                     <div className="space-y-2">
-                        {availableTopics
-                            .filter(t => t.suggested_by === 'ai')
-                            .map(topic => (
-                                <TopicCard
-                                    key={topic.id}
-                                    topic={topic}
-                                    onMarkForDraft={handleMarkForDraft}
-                                    onRemove={handleRemoveTopic}
-                                />
-                            ))}
-
-                        {showUsed && usedTopics
-                            .filter(t => t.suggested_by === 'ai')
-                            .map(topic => (
-                                <TopicCard
-                                    key={topic.id}
-                                    topic={topic}
-                                    onMarkForDraft={handleMarkForDraft}
-                                    onRemove={handleRemoveTopic}
-                                />
-                            ))}
-
-                        {availableTopics.filter(t => t.suggested_by === 'ai').length === 0 && !showUsed && (
-                            <div className="rounded-xl border border-dashed border-white/[0.08] p-6 text-center">
-                                <p className="text-sm text-white/25">
-                                    {searchQuery ? 'No AI topics match your search' : 'No AI-recommended topics yet'}
-                                </p>
-                            </div>
-                        )}
-                    </div>
-                </section>
-
-                {/* User Added */}
-                <section>
-                    <div className="mb-3 flex items-center gap-2">
-                        <HugeiconsIcon icon={TextIcon} className="h-4 w-4 text-blue-400" />
-                        <h2 className="text-sm font-semibold text-white">Your Topics</h2>
-                        <span className="text-xs text-white/30">
-                            Topics you've saved for future emails
-                        </span>
-                    </div>
-
-                    <div className="space-y-2">
-                        {availableTopics
-                            .filter(t => t.suggested_by === 'user')
-                            .map(topic => (
-                                <TopicCard
-                                    key={topic.id}
-                                    topic={topic}
-                                    onMarkForDraft={handleMarkForDraft}
-                                    onRemove={handleRemoveTopic}
-                                />
-                            ))}
-
-                        {availableTopics.filter(t => t.suggested_by === 'user').length === 0 && (
+                        {isLoading ? (
                             <div className="rounded-xl border border-dashed border-white/[0.08] p-8 text-center">
-                                <HugeiconsIcon icon={Add01Icon} className="mx-auto mb-2 h-6 w-6 text-white/15" />
-                                <p className="text-sm text-white/25">
-                                    Search for a topic above to add it to your research
-                                </p>
+                                <p className="text-sm text-white/25">Loading research topics…</p>
                             </div>
+                        ) : (
+                            <>
+                                {availableTopics.map(topic => (
+                                    <TopicCard
+                                        key={topic.id}
+                                        topic={topic}
+                                        onMarkForDraft={handleMarkForDraft}
+                                        onRemove={handleRemoveTopic}
+                                    />
+                                ))}
+
+                                {showUsed && usedTopics.map(topic => (
+                                    <TopicCard
+                                        key={topic.id}
+                                        topic={topic}
+                                        onMarkForDraft={handleMarkForDraft}
+                                        onRemove={handleRemoveTopic}
+                                    />
+                                ))}
+
+                                {availableTopics.length === 0 && !showUsed && (
+                                    <div className="rounded-xl border border-dashed border-white/[0.08] p-8 text-center">
+                                        <HugeiconsIcon icon={Search01Icon} className="mx-auto mb-2 h-6 w-6 text-white/15" />
+                                        <p className="text-sm text-white/25">
+                                            Search for a topic above to discover research for your emails
+                                        </p>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </section>

@@ -82,95 +82,7 @@ function GeneralSection() {
     )
 }
 
-// ── Stances Section ─────────────────────────────────────────
-function StancesSection() {
-    const [stances, setStances] = useState([
-        { issue: 'Healthcare', position: 'Support universal coverage through public option expansion', priority: 'high' },
-        { issue: 'Climate', position: 'Net-zero by 2050 with green energy investment', priority: 'high' },
-        { issue: 'Education', position: 'Increase public school funding, expand Pre-K access', priority: 'medium' },
-    ])
 
-    const [newIssue, setNewIssue] = useState('')
-    const [newPosition, setNewPosition] = useState('')
-
-    const addStance = () => {
-        if (!newIssue.trim() || !newPosition.trim()) return
-        setStances([...stances, { issue: newIssue, position: newPosition, priority: 'medium' }])
-        setNewIssue('')
-        setNewPosition('')
-    }
-
-    const removeStance = (idx: number) => {
-        setStances(stances.filter((_, i) => i !== idx))
-    }
-
-    return (
-        <div className="space-y-8">
-            <div>
-                <h3 className="text-base font-semibold text-white">Policy Stances</h3>
-                <p className="mt-1 text-sm text-white/40">
-                    Define your campaign's positions on key issues. The AI writer uses these to generate on-message emails.
-                </p>
-            </div>
-
-            {/* Existing stances */}
-            <div className="space-y-3">
-                {stances.map((stance, i) => (
-                    <div
-                        key={i}
-                        className="group flex items-start justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 transition-colors hover:bg-white/[0.04]"
-                    >
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold text-white">{stance.issue}</span>
-                                <span
-                                    className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${stance.priority === 'high'
-                                        ? 'bg-[#e8614d]/15 text-[#e8614d]'
-                                        : 'bg-white/5 text-white/40'
-                                        }`}
-                                >
-                                    {stance.priority}
-                                </span>
-                            </div>
-                            <p className="mt-1 text-sm text-white/50">{stance.position}</p>
-                        </div>
-                        <button
-                            onClick={() => removeStance(i)}
-                            className="ml-3 cursor-pointer text-xs text-white/20 opacity-0 transition-all hover:text-red-400 group-hover:opacity-100"
-                        >
-                            Remove
-                        </button>
-                    </div>
-                ))}
-            </div>
-
-            {/* Add new stance */}
-            <div className="rounded-xl border border-dashed border-white/10 p-4">
-                <p className="mb-3 text-xs font-medium uppercase tracking-wider text-white/30">Add a Stance</p>
-                <div className="flex gap-3">
-                    <input
-                        type="text"
-                        placeholder="Issue (e.g. Economy)"
-                        value={newIssue}
-                        onChange={e => setNewIssue(e.target.value)}
-                        className="w-40 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder-white/25 outline-none focus:border-[#e8614d]/50"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Your position on this issue…"
-                        value={newPosition}
-                        onChange={e => setNewPosition(e.target.value)}
-                        className="flex-1 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-2 text-sm text-white placeholder-white/25 outline-none focus:border-[#e8614d]/50"
-                        onKeyDown={e => e.key === 'Enter' && addStance()}
-                    />
-                    <Button onClick={addStance} className="bg-[#e8614d] text-white hover:bg-[#d4553f]">
-                        Add
-                    </Button>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 // ── Billing Section ─────────────────────────────────────────
 function BillingSection() {
@@ -552,7 +464,7 @@ export default function SettingsPage() {
                         Settings
                     </h1>
                     <p className="mt-1 text-sm text-white/40">
-                        Manage your campaign settings, policy stances, billing, and integrations
+                        Manage your campaign settings, billing, and integrations
                     </p>
                 </div>
 
@@ -560,9 +472,7 @@ export default function SettingsPage() {
                 <div id="general" className={activeSection === 'general' ? '' : 'hidden'}>
                     <GeneralSection />
                 </div>
-                <div id="stances" className={activeSection === 'stances' ? '' : 'hidden'}>
-                    <StancesSection />
-                </div>
+
                 <div id="billing" className={activeSection === 'billing' ? '' : 'hidden'}>
                     <BillingSection />
                 </div>

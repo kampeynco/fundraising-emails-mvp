@@ -66,12 +66,6 @@ const settingsSections = [
         ],
     },
     {
-        label: 'Campaign',
-        items: [
-            { icon: AlertSquareIcon, label: 'Stances', sectionId: 'stances' },
-        ],
-    },
-    {
         label: 'Account',
         items: [
             { icon: CreditCardPosIcon, label: 'Billing', sectionId: 'billing' },
