@@ -46,8 +46,9 @@ export default function DraftEditorPage() {
             setDraftSubject(draft.subject_line || 'Untitled Draft')
 
             // Load structured blocks if available, otherwise fallback to raw HTML
-            if (draft.editor_blocks && Array.isArray(draft.editor_blocks) && draft.editor_blocks.length > 0) {
-                setBlocks(draft.editor_blocks as EditorBlock[])
+            const draftAny = draft as any
+            if (draftAny.editor_blocks && Array.isArray(draftAny.editor_blocks) && draftAny.editor_blocks.length > 0) {
+                setBlocks(draftAny.editor_blocks as EditorBlock[])
             } else if (draft.body_html) {
                 setBlocks([{
                     id: 'raw-' + crypto.randomUUID(),
