@@ -136,60 +136,56 @@ function SortableBlock({
                     <div className="flex items-center gap-0.5" onPointerDown={(e) => e.stopPropagation()}>
                         <button
                             onClick={(e) => { e.stopPropagation(); onMoveUp?.() }}
-                            className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-white/20
-                                }`}
+                            className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-white/20"
                             title="Move up"
                         >
-                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onMoveDown?.() }}
-                        className={`flex h-5 w-5 items-center justify-center rounded transition-colors ${isSelected ? 'hover:bg-white/20' : 'hover:bg-gray-200'
-                            }`}
-                        title="Move down"
-                    >
-                        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
+                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onMoveDown?.() }}
+                            className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-white/20"
+                            title="Move down"
+                        >
+                            <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
 
-                    <div className="mx-0.5 h-3 w-px bg-white/20" />
+                        <div className="mx-0.5 h-3 w-px bg-white/20" />
 
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onDuplicate() }}
-                        className={`flex h-5 w-5 items-center justify-center rounded transition-colors ${isSelected ? 'hover:bg-white/20' : 'hover:bg-gray-200'
-                            }`}
-                        title="Duplicate block"
-                    >
-                        <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                            <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={(e) => { e.stopPropagation(); onDelete() }}
-                        className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-white/20
-                                }`}
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onDuplicate() }}
+                            className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-white/20"
+                            title="Duplicate block"
+                        >
+                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); onDelete() }}
+                            className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-white/20"
                             title="Delete block"
                         >
-                    <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
-        </div >
+                            <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
 
-            {/* Block content — editable */ }
-            < div
-    ref = { contentRef }
-    className = "cursor-text overflow-hidden bg-white"
-    contentEditable
-    suppressContentEditableWarning
-    onBlur = { handleBlur }
-    data - block - id={ block.id }
-    dangerouslySetInnerHTML = {{
-        __html: `<style>
+                {/* Block content — editable */}
+                <div
+                    ref={contentRef}
+                    className="cursor-text overflow-hidden bg-white"
+                    contentEditable
+                    suppressContentEditableWarning
+                    onBlur={handleBlur}
+                    data-block-id={block.id}
+                    dangerouslySetInnerHTML={{
+                        __html: `<style>
                             [data-block-id="${block.id}"] * {
                                 font-family: ${block.props.fontFamily || 'Arial, Helvetica, sans-serif'} !important;
                                 font-size: ${block.props.fontSize ? `${block.props.fontSize}px` : '16px'} !important;
@@ -200,19 +196,18 @@ function SortableBlock({
                             }
                             ${block.props.imageMaxHeight ? `[data-block-id="${block.id}"] img { width: ${block.props.imageMaxHeight}% !important; height: auto !important; max-width: 100% !important; }` : ''}
                         </style>${block.html}`
-    }
-}
-style = {{
-    paddingTop: block.props.paddingTop,
-        paddingRight: block.props.paddingRight,
-            paddingBottom: block.props.paddingBottom,
-                paddingLeft: block.props.paddingLeft,
-                    backgroundColor: block.props.backgroundColor || undefined,
+                    }}
+                    style={{
+                        paddingTop: block.props.paddingTop,
+                        paddingRight: block.props.paddingRight,
+                        paddingBottom: block.props.paddingBottom,
+                        paddingLeft: block.props.paddingLeft,
+                        backgroundColor: block.props.backgroundColor || undefined,
                         maxWidth: block.props.width || 600,
-                            lineHeight: 1.6,
+                        lineHeight: 1.6,
                     }}
                 />
-            </div >
+            </div>
         </>
     )
 }
