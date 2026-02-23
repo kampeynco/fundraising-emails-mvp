@@ -19,91 +19,6 @@ import {
 } from '@hugeicons/core-free-icons'
 import { type Draft, type DraftStatus, DRAFT_STATUS_CONFIG } from '@/types/draft'
 
-// ── Mock data until Supabase hook is wired up ──
-const mockDrafts: Draft[] = [
-    {
-        id: 'draft-1',
-        user_id: 'user-1',
-        week_of: '2026-02-16',
-        draft_type: 'weekly',
-        subject_line: 'End-of-Quarter Push — Match Deadline Tonight',
-        preview_text: 'Every dollar doubled until midnight. Don\'t miss this.',
-        body_html: '<div>Draft content...</div>',
-        status: 'pending_review',
-        alt_subject_lines: ['LAST CHANCE: 2X Match Expires Tonight', 'Your $25 becomes $50 — but only until midnight'],
-        ai_model: 'gpt-5.2-chat-latest',
-        created_at: '2026-02-20T12:00:00Z',
-        updated_at: '2026-02-20T12:00:00Z',
-    },
-    {
-        id: 'draft-2',
-        user_id: 'user-1',
-        week_of: '2026-02-16',
-        draft_type: 'weekly',
-        subject_line: 'Welcome to the Team — Here\'s Why We Fight',
-        preview_text: 'You joined for a reason. Let me tell you mine.',
-        body_html: '<div>Draft content...</div>',
-        status: 'pending_review',
-        alt_subject_lines: ['Why I\'m in this fight', 'A personal note from our founder'],
-        ai_model: 'gpt-5.2-chat-latest',
-        created_at: '2026-02-20T12:05:00Z',
-        updated_at: '2026-02-20T12:05:00Z',
-    },
-    {
-        id: 'draft-3',
-        user_id: 'user-1',
-        week_of: '2026-02-16',
-        draft_type: 'rapid_response',
-        subject_line: 'BREAKING: They Just Attacked Us — Fight Back Now',
-        preview_text: 'We need your help in the next 24 hours.',
-        body_html: '<div>Draft content...</div>',
-        status: 'revision_requested',
-        user_comments: 'Tone is too aggressive. Soften the opening and add data points.',
-        ai_model: 'gpt-5.2-chat-latest',
-        created_at: '2026-02-19T08:00:00Z',
-        updated_at: '2026-02-19T16:00:00Z',
-    },
-    {
-        id: 'draft-4',
-        user_id: 'user-1',
-        week_of: '2026-02-09',
-        draft_type: 'weekly',
-        subject_line: 'Your $50 Is Already At Work — Here\'s Proof',
-        preview_text: 'Thank you. Here\'s exactly what your gift did.',
-        body_html: '<div>Draft content...</div>',
-        status: 'approved',
-        ai_model: 'gpt-5.2-chat-latest',
-        created_at: '2026-02-13T12:00:00Z',
-        updated_at: '2026-02-14T09:00:00Z',
-    },
-    {
-        id: 'draft-5',
-        user_id: 'user-1',
-        week_of: '2026-02-09',
-        draft_type: 'weekly',
-        subject_line: 'FEC Deadline Countdown — 48hrs Left',
-        preview_text: 'We\'re $4,200 short. Can you help close the gap?',
-        body_html: '<div>Draft content...</div>',
-        status: 'sent',
-        ai_model: 'gpt-5.2-chat-latest',
-        created_at: '2026-02-12T12:00:00Z',
-        updated_at: '2026-02-12T18:00:00Z',
-    },
-    {
-        id: 'draft-6',
-        user_id: 'user-1',
-        week_of: '2026-02-02',
-        draft_type: 'weekly',
-        subject_line: 'Monthly Recurring Donor Thank You',
-        preview_text: 'Your monthly gift keeps our campaign running strong.',
-        body_html: '<div>Draft content...</div>',
-        status: 'sent',
-        ai_model: 'gpt-5.2-chat-latest',
-        created_at: '2026-02-06T12:00:00Z',
-        updated_at: '2026-02-06T15:00:00Z',
-    },
-]
-
 // ── Status order for swimlanes ──
 const STATUS_ORDER: DraftStatus[] = [
     'pending_review',
@@ -130,13 +45,39 @@ function formatWeek(weekOf: string) {
 }
 
 export default function DraftsPage() {
-    const { user } = useAuth()
+    const { user, loading: authLoading } = useAuth()
     const navigate = useNavigate()
+    const [drafts, setDrafts] = useState<Draft[]>([])
+    const [loadingDrafts, setLoadingDrafts] = useState(true)
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
     const [dropDay, setDropDay] = useState('Thursday')
 
+    // ── Fetch drafts from Supabase ──
     useEffect(() => {
-        if (!user) return
+        if (authLoading || !user) return
+
+        const fetchDrafts = async () => {
+            setLoadingDrafts(true)
+            const { data, error } = await supabase
+                .from('email_drafts')
+                .select('*')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false })
+
+            if (error) {
+                console.error('Error fetching drafts:', error)
+            } else {
+                setDrafts((data || []) as Draft[])
+            }
+            setLoadingDrafts(false)
+        }
+
+        fetchDrafts()
+    }, [user, authLoading])
+
+    // ── Fetch delivery day ──
+    useEffect(() => {
+        if (authLoading || !user) return
         const fetchDay = async () => {
             const { data } = await supabase
                 .from('profiles')
@@ -149,7 +90,7 @@ export default function DraftsPage() {
             }
         }
         fetchDay()
-    }, [user])
+    }, [user, authLoading])
 
     const toggleSection = (status: DraftStatus) => {
         setCollapsedSections(prev => {
@@ -162,12 +103,49 @@ export default function DraftsPage() {
 
     // Group drafts by status
     const grouped = STATUS_ORDER.reduce((acc, status) => {
-        acc[status] = mockDrafts.filter(d => d.status === status)
+        acc[status] = drafts.filter(d => d.status === status)
         return acc
     }, {} as Record<DraftStatus, Draft[]>)
 
-    const totalDrafts = mockDrafts.length
+    const totalDrafts = drafts.length
     const pendingCount = grouped.pending_review.length + grouped.revision_requested.length
+
+    // ── Loading skeleton ──
+    if (loadingDrafts || authLoading) {
+        return (
+            <div className="h-full overflow-y-auto">
+                <div className="sticky top-0 z-10 border-b border-white/[0.06] bg-[#111827]/95 px-8 py-5 backdrop-blur-sm">
+                    <div className="h-6 w-36 animate-pulse rounded bg-white/[0.06]" />
+                    <div className="mt-2 h-4 w-56 animate-pulse rounded bg-white/[0.04]" />
+                </div>
+                <div className="px-8 py-6 space-y-2">
+                    {[...Array(4)].map((_, i) => (
+                        <div key={i} className="rounded-xl border border-white/[0.06] bg-[#1e293b]/50 overflow-hidden">
+                            <div className="flex items-center gap-3 px-5 py-3.5">
+                                <div className="h-4 w-4 animate-pulse rounded bg-white/[0.06]" />
+                                <div className="h-4 w-28 animate-pulse rounded bg-white/[0.06]" style={{ animationDelay: `${i * 100}ms` }} />
+                                <div className="h-5 w-5 animate-pulse rounded-full bg-white/[0.06]" />
+                            </div>
+                            {i < 2 && (
+                                <div className="border-t border-white/[0.04] space-y-0">
+                                    {[...Array(2)].map((_, j) => (
+                                        <div key={j} className="flex items-center gap-4 px-5 py-3.5 border-b border-white/[0.04] last:border-b-0">
+                                            <div className="h-2 w-2 animate-pulse rounded-full bg-white/[0.06]" />
+                                            <div className="flex-1 space-y-1.5">
+                                                <div className="h-4 w-3/4 animate-pulse rounded bg-white/[0.06]" style={{ animationDelay: `${(i * 2 + j) * 80}ms` }} />
+                                                <div className="h-3 w-1/2 animate-pulse rounded bg-white/[0.04]" />
+                                            </div>
+                                            <div className="h-3 w-20 animate-pulse rounded bg-white/[0.04]" />
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="h-full overflow-y-auto">
