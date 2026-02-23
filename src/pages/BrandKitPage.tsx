@@ -206,7 +206,7 @@ export default function BrandKitPage() {
                 {/* ═══════ SCROLLABLE FORM CONTENT ═══════ */}
                 <div className="max-w-2xl px-8 py-8 space-y-12">
 
-                    {/* ── BRAND DETAILS ── */}
+                    {/* ── DETAILS ── */}
                     <section id="brand-details" className="scroll-mt-20">
                         <h2 className="mb-8 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                             Details
@@ -224,6 +224,151 @@ export default function BrandKitPage() {
                         </div>
 
                         <div className="mb-6">
+                            <label className="mb-2 block text-sm font-medium text-white/50">Organization Type</label>
+                            <div className="relative">
+                                <select
+                                    value={data.org_type}
+                                    onChange={(e) => {
+                                        updateField('org_type', e.target.value)
+                                        // Reset candidate-specific fields when switching away
+                                        if (e.target.value !== 'Candidate') {
+                                            updateField('org_level', '')
+                                            updateField('office_sought', '')
+                                            updateField('state', '')
+                                            updateField('district', '')
+                                        }
+                                    }}
+                                    className={`${inputClasses} appearance-none cursor-pointer`}
+                                >
+                                    <option value="" className="bg-[#1e293b]">Select type…</option>
+                                    <option value="Candidate" className="bg-[#1e293b]">Candidate</option>
+                                    <option value="Other Political Group" className="bg-[#1e293b]">Other Political Group</option>
+                                    <option value="501c3" className="bg-[#1e293b]">501(c)(3)</option>
+                                    <option value="501c4" className="bg-[#1e293b]">501(c)(4)</option>
+                                </select>
+                                <svg className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                </svg>
+                            </div>
+                        </div>
+
+                        {/* Candidate-specific fields */}
+                        {data.org_type === 'Candidate' && (
+                            <>
+                                <div className="mb-6">
+                                    <label className="mb-2 block text-sm font-medium text-white/50">Level</label>
+                                    <div className="relative">
+                                        <select
+                                            value={data.org_level}
+                                            onChange={(e) => {
+                                                updateField('org_level', e.target.value)
+                                                updateField('office_sought', '') // Reset office when level changes
+                                            }}
+                                            className={`${inputClasses} appearance-none cursor-pointer`}
+                                        >
+                                            <option value="" className="bg-[#1e293b]">Select level…</option>
+                                            <option value="Federal" className="bg-[#1e293b]">Federal</option>
+                                            <option value="State" className="bg-[#1e293b]">State</option>
+                                            <option value="Local" className="bg-[#1e293b]">Local</option>
+                                        </select>
+                                        <svg className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                {data.org_level && (
+                                    <div className="mb-6">
+                                        <label className="mb-2 block text-sm font-medium text-white/50">Office Sought</label>
+                                        <div className="relative">
+                                            <select
+                                                value={data.office_sought}
+                                                onChange={(e) => updateField('office_sought', e.target.value)}
+                                                className={`${inputClasses} appearance-none cursor-pointer`}
+                                            >
+                                                <option value="" className="bg-[#1e293b]">Select office…</option>
+                                                {data.org_level === 'Federal' && (
+                                                    <>
+                                                        <option value="President" className="bg-[#1e293b]">President</option>
+                                                        <option value="U.S. Senate" className="bg-[#1e293b]">U.S. Senate</option>
+                                                        <option value="U.S. House" className="bg-[#1e293b]">U.S. House</option>
+                                                    </>
+                                                )}
+                                                {data.org_level === 'State' && (
+                                                    <>
+                                                        <option value="Governor" className="bg-[#1e293b]">Governor</option>
+                                                        <option value="Lt. Governor" className="bg-[#1e293b]">Lt. Governor</option>
+                                                        <option value="Attorney General" className="bg-[#1e293b]">Attorney General</option>
+                                                        <option value="Secretary of State" className="bg-[#1e293b]">Secretary of State</option>
+                                                        <option value="State Senate" className="bg-[#1e293b]">State Senate</option>
+                                                        <option value="State House" className="bg-[#1e293b]">State House</option>
+                                                        <option value="Other Statewide" className="bg-[#1e293b]">Other Statewide</option>
+                                                    </>
+                                                )}
+                                                {data.org_level === 'Local' && (
+                                                    <>
+                                                        <option value="Mayor" className="bg-[#1e293b]">Mayor</option>
+                                                        <option value="City Council" className="bg-[#1e293b]">City Council</option>
+                                                        <option value="County Commissioner" className="bg-[#1e293b]">County Commissioner</option>
+                                                        <option value="School Board" className="bg-[#1e293b]">School Board</option>
+                                                        <option value="District Attorney" className="bg-[#1e293b]">District Attorney</option>
+                                                        <option value="Sheriff" className="bg-[#1e293b]">Sheriff</option>
+                                                        <option value="Other Local" className="bg-[#1e293b]">Other Local</option>
+                                                    </>
+                                                )}
+                                            </select>
+                                            <svg className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                )}
+
+                                <div className="mb-6">
+                                    <label className="mb-2 block text-sm font-medium text-white/50">State</label>
+                                    <div className="relative">
+                                        <select
+                                            value={data.state}
+                                            onChange={(e) => updateField('state', e.target.value)}
+                                            className={`${inputClasses} appearance-none cursor-pointer`}
+                                        >
+                                            <option value="" className="bg-[#1e293b]">Select state…</option>
+                                            {['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California', 'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia', 'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland', 'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming', 'District of Columbia'].map(s => (
+                                                <option key={s} value={s} className="bg-[#1e293b]">{s}</option>
+                                            ))}
+                                        </select>
+                                        <svg className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="mb-2 block text-sm font-medium text-white/50">District</label>
+                                    <input
+                                        type="text"
+                                        value={data.district}
+                                        onChange={(e) => updateField('district', e.target.value)}
+                                        placeholder="e.g. 7th Congressional District"
+                                        className={inputClasses}
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </section>
+
+                    <hr className="border-white/[0.06]" />
+
+                    {/* ── MISSION ── */}
+                    <section id="mission" className="scroll-mt-20">
+                        <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+                            Mission
+                        </h2>
+                        <p className="mb-6 text-sm text-white/40">
+                            Describe your organization's purpose and goals.
+                        </p>
+
+                        <div className="mb-6">
                             <label className="mb-2 block text-sm font-medium text-white/50">Tell us about your committee</label>
                             <textarea
                                 value={data.brand_summary}
@@ -234,8 +379,8 @@ export default function BrandKitPage() {
                             />
                         </div>
 
-                        <div className="mb-6">
-                            <label className="mb-2 block text-sm font-medium text-white/50">Address</label>
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-white/50">Official Address</label>
                             <input
                                 type="text"
                                 value={data.address}
@@ -244,6 +389,18 @@ export default function BrandKitPage() {
                                 className={inputClasses}
                             />
                         </div>
+                    </section>
+
+                    <hr className="border-white/[0.06]" />
+
+                    {/* ── VOICE ── */}
+                    <section id="voice" className="scroll-mt-20">
+                        <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+                            Voice
+                        </h2>
+                        <p className="mb-6 text-sm text-white/40">
+                            Set the tone and personality of your emails.
+                        </p>
 
                         <div>
                             <label className="mb-2 block text-sm font-medium text-white/50">Tone of Voice</label>
