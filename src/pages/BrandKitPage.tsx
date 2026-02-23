@@ -69,8 +69,9 @@ function StancesSection({ inputClasses }: { inputClasses: string }) {
 
     return (
         <section id="stances" className="scroll-mt-20">
-            <h2 className="mb-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+            <h2 className="mb-2 flex items-center gap-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                 Policy Stances
+                <span className="rounded-full bg-[#e8614d]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#e8614d]">Beta</span>
             </h2>
             <p className="mb-6 text-sm text-white/40">
                 Define your campaign's positions on key issues. The AI writer uses these to generate on-message emails.

@@ -204,8 +204,11 @@ export function DashboardLayout() {
                 <aside className="flex w-56 flex-col border-r border-white/[0.06] bg-[#142d48]">
                     {/* Title */}
                     <div className="px-5 py-5">
-                        <h2 className="text-sm font-semibold tracking-wide text-white">
+                        <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-white">
                             {isSettings ? 'Settings' : isResearch ? 'Research' : 'Brand Kit'}
+                            {isResearch && (
+                                <span className="rounded-full bg-[#e8614d]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#e8614d]">Beta</span>
+                            )}
                         </h2>
                     </div>
 

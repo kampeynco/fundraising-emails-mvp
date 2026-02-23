@@ -14,35 +14,65 @@ function GeneralSection() {
     const [timezone, setTimezone] = useState('America/Chicago')
     const [deliveryDays, setDeliveryDays] = useState<string[]>(['thursday'])
     const [maxDays, setMaxDays] = useState<number>(1)
+    const [saving, setSaving] = useState(false)
+    const [saved, setSaved] = useState(false)
 
-    // Fetch user's subscription to get emails_per_week limit
+    // Load existing profile settings + subscription limit
     useEffect(() => {
         if (!user) return
-        const fetchPlanLimit = async () => {
-            const { data } = await supabase
+        const load = async () => {
+            // Fetch profile for current delivery_days
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('delivery_days')
+                .eq('id', user.id)
+                .maybeSingle()
+
+            if (profile?.delivery_days && Array.isArray(profile.delivery_days)) {
+                setDeliveryDays(profile.delivery_days)
+            }
+
+            // Fetch subscription for plan limit
+            const { data: sub } = await supabase
                 .from('subscriptions')
                 .select('emails_per_week')
                 .eq('user_id', user.id)
                 .eq('status', 'active')
                 .maybeSingle()
 
-            if (data?.emails_per_week) {
-                setMaxDays(data.emails_per_week)
+            if (sub?.emails_per_week) {
+                setMaxDays(sub.emails_per_week)
             }
         }
-        fetchPlanLimit()
+        load()
     }, [user])
 
     const toggleDay = (day: string) => {
+        setSaved(false)
         setDeliveryDays(prev => {
             if (prev.includes(day)) {
-                // Always allow deselecting
                 return prev.filter(d => d !== day)
             }
-            // Only allow selecting if under the limit
             if (prev.length >= maxDays) return prev
             return [...prev, day]
         })
+    }
+
+    const handleSave = async () => {
+        if (!user) return
+        setSaving(true)
+        setSaved(false)
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ delivery_days: deliveryDays })
+            .eq('id', user.id)
+
+        setSaving(false)
+        if (!error) {
+            setSaved(true)
+            setTimeout(() => setSaved(false), 3000)
+        }
     }
 
     const atLimit = deliveryDays.length >= maxDays
@@ -59,7 +89,7 @@ function GeneralSection() {
                 <label className="block text-sm font-medium text-white/70">Timezone</label>
                 <select
                     value={timezone}
-                    onChange={e => setTimezone(e.target.value)}
+                    onChange={e => { setTimezone(e.target.value); setSaved(false) }}
                     className="w-full max-w-md rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30 [&>option]:bg-[#1e293b]"
                 >
                     <option value="America/New_York">Eastern Time (ET)</option>
@@ -106,9 +136,13 @@ function GeneralSection() {
             </div>
 
             <div className="pt-2">
-                <Button className="bg-[#e8614d] text-white hover:bg-[#d4553f]">
+                <Button
+                    onClick={handleSave}
+                    disabled={saving || deliveryDays.length === 0}
+                    className="bg-[#e8614d] text-white hover:bg-[#d4553f] disabled:opacity-50"
+                >
                     <HugeiconsIcon icon={Tick01Icon} size={16} className="mr-1.5" />
-                    Save Changes
+                    {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
                 </Button>
             </div>
         </div >
