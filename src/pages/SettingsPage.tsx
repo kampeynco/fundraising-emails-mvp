@@ -257,7 +257,7 @@ interface Integration {
 
 const INTEGRATIONS: Integration[] = [
     { name: 'Mailchimp', provider: 'mailchimp', desc: 'Send approved emails directly to your Mailchimp audience', icon: '📬', authType: 'oauth' },
-    { name: 'Action Network', provider: 'action_network', desc: 'Sync with your Action Network email lists', icon: '📢', authType: 'apikey' },
+    { name: 'Action Network', provider: 'action_network', desc: 'Send approved emails directly to your Action Network list', icon: '📢', authType: 'apikey' },
     { name: 'HubSpot', provider: 'hubspot', desc: 'Send through your HubSpot email marketing', icon: '🔶', authType: 'none' },
     { name: 'Active Campaign', provider: 'active_campaign', desc: 'Deliver emails via Active Campaign automations', icon: '⚡', authType: 'none' },
     { name: 'Constant Contact', provider: 'constant_contact', desc: 'Send through Constant Contact campaigns', icon: '✉️', authType: 'none' },
@@ -475,13 +475,13 @@ function IntegrationsSection() {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    disabled={!isAvailable || isConnecting || isLockedOut}
-                                    onClick={() => handleConnect(integration)}
-                                    className={`cursor-pointer text-xs ${isLockedOut
-                                            ? 'cursor-not-allowed border-white/5 text-white/20 opacity-40'
+                                    disabled={isConnecting}
+                                    onClick={() => { if (!isLockedOut && isAvailable) handleConnect(integration) }}
+                                    className={`text-xs ${isLockedOut
+                                            ? 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
                                             : isAvailable
-                                                ? 'border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white'
-                                                : 'border-[#e8614d]/30 bg-[#e8614d]/5 text-[#e8614d]/50'
+                                                ? 'cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white'
+                                                : 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
                                         }`}
                                 >
                                     {isConnecting ? 'Connecting…' : isLockedOut ? 'Locked' : isAvailable ? 'Connect' : 'Coming Soon'}
