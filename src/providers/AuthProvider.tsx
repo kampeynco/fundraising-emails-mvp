@@ -25,6 +25,7 @@ interface AuthContextValue {
     signIn: (email: string, password: string) => Promise<{ error: Error | null }>
     signUp: (email: string, password: string) => Promise<{ error: Error | null; requireEmailVerification?: boolean }>
     verifyEmail: (email: string, otp: string) => Promise<{ error: Error | null }>
+    signInWithOAuth: (provider: string) => Promise<void>
     signOut: () => Promise<void>
 }
 
@@ -69,6 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: error as Error | null }
     }
 
+    const signInWithOAuth = async (provider: string) => {
+        await insforge.auth.signInWithOAuth({
+            provider,
+            redirectTo: `${window.location.origin}/dashboard`,
+        })
+    }
+
     const signOut = async () => {
         await insforge.auth.signOut()
         setSession(null)
@@ -76,7 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ session, user, loading, signIn, signUp, verifyEmail, signOut }}>
+        <AuthContext.Provider value={{ session, user, loading, signIn, signUp, verifyEmail, signInWithOAuth, signOut }}>
             {children}
         </AuthContext.Provider>
     )
