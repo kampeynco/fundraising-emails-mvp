@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { insforge } from '@/lib/insforge'
+import type { OAuthProvidersSchema } from '@insforge/sdk'
 
 interface InsForgeUser {
     id: string
@@ -25,7 +26,7 @@ interface AuthContextValue {
     signIn: (email: string, password: string) => Promise<{ error: Error | null }>
     signUp: (email: string, password: string) => Promise<{ error: Error | null; requireEmailVerification?: boolean }>
     verifyEmail: (email: string, otp: string) => Promise<{ error: Error | null }>
-    signInWithOAuth: (provider: string) => Promise<void>
+    signInWithOAuth: (provider: OAuthProvidersSchema) => Promise<void>
     signOut: () => Promise<void>
 }
 
@@ -70,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { error: error as Error | null }
     }
 
-    const signInWithOAuth = async (provider: string) => {
+    const signInWithOAuth = async (provider: OAuthProvidersSchema) => {
         await insforge.auth.signInWithOAuth({
             provider,
             redirectTo: `${window.location.origin}/dashboard`,
