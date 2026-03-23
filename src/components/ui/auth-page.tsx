@@ -16,9 +16,10 @@ interface AuthPageProps {
     onSubmitLogin?: (email: string, password: string) => Promise<{ error: Error | null }>
     onSubmitSignup?: (email: string, password: string) => Promise<{ error: Error | null; requireEmailVerification?: boolean }>
     onVerifyEmail?: (email: string, otp: string) => Promise<{ error: Error | null }>
+    onSignInWithOAuth?: (provider: string) => Promise<void>
 }
 
-export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail }: AuthPageProps) {
+export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, onSignInWithOAuth }: AuthPageProps) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [otp, setOtp] = useState('')
@@ -255,10 +256,24 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail }:
                                     ? (mode === 'login' ? 'Signing in…' : 'Creating account…')
                                     : (mode === 'login' ? 'Sign In' : 'Create Account')}
                             </Button>
+
+                            {onSignInWithOAuth && (
+                                <>
+                                    <AuthSeparator />
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        className="w-full flex items-center gap-2"
+                                        disabled={loading}
+                                        onClick={() => onSignInWithOAuth('google')}
+                                    >
+                                        <GoogleIcon />
+                                        Continue with Google
+                                    </Button>
+                                </>
+                            )}
                         </form>
                     )}
-
-                    <AuthSeparator />
 
                     <p className="text-muted-foreground text-center text-sm">
                         {mode === 'login' ? (
