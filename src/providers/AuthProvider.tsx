@@ -36,7 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        insforge.auth.getCurrentSession().then(({ data }) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (insforge.auth as any).getCurrentSession().then(({ data }: { data: any }) => {
             const s = data?.session ?? null
             setSession(s as InsForgeSession | null)
             setUser((s?.user as InsForgeUser) ?? null)

@@ -10,7 +10,7 @@ type UserRole = 'user' | 'manager' | 'superadmin'
 export function useUserRole() {
     const { user } = useAuth()
 
-    const role: UserRole = (user?.user_metadata?.role as UserRole) || 'user'
+    const role: UserRole = (user?.metadata?.role as UserRole) || 'user'
 
     return {
         role,
