@@ -64,16 +64,17 @@ export default async function (req: Request): Promise<Response> {
 
         // Authenticate as the user and save integration
         const client = createClient({
-            baseUrl: Deno.env.get('INSFORGE_BASE_URL'),
+            baseUrl: Deno.env.get('INSFORGE_INTERNAL_URL'),
             edgeFunctionToken: userToken,
         })
 
         const { data: userData } = await client.auth.getCurrentUser()
         if (!userData?.user?.id) {
+            console.error('getCurrentUser failed — token may be expired')
             return Response.redirect(`${settingsUrl}&error=auth_failed`, 302)
         }
 
-        await client.database.from('email_integrations').upsert(
+        const { error: upsertError } = await client.database.from('email_integrations').upsert(
             {
                 user_id: userData.user.id,
                 provider: 'mailchimp',
@@ -89,6 +90,11 @@ export default async function (req: Request): Promise<Response> {
             },
             { onConflict: 'user_id,provider' }
         )
+
+        if (upsertError) {
+            console.error('Mailchimp integration upsert failed:', upsertError)
+            return Response.redirect(`${settingsUrl}&error=callback_failed`, 302)
+        }
 
         return Response.redirect(`${settingsUrl}&connected=mailchimp`, 302)
     } catch (err) {
