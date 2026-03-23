@@ -26,3 +26,4 @@ dist/
 
 # Vite
 *.local
+.tmp-antigravity-kit
