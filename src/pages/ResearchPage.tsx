@@ -133,8 +133,8 @@ export default function ResearchPage() {
 
         switch (activeResearchSection) {
             case 'in-queue':
-                // Topics marked for draft generation but not yet used
-                return searchFiltered.filter(t => t.used_in_draft)
+                // Topics queued for next draft generation (not yet used)
+                return searchFiltered.filter(t => !t.used_in_draft)
             case 'saved':
                 // User-searched topics that haven't been used
                 return searchFiltered.filter(t => t.suggested_by === 'user' && !t.used_in_draft)

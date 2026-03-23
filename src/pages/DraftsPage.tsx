@@ -53,6 +53,15 @@ export default function DraftsPage() {
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
     const [showNewDraft, setShowNewDraft] = useState(false)
     const [dropDay, setDropDay] = useState('Thursday')
+    const [previewDraft, setPreviewDraft] = useState<Draft | null>(null)
+
+    // Close preview modal on Escape
+    useEffect(() => {
+        if (!previewDraft) return
+        const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setPreviewDraft(null) }
+        window.addEventListener('keydown', handler)
+        return () => window.removeEventListener('keydown', handler)
+    }, [previewDraft])
 
     // Auto-open dialog from sidebar ?new=regular param
     useEffect(() => {
@@ -72,7 +81,7 @@ export default function DraftsPage() {
             setLoadingDrafts(true)
             const { data, error } = await insforge.database
                 .from('email_drafts')
-                .select('*')
+                .select('id, user_id, subject_line, preview_text, body_html, status, draft_type, week_of, created_at, updated_at, user_comments, alt_subject_lines, google_doc_url')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
@@ -103,6 +112,24 @@ export default function DraftsPage() {
         }
         fetchDay()
     }, [user, authLoading])
+
+    const updateDraftStatus = async (draftId: string, newStatus: DraftStatus, e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (!user) return
+        const prevStatus = drafts.find(d => d.id === draftId)?.status
+        setDrafts(prev => prev.map(d => d.id === draftId ? { ...d, status: newStatus } : d))
+        const { error } = await insforge.database
+            .from('email_drafts')
+            .update({ status: newStatus })
+            .eq('id', draftId)
+            .eq('user_id', user.id)
+        if (error) {
+            console.error('Failed to update draft status:', error)
+            if (prevStatus) {
+                setDrafts(prev => prev.map(d => d.id === draftId ? { ...d, status: prevStatus } : d))
+            }
+        }
+    }
 
     const toggleSection = (status: DraftStatus) => {
         setCollapsedSections(prev => {
@@ -279,25 +306,25 @@ export default function DraftsPage() {
                                                 <div className="flex shrink-0 items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
                                                     {status === 'pending_review' && (
                                                         <>
-                                                            <button className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-emerald-400" title="Approve">
+                                                            <button onClick={(e) => updateDraftStatus(draft.id, 'approved', e)} className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-emerald-400" title="Approve">
                                                                 <HugeiconsIcon icon={CheckmarkBadge01Icon} className="h-3.5 w-3.5" />
                                                             </button>
-                                                            <button className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-orange-400" title="Request Revision">
+                                                            <button onClick={(e) => updateDraftStatus(draft.id, 'revision_requested', e)} className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-orange-400" title="Request Revision">
                                                                 <HugeiconsIcon icon={PencilEdit01Icon} className="h-3.5 w-3.5" />
                                                             </button>
                                                         </>
                                                     )}
                                                     {status === 'revision_requested' && (
-                                                        <button className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white" title="View Comments">
+                                                        <button onClick={(e) => { e.stopPropagation(); draft.google_doc_url && window.open(draft.google_doc_url, '_blank') }} className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white" title="View Comments">
                                                             <HugeiconsIcon icon={Comment01Icon} className="h-3.5 w-3.5" />
                                                         </button>
                                                     )}
                                                     {status === 'approved' && (
-                                                        <button className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-blue-400" title="Schedule">
+                                                        <button onClick={(e) => updateDraftStatus(draft.id, 'scheduled', e)} className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-blue-400" title="Schedule">
                                                             <HugeiconsIcon icon={Clock01Icon} className="h-3.5 w-3.5" />
                                                         </button>
                                                     )}
-                                                    <button className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white" title="Preview">
+                                                    <button onClick={(e) => { e.stopPropagation(); setPreviewDraft(draft) }} className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white" title="Preview">
                                                         <HugeiconsIcon icon={ViewIcon} className="h-3.5 w-3.5" />
                                                     </button>
                                                     <button className="rounded-md p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white" title="More">
@@ -337,6 +364,50 @@ export default function DraftsPage() {
             </div>
 
             <NewDraftDialog open={showNewDraft} onOpenChange={setShowNewDraft} />
+
+            {/* ── Email Preview Modal ── */}
+            {previewDraft && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+                    onClick={() => setPreviewDraft(null)}
+                >
+                    <div
+                        className="relative flex h-[85vh] w-full max-w-2xl flex-col rounded-2xl border border-white/[0.08] bg-[#111827] shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal header */}
+                        <div className="flex items-start justify-between border-b border-white/[0.06] px-6 py-4">
+                            <div className="min-w-0 flex-1 pr-4">
+                                <p className="truncate text-sm font-semibold text-white">{previewDraft.subject_line}</p>
+                                <p className="mt-0.5 text-xs text-white/40">{previewDraft.preview_text}</p>
+                            </div>
+                            <button
+                                onClick={() => setPreviewDraft(null)}
+                                className="shrink-0 rounded-lg p-1.5 text-white/40 transition-colors hover:bg-white/10 hover:text-white"
+                            >
+                                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        {/* Sandboxed iframe — prevents XSS from AI-generated HTML */}
+                        <div className="min-h-0 flex-1 overflow-hidden rounded-b-2xl bg-white">
+                            {previewDraft.body_html ? (
+                                <iframe
+                                    sandbox=""
+                                    srcDoc={previewDraft.body_html}
+                                    className="h-full w-full border-0"
+                                    title="Email preview"
+                                />
+                            ) : (
+                                <div className="flex h-full items-center justify-center">
+                                    <p className="text-sm text-gray-400">No HTML preview available</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     )
 }

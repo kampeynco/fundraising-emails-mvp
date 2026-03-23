@@ -57,11 +57,17 @@ export default function DashboardPage() {
             setLoading(true)
 
             // Fetch all drafts for stats
-            const { data: drafts } = await insforge.database
+            const { data: drafts, error: draftsError } = await insforge.database
                 .from('email_drafts')
                 .select('id, subject_line, status, draft_type, created_at, week_of, google_doc_url')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
+
+            if (draftsError) {
+                console.error('Failed to fetch drafts:', draftsError)
+                setLoading(false)
+                return
+            }
 
             if (drafts) {
                 const now = new Date()
@@ -85,6 +91,7 @@ export default function DashboardPage() {
                     status: d.status || 'pending_review',
                     draft_type: d.draft_type,
                     created_at: d.created_at,
+                    google_doc_url: d.google_doc_url,
                 })))
 
                 // Template performance

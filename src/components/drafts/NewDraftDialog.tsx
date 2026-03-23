@@ -19,34 +19,40 @@ interface NewDraftDialogProps {
 export function NewDraftDialog({ open, onOpenChange }: NewDraftDialogProps) {
     const { user } = useAuth()
     const [aiLoading, setAiLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [queued, setQueued] = useState(false)
 
     // ── AI Draft: trigger edge function → Trigger.dev ──
     const handleAiDraft = async () => {
         if (!user) return
         setAiLoading(true)
+        setError(null)
 
         try {
-            const { data, error } = await insforge.functions.invoke('trigger-draft-generation', {
+            const { data, error: fnError } = await insforge.functions.invoke('trigger-draft-generation', {
                 body: { emailsToGenerate: 1 },
             })
 
-            if (error) {
-                console.error('Edge function error:', error)
-                alert('Failed to start AI generation. Please try again.')
+            if (fnError) {
+                console.error('Edge function error:', fnError)
+                setError('Failed to start AI generation. Please try again.')
                 return
             }
 
-            // Close dialog and show success toast / message
-            onOpenChange(false)
+            if (data?.error) {
+                setError(data.error)
+                return
+            }
 
-            // Show a brief notification
-            alert(`✨ ${data.message}\n\nYour AI draft is being generated. It will appear here in a few moments.`)
-
-            // Refresh the page to pick up the new draft
-            window.location.reload()
+            // Show success briefly, then close — draft appears async (Trigger.dev job)
+            setQueued(true)
+            setTimeout(() => {
+                onOpenChange(false)
+                setQueued(false)
+            }, 2000)
         } catch (err) {
             console.error('Failed to trigger AI draft:', err)
-            alert('Something went wrong. Please try again.')
+            setError('Something went wrong. Please try again.')
         } finally {
             setAiLoading(false)
         }
@@ -65,6 +71,12 @@ export function NewDraftDialog({ open, onOpenChange }: NewDraftDialogProps) {
                 </DialogHeader>
 
                 <div className="mt-4">
+                    {error && (
+                        <p className="mb-3 text-xs text-red-400">{error}</p>
+                    )}
+                    {queued && (
+                        <p className="mb-3 text-xs text-emerald-400">✨ Draft queued — it'll appear in your list in ~30 seconds.</p>
+                    )}
                     <button
                         onClick={handleAiDraft}
                         disabled={aiLoading}

@@ -1,7 +1,6 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
 import { createClient } from "@insforge/sdk";
 import OpenAI from "openai";
-import { fetchRagContext, formatRagPromptSection, type RagContext } from "./lib/rag-context";
 
 // ── Clients ──
 const insforge = createClient({
@@ -121,26 +120,8 @@ export const generateUserDrafts = task({
 
         const researchTopics = (topics || []) as ResearchTopic[];
 
-        // ── 3. Load recent sent emails for variety ──
-        const { data: recentEmails } = await insforge.database
-            .from("email_drafts")
-            .select("subject_line, draft_type")
-            .eq("user_id", userId)
-            .in("status", ["sent", "approved", "scheduled"])
-            .order("created_at", { ascending: false })
-            .limit(4);
-
-        // ── 4. Fetch RAG context (similar emails + HTML formats + research) ──
-        const ragQueryText = `${bk.kit_name} ${bk.brand_summary || ""} ${researchTopics.map(t => t.title).join(" ")}`;
-        const ragContext = await fetchRagContext(userId, ragQueryText);
-        logger.info("RAG context loaded", {
-            similarEmails: ragContext.similarEmails.length,
-            htmlFormats: ragContext.htmlFormats.length,
-            similarResearch: ragContext.similarResearch.length,
-        });
-
-        // ── 5. Select templates (avoid repeating recent ones) ──
-        const selectedTemplates = selectTemplates(emailsToGenerate, recentEmails || []);
+        // ── 3. Select templates (week-based rotation avoids adjacent-week repeats) ──
+        const selectedTemplates = selectTemplates(emailsToGenerate, weekOf);
 
         metadata.set("status", "generating_drafts");
 
@@ -157,7 +138,7 @@ export const generateUserDrafts = task({
             logger.info(`Generating draft ${i + 1}/${emailsToGenerate}`, { template });
 
             try {
-                const draft = await generateDraft(bk, template, topicsForThisDraft, weekOf, ragContext);
+                const draft = await generateDraft(bk, template, topicsForThisDraft, weekOf);
 
                 // Save to database
                 const { data: savedDraft, error: saveError } = await insforge.database
@@ -173,7 +154,7 @@ export const generateUserDrafts = task({
                         body_text: draft.body_text,
                         alt_subject_lines: draft.alt_subject_lines,
                         status: "pending_review",
-                        ai_model: "gpt-5.2-chat-latest",
+                        ai_model: "gpt-5.4-nano",
                         research_topic_ids: topicsForThisDraft.map((t) => t.id),
                         editor_blocks: draft.editor_blocks ? draft.editor_blocks.map((b, i) => ({
                             id: `block-gen-${Date.now()}-${i}`,
@@ -235,14 +216,21 @@ export const generateUserDrafts = task({
     },
 });
 
-// ── Helper: Select templates avoiding recent repeats ──
+// ── Helper: Select templates avoiding adjacent-week repeats ──
 function selectTemplates(
     count: number,
-    recentEmails: Array<{ subject_line: string; draft_type: string }>
+    weekOf: string
 ): EmailTemplate[] {
-    // Shuffle available templates and pick `count`, avoiding what was recently sent
-    const shuffled = [...EMAIL_TEMPLATES].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(count, shuffled.length));
+    // Multiply weekNum by count so each week's block of N templates starts
+    // right after last week's block — no overlap between adjacent weeks.
+    // e.g. count=2: week0→[0,1], week1→[2,3], week2→[4,5], week3→[6,7], week4→[0,1]
+    const weekNum = Math.floor(new Date(weekOf).getTime() / (7 * 24 * 60 * 60 * 1000));
+    const offset = (weekNum * count) % EMAIL_TEMPLATES.length;
+    const rotated = [
+        ...EMAIL_TEMPLATES.slice(offset),
+        ...EMAIL_TEMPLATES.slice(0, offset),
+    ];
+    return rotated.slice(0, Math.min(count, rotated.length));
 }
 
 // ── Helper: Generate a single draft via OpenAI ──
@@ -250,8 +238,7 @@ async function generateDraft(
     brandKit: BrandKit,
     template: EmailTemplate,
     topics: ResearchTopic[],
-    weekOf: string,
-    ragContext?: RagContext
+    weekOf: string
 ): Promise<GeneratedDraft> {
     const topicsContext =
         topics.length > 0
@@ -273,7 +260,6 @@ Week of: ${weekOf}
 
 CURRENT NEWS & TOPICS:
 ${topicsContext}
-${ragContext ? formatRagPromptSection(ragContext) : ""}
 RULES:
 1. Open with a compelling hook — never "Dear friend" or "I'm writing to..."
 2. ONE clear call-to-action per email
@@ -318,7 +304,7 @@ IMPORTANT for editor_blocks:
 - The body_html should be the concatenation of all editor_blocks HTML`;
 
     const response = await openai.chat.completions.create({
-        model: "gpt-5.2-chat-latest",
+        model: "gpt-5.4-nano",
         messages: [
             { role: "system", content: systemPrompt },
             {

@@ -263,6 +263,7 @@ function IntegrationsSection() {
     const { user } = useAuth()
     const [connectedProviders, setConnectedProviders] = useState<Record<string, { account_name?: string; list_name?: string }>>({})
     const [connecting, setConnecting] = useState<string | null>(null)
+    const [connectError, setConnectError] = useState<string | null>(null)
     const [apiKeyDialogProvider, setApiKeyDialogProvider] = useState<string | null>(null)
     const [apiKeyInput, setApiKeyInput] = useState('')
     const [accountUrlInput, setAccountUrlInput] = useState('')
@@ -299,6 +300,7 @@ function IntegrationsSection() {
 
     const handleConnect = async (integration: Integration) => {
         if (integration.authType === 'none') return
+        setConnectError(null)
 
         // API key flow — show dialog
         if (integration.authType === 'apikey') {
@@ -318,7 +320,7 @@ function IntegrationsSection() {
 
         const functionName = oauthFunctionMap[integration.provider]
         if (!functionName) {
-            alert(`OAuth not configured for ${integration.name}`)
+            setConnectError(`OAuth not configured for ${integration.name}.`)
             setConnecting(null)
             return
         }
@@ -328,13 +330,13 @@ function IntegrationsSection() {
 
             if (error) {
                 console.error('OAuth URL error:', error)
-                alert(`Failed to start ${integration.name} connection. Please try again.`)
+                setConnectError(`Failed to start ${integration.name} connection. Please try again.`)
                 return
             }
 
             if (data?.error) {
                 console.error('OAuth URL error:', data.error)
-                alert(`${integration.name} OAuth error: ${data.error}`)
+                setConnectError(`${integration.name} error: ${data.error}`)
                 return
             }
 
@@ -343,7 +345,7 @@ function IntegrationsSection() {
             }
         } catch (err) {
             console.error('Connect failed:', err)
-            alert('Connection failed. Please try again.')
+            setConnectError('Connection failed. Please try again.')
         } finally {
             setConnecting(null)
         }
@@ -480,6 +482,9 @@ function IntegrationsSection() {
                 <p className="text-xs text-amber-400/60">
                     Only one platform can be connected at a time. Disconnect your current platform to switch.
                 </p>
+            )}
+            {connectError && (
+                <p className="text-xs text-red-400">{connectError}</p>
             )}
 
             <div className="space-y-3">
