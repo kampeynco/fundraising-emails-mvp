@@ -24,7 +24,7 @@ export default async function (req: Request): Promise<Response> {
     const userToken = authHeader ? authHeader.replace('Bearer ', '') : ''
     const state = btoa(userToken)
 
-    const scopes = encodeURIComponent('crm.objects.contacts.read sales-email-read')
+    const scopes = encodeURIComponent('oauth crm.objects.contacts.read sales-email-read')
     const url =
         `https://app.hubspot.com/oauth/authorize` +
         `?client_id=${clientId}` +

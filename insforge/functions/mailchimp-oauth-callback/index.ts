@@ -9,7 +9,7 @@ export default async function (req: Request): Promise<Response> {
     const settingsUrl = `${appUrl}/dashboard/settings?section=integrations`
 
     if (!code) {
-        return Response.redirect(`${settingsUrl}?error=oauth_failed`, 302)
+        return Response.redirect(`${settingsUrl}&error=oauth_failed`, 302)
     }
 
     const clientId = Deno.env.get('MAILCHIMP_CLIENT_ID')
@@ -17,14 +17,14 @@ export default async function (req: Request): Promise<Response> {
     const redirectUri = Deno.env.get('MAILCHIMP_REDIRECT_URI')
 
     if (!clientId || !clientSecret || !redirectUri) {
-        return Response.redirect(`${settingsUrl}?error=not_configured`, 302)
+        return Response.redirect(`${settingsUrl}&error=not_configured`, 302)
     }
 
     try {
         // Decode state to recover the user's JWT
         const userToken = state ? atob(decodeURIComponent(state)) : null
         if (!userToken) {
-            return Response.redirect(`${settingsUrl}?error=invalid_state`, 302)
+            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
         }
 
         // Exchange authorization code for access token
@@ -42,7 +42,7 @@ export default async function (req: Request): Promise<Response> {
 
         if (!tokenRes.ok) {
             console.error('Mailchimp token exchange failed:', await tokenRes.text())
-            return Response.redirect(`${settingsUrl}?error=token_exchange_failed`, 302)
+            return Response.redirect(`${settingsUrl}&error=token_exchange_failed`, 302)
         }
 
         const tokenData = await tokenRes.json()
@@ -70,7 +70,7 @@ export default async function (req: Request): Promise<Response> {
 
         const { data: userData } = await client.auth.getCurrentUser()
         if (!userData?.user?.id) {
-            return Response.redirect(`${settingsUrl}?error=auth_failed`, 302)
+            return Response.redirect(`${settingsUrl}&error=auth_failed`, 302)
         }
 
         await client.database.from('email_integrations').upsert(
@@ -90,9 +90,9 @@ export default async function (req: Request): Promise<Response> {
             { onConflict: 'user_id,provider' }
         )
 
-        return Response.redirect(`${settingsUrl}?connected=mailchimp`, 302)
+        return Response.redirect(`${settingsUrl}&connected=mailchimp`, 302)
     } catch (err) {
         console.error('Mailchimp OAuth callback error:', err)
-        return Response.redirect(`${settingsUrl}?error=callback_failed`, 302)
+        return Response.redirect(`${settingsUrl}&error=callback_failed`, 302)
     }
 }
