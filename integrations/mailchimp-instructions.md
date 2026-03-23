@@ -11,15 +11,15 @@ Mailchimp uses **OAuth 2.0** for authentication.
 3. Fill in:
    - **App name**: Kampeyn
    - **App description**: Fundraising email integration
-   - **Redirect URI**: `https://npxklgkoemybgivdrmka.supabase.co/functions/v1/mailchimp-oauth-callback`
+   - **Redirect URI**: `https://z4yfizmv.us-east.insforge.app/functions/mailchimp-oauth-callback`
 4. Copy the **Client ID** and **Client Secret**
 
-## 2. Set Supabase Secrets
+## 2. Set InsForge Secrets
 
 ```bash
-supabase secrets set MAILCHIMP_CLIENT_ID=your_client_id_here
-supabase secrets set MAILCHIMP_CLIENT_SECRET=your_client_secret_here
-supabase secrets set MAILCHIMP_REDIRECT_URI=https://npxklgkoemybgivdrmka.supabase.co/functions/v1/mailchimp-oauth-callback
+insforge secrets add MAILCHIMP_CLIENT_ID your_client_id_here
+insforge secrets add MAILCHIMP_CLIENT_SECRET your_client_secret_here
+# MAILCHIMP_REDIRECT_URI is already set automatically
 ```
 
 ## 3. Edge Functions

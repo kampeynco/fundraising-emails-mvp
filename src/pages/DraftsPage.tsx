@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useOutletContext } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
@@ -30,11 +30,16 @@ const STATUS_ORDER: DraftStatus[] = [
     'sent',
 ]
 
+interface DraftsContext {
+    drafts: Draft[]
+    setDrafts: React.Dispatch<React.SetStateAction<Draft[]>>
+    draftsLoading: boolean
+}
+
 export default function DraftsPage() {
     const { user, loading: authLoading } = useAuthContext()
+    const { drafts, setDrafts, draftsLoading } = useOutletContext<DraftsContext>()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [drafts, setDrafts] = useState<Draft[]>([])
-    const [loadingDrafts, setLoadingDrafts] = useState(true)
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
     const [showNewDraft, setShowNewDraft] = useState(false)
     const [dropDay, setDropDay] = useState('Thursday')
@@ -53,33 +58,10 @@ export default function DraftsPage() {
         const newParam = searchParams.get('new')
         if (newParam === 'regular' || newParam === 'rapid') {
             setShowNewDraft(true)
-            // Clean up the query param so it doesn't re-trigger
             searchParams.delete('new')
             setSearchParams(searchParams, { replace: true })
         }
     }, [searchParams, setSearchParams])
-    // ── Fetch drafts from Supabase ──
-    useEffect(() => {
-        if (authLoading || !user) return
-
-        const fetchDrafts = async () => {
-            setLoadingDrafts(true)
-            const { data, error } = await insforge.database
-                .from('email_drafts')
-                .select('id, user_id, subject_line, preview_text, body_html, status, draft_type, week_of, created_at, updated_at, user_comments, alt_subject_lines, google_doc_url')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-
-            if (error) {
-                console.error('Error fetching drafts:', error)
-            } else {
-                setDrafts((data || []) as Draft[])
-            }
-            setLoadingDrafts(false)
-        }
-
-        fetchDrafts()
-    }, [user, authLoading])
 
     // ── Fetch delivery day ──
     useEffect(() => {
@@ -135,7 +117,7 @@ export default function DraftsPage() {
     const pendingCount = grouped.pending_review.length + grouped.revision_requested.length
 
     // ── Loading skeleton ──
-    if (loadingDrafts || authLoading) {
+    if (draftsLoading || authLoading) {
         return (
             <div className="h-full overflow-y-auto">
                 <div className="sticky top-0 z-10 border-b border-white/[0.06] bg-[#111827]/95 px-8 py-5 backdrop-blur-sm">
