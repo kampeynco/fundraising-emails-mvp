@@ -2,13 +2,17 @@ import { AuthPage } from '@/components/ui/auth-page'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function GetStartedPage() {
-    const { signIn } = useAuth()
+    const { signUp, verifyEmail } = useAuth()
 
     return (
         <AuthPage
             mode="signup"
-            onSubmitLogin={async (email) => {
-                const { error } = await signIn(email)
+            onSubmitSignup={async (email, password) => {
+                const { error, requireEmailVerification } = await signUp(email, password)
+                return { error: error as Error | null, requireEmailVerification }
+            }}
+            onVerifyEmail={async (email, otp) => {
+                const { error } = await verifyEmail(email, otp)
                 return { error: error as Error | null }
             }}
         />
