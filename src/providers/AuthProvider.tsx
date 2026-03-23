@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { insforge } from '@/lib/insforge'
 
-type OAuthProvider = Parameters<typeof insforge.auth.signInWithOAuth>[0]['provider']
+export type OAuthProvider = Parameters<typeof insforge.auth.signInWithOAuth>[0]['provider']
 
 interface InsForgeUser {
     id: string

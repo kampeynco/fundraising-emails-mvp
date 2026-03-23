@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import type { OAuthProvider } from '@/providers/AuthProvider'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -16,7 +17,7 @@ interface AuthPageProps {
     onSubmitLogin?: (email: string, password: string) => Promise<{ error: Error | null }>
     onSubmitSignup?: (email: string, password: string) => Promise<{ error: Error | null; requireEmailVerification?: boolean }>
     onVerifyEmail?: (email: string, otp: string) => Promise<{ error: Error | null }>
-    onSignInWithOAuth?: (provider: string) => Promise<void>
+    onSignInWithOAuth?: (provider: OAuthProvider) => Promise<void>
 }
 
 export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, onSignInWithOAuth }: AuthPageProps) {
