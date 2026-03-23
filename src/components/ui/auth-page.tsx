@@ -9,7 +9,6 @@ import {
 } from '@hugeicons/core-free-icons'
 import { Button } from './button'
 import { Input } from './input'
-import { cn } from '@/lib/utils'
 
 interface AuthPageProps {
     mode: 'login' | 'signup'
