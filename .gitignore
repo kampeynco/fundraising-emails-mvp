@@ -43,3 +43,6 @@ dist/
 .trae
 .windsurf
 docs/migratedb
+
+# Local Netlify folder
+.netlify
