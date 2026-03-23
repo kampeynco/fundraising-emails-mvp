@@ -2,7 +2,7 @@ import { AuthPage } from '@/components/ui/auth-page'
 import { useAuth } from '@/hooks/useAuth'
 
 export default function LoginPage() {
-    const { signIn } = useAuth()
+    const { signIn, signInWithOAuth } = useAuth()
 
     return (
         <AuthPage
@@ -11,6 +11,7 @@ export default function LoginPage() {
                 const { error } = await signIn(email, password)
                 return { error: error as Error | null }
             }}
+            onSignInWithOAuth={signInWithOAuth}
         />
     )
 }
