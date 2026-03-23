@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
+import { formatDate, formatWeek } from '@/lib/dates'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     ArrowDown01Icon,
@@ -29,24 +30,8 @@ const STATUS_ORDER: DraftStatus[] = [
     'sent',
 ]
 
-function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-    })
-}
-
-function formatWeek(weekOf: string) {
-    const start = new Date(weekOf)
-    const end = new Date(start)
-    end.setDate(end.getDate() + 6)
-    const fmt = (d: Date) =>
-        d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    return `${fmt(start)} – ${fmt(end)}`
-}
-
 export default function DraftsPage() {
-    const { user, loading: authLoading } = useAuth()
+    const { user, loading: authLoading } = useAuthContext()
     const [searchParams, setSearchParams] = useSearchParams()
     const [drafts, setDrafts] = useState<Draft[]>([])
     const [loadingDrafts, setLoadingDrafts] = useState(true)
@@ -207,7 +192,7 @@ export default function DraftsPage() {
                         {/* New Draft button */}
                         <button
                             onClick={() => setShowNewDraft(true)}
-                            className="flex items-center gap-2 rounded-lg bg-[#e8614d] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#e8614d]/80 active:scale-[0.98]"
+                            className="flex items-center gap-2 rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-brand/80 active:scale-[0.98]"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -348,10 +333,10 @@ export default function DraftsPage() {
                 </div>
 
                 {/* ── Drop Day Info ── */}
-                <div className="mx-8 mb-8 rounded-xl border border-white/[0.06] bg-gradient-to-r from-[#e8614d]/5 to-transparent p-5">
+                <div className="mx-8 mb-8 rounded-xl border border-white/[0.06] bg-gradient-to-r from-brand/5 to-transparent p-5">
                     <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#e8614d]/10">
-                            <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 text-[#e8614d]" />
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand/10">
+                            <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 text-brand" />
                         </div>
                         <div>
                             <p className="text-sm font-medium text-white/80">The {dropDay} Drop</p>

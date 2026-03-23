@@ -45,7 +45,7 @@ export function HexColorPickerField({ color, onChange, label, description }: Hex
         <div className="relative" ref={popoverRef}>
             {/* Color swatch */}
             <div
-                className="h-36 cursor-pointer rounded-xl border border-white/[0.08] transition-all hover:border-[#e8614d]/40 hover:shadow-lg hover:shadow-black/20"
+                className="h-36 cursor-pointer rounded-xl border border-white/[0.08] transition-all hover:border-brand/40 hover:shadow-lg hover:shadow-black/20"
                 style={{ backgroundColor: color }}
                 onClick={() => setOpen(!open)}
             />
@@ -75,7 +75,7 @@ export function HexColorPickerField({ color, onChange, label, description }: Hex
                             value={hexInput}
                             onChange={(e) => handleHexChange(e.target.value)}
                             maxLength={7}
-                            className="w-full rounded-md border border-white/[0.08] bg-[#0f172a] px-3 py-1.5 text-sm font-mono text-white outline-none transition-colors focus:border-[#e8614d]/50"
+                            className="w-full rounded-md border border-white/[0.08] bg-[#0f172a] px-3 py-1.5 text-sm font-mono text-white outline-none transition-colors focus:border-brand/50"
                         />
                     </div>
                 </div>

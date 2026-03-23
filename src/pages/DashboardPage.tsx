@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
+import { formatDate } from '@/lib/dates'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     LicenseDraftIcon,
@@ -44,7 +45,7 @@ interface RecentDraft {
 }
 
 export default function DashboardPage() {
-    const { user } = useAuth()
+    const { user } = useAuthContext()
     const [stats, setStats] = useState<DraftStats>({ totalDrafts: 0, sentThisMonth: 0, pendingReview: 0, approvalRate: 0 })
     const [topicStats, setTopicStats] = useState<TopicStat[]>([])
     const [templateStats, setTemplateStats] = useState<TemplateStat[]>([])
@@ -148,16 +149,6 @@ export default function DashboardPage() {
         fetchData()
     }, [user])
 
-    const formatDate = (iso: string) => {
-        const d = new Date(iso)
-        const now = new Date()
-        const diff = now.getTime() - d.getTime()
-        const days = Math.floor(diff / 86400000)
-        if (days === 0) return 'Today'
-        if (days === 1) return 'Yesterday'
-        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    }
-
     const statusConfig: Record<string, { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive' }> = {
         pending_review: { label: 'Review', variant: 'secondary' },
         approved: { label: 'Approved', variant: 'default' },
@@ -170,7 +161,7 @@ export default function DashboardPage() {
         { label: 'Total Drafts', value: stats.totalDrafts.toString(), icon: LicenseDraftIcon, color: 'text-blue-400' },
         { label: 'Sent This Month', value: stats.sentThisMonth.toString(), icon: SentIcon, color: 'text-emerald-400' },
         { label: 'Pending Review', value: stats.pendingReview.toString(), icon: Clock01Icon, color: 'text-amber-400' },
-        { label: 'Approval Rate', value: `${stats.approvalRate}%`, icon: PercentIcon, color: 'text-[#e8614d]' },
+        { label: 'Approval Rate', value: `${stats.approvalRate}%`, icon: PercentIcon, color: 'text-brand' },
     ]
 
     return (
@@ -205,7 +196,7 @@ export default function DashboardPage() {
                     {/* Topic Performance */}
                     <div className="rounded-xl border border-white/[0.08] bg-[#1e293b]">
                         <div className="flex items-center gap-2 border-b border-white/[0.06] px-6 py-4">
-                            <HugeiconsIcon icon={ChartRoseIcon} size={16} className="text-[#e8614d]" />
+                            <HugeiconsIcon icon={ChartRoseIcon} size={16} className="text-brand" />
                             <h3 className="text-base font-semibold text-white">Topic Performance</h3>
                         </div>
                         <div className="p-4">

@@ -6,7 +6,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { SparklesIcon } from '@hugeicons/core-free-icons'
@@ -17,7 +17,7 @@ interface NewDraftDialogProps {
 }
 
 export function NewDraftDialog({ open, onOpenChange }: NewDraftDialogProps) {
-    const { user } = useAuth()
+    const { user } = useAuthContext()
     const [aiLoading, setAiLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [queued, setQueued] = useState(false)
@@ -80,13 +80,13 @@ export function NewDraftDialog({ open, onOpenChange }: NewDraftDialogProps) {
                     <button
                         onClick={handleAiDraft}
                         disabled={aiLoading}
-                        className="group relative flex w-full items-start gap-4 rounded-xl border border-white/[0.08] bg-gradient-to-br from-[#e8614d]/5 to-transparent p-4 text-left transition-all hover:border-[#e8614d]/30 hover:bg-[#e8614d]/5 disabled:opacity-50"
+                        className="group relative flex w-full items-start gap-4 rounded-xl border border-white/[0.08] bg-gradient-to-br from-brand/5 to-transparent p-4 text-left transition-all hover:border-brand/30 hover:bg-brand/5 disabled:opacity-50"
                     >
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#e8614d]/10 transition-colors group-hover:bg-[#e8614d]/20">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand/10 transition-colors group-hover:bg-brand/20">
                             {aiLoading ? (
-                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#e8614d]/30 border-t-[#e8614d]" />
+                                <div className="h-4 w-4 animate-spin rounded-full border-2 border-brand/30 border-t-brand" />
                             ) : (
-                                <HugeiconsIcon icon={SparklesIcon} className="h-5 w-5 text-[#e8614d]" />
+                                <HugeiconsIcon icon={SparklesIcon} className="h-5 w-5 text-brand" />
                             )}
                         </div>
                         <div>

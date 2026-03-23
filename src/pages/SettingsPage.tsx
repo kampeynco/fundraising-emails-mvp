@@ -4,13 +4,13 @@ import { Button } from '@/components/ui/button'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Tick01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
 import { insforge } from '@/lib/insforge'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 
 type SettingsContext = { activeSettingsSection: string }
 
 // ── General Section ─────────────────────────────────────────
 function GeneralSection() {
-    const { user } = useAuth()
+    const { user } = useAuthContext()
     const [timezone, setTimezone] = useState('America/Chicago')
     const [deliveryDays, setDeliveryDays] = useState<string[]>(['thursday'])
     const [maxDays, setMaxDays] = useState<number>(1)
@@ -90,7 +90,7 @@ function GeneralSection() {
                 <select
                     value={timezone}
                     onChange={e => { setTimezone(e.target.value); setSaved(false) }}
-                    className="w-full max-w-md rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30 [&>option]:bg-[#1e293b]"
+                    className="w-full max-w-md rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-brand/50 focus:ring-1 focus:ring-brand/30 [&>option]:bg-[#1e293b]"
                 >
                     <option value="America/New_York">Eastern Time (ET)</option>
                     <option value="America/Chicago">Central Time (CT)</option>
@@ -116,7 +116,7 @@ function GeneralSection() {
                                 onClick={() => toggleDay(day)}
                                 disabled={isDisabled}
                                 className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium capitalize transition-all ${isSelected
-                                    ? 'border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d]'
+                                    ? 'border-brand bg-brand/10 text-brand'
                                     : isDisabled
                                         ? 'cursor-not-allowed border-white/[0.04] text-white/15'
                                         : 'border-white/[0.08] text-white/40 hover:border-white/15 hover:text-white/60'
@@ -139,7 +139,7 @@ function GeneralSection() {
                 <Button
                     onClick={handleSave}
                     disabled={saving || deliveryDays.length === 0}
-                    className="bg-[#e8614d] text-white hover:bg-[#d4553f] disabled:opacity-50"
+                    className="bg-brand text-white hover:bg-brand-dark disabled:opacity-50"
                 >
                     <HugeiconsIcon icon={Tick01Icon} size={16} className="mr-1.5" />
                     {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
@@ -161,14 +161,14 @@ function BillingSection() {
             </div>
 
             {/* Current plan summary */}
-            <div className="rounded-xl border border-[#e8614d]/20 bg-[#e8614d]/5 p-5">
+            <div className="rounded-xl border border-brand/20 bg-brand/5 p-5">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="text-xs font-medium uppercase tracking-wider text-[#e8614d]">Current Plan</p>
+                        <p className="text-xs font-medium uppercase tracking-wider text-brand">Current Plan</p>
                         <p className="mt-1 text-2xl font-bold text-white">$500<span className="text-sm font-normal text-white/40">/month</span></p>
                         <p className="mt-0.5 text-sm text-white/40">1 email/week · Base platform · Billed monthly</p>
                     </div>
-                    <Button variant="outline" className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white">
+                    <Button variant="outline" className="cursor-pointer border-brand bg-brand/10 text-brand hover:bg-brand hover:text-white">
                         Manage Billing
                         <HugeiconsIcon icon={ArrowRight01Icon} size={14} className="ml-1" />
                     </Button>
@@ -221,7 +221,7 @@ function BillingSection() {
                     <div>
                         <div className="flex items-center gap-2">
                             <p className="text-sm font-semibold text-white">Rapid Response Service</p>
-                            <span className="text-[10px] font-medium text-[#e8614d]">⚡ Available at 3+ emails/wk</span>
+                            <span className="text-[10px] font-medium text-brand">⚡ Available at 3+ emails/wk</span>
                         </div>
                         <p className="mt-0.5 text-xs text-white/40">24-hour turnaround for breaking news, opposition hits, deadline surprises</p>
                     </div>
@@ -260,7 +260,7 @@ const INTEGRATIONS: Integration[] = [
 ]
 
 function IntegrationsSection() {
-    const { user } = useAuth()
+    const { user } = useAuthContext()
     const [connectedProviders, setConnectedProviders] = useState<Record<string, { account_name?: string; list_name?: string }>>({})
     const [connecting, setConnecting] = useState<string | null>(null)
     const [connectError, setConnectError] = useState<string | null>(null)
@@ -527,7 +527,7 @@ function IntegrationsSection() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => handleDisconnect(integration.provider)}
-                                    className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-xs text-[#e8614d] hover:bg-[#e8614d] hover:text-white"
+                                    className="cursor-pointer border-brand bg-brand/10 text-xs text-brand hover:bg-brand hover:text-white"
                                 >
                                     Disconnect
                                 </Button>
@@ -540,7 +540,7 @@ function IntegrationsSection() {
                                     className={`text-xs ${isLockedOut
                                         ? 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
                                         : isAvailable
-                                            ? 'cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white'
+                                            ? 'cursor-pointer border-brand bg-brand/10 text-brand hover:bg-brand hover:text-white'
                                             : 'pointer-events-none border-white/[0.06] bg-transparent text-white/20'
                                         }`}
                                 >
@@ -574,7 +574,7 @@ function IntegrationsSection() {
                                     value={accountUrlInput}
                                     onChange={e => setAccountUrlInput(e.target.value)}
                                     placeholder="yourname.api-us1.com"
-                                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
+                                    className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-brand/50 focus:ring-1 focus:ring-brand/30"
                                     autoFocus
                                 />
                             )}
@@ -583,7 +583,7 @@ function IntegrationsSection() {
                                 value={apiKeyInput}
                                 onChange={e => setApiKeyInput(e.target.value)}
                                 placeholder="Paste your API key here…"
-                                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
+                                className="w-full rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white placeholder-white/25 outline-none transition-colors focus:border-brand/50 focus:ring-1 focus:ring-brand/30"
                                 onKeyDown={e => e.key === 'Enter' && handleApiKeySubmit()}
                                 autoFocus={apiKeyDialogProvider !== 'active_campaign'}
                             />
@@ -595,7 +595,7 @@ function IntegrationsSection() {
                                     variant="outline"
                                     size="sm"
                                     onClick={() => { setApiKeyDialogProvider(null); setApiKeyInput(''); setAccountUrlInput(''); setApiKeyError('') }}
-                                    className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-xs text-[#e8614d] hover:bg-[#e8614d] hover:text-white"
+                                    className="cursor-pointer border-brand bg-brand/10 text-xs text-brand hover:bg-brand hover:text-white"
                                 >
                                     Cancel
                                 </Button>
@@ -603,7 +603,7 @@ function IntegrationsSection() {
                                     size="sm"
                                     disabled={!apiKeyInput.trim() || apiKeyLoading}
                                     onClick={handleApiKeySubmit}
-                                    className="cursor-pointer bg-[#e8614d] text-xs text-white hover:bg-[#d4553f]"
+                                    className="cursor-pointer bg-brand text-xs text-white hover:bg-brand-dark"
                                 >
                                     {apiKeyLoading ? 'Validating…' : 'Connect'}
                                 </Button>
@@ -635,17 +635,10 @@ export default function SettingsPage() {
                     </p>
                 </div>
 
-                {/* Active section */}
-                <div id="general" className={activeSection === 'general' ? '' : 'hidden'}>
-                    <GeneralSection />
-                </div>
-
-                <div id="billing" className={activeSection === 'billing' ? '' : 'hidden'}>
-                    <BillingSection />
-                </div>
-                <div id="integrations" className={activeSection === 'integrations' ? '' : 'hidden'}>
-                    <IntegrationsSection />
-                </div>
+                {/* Active section — conditionally rendered to avoid mounting hidden effects */}
+                {activeSection === 'general' && <GeneralSection />}
+                {activeSection === 'billing' && <BillingSection />}
+                {activeSection === 'integrations' && <IntegrationsSection />}
             </div>
         </div>
     )

@@ -81,7 +81,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, o
                 <div className="z-10 flex items-center gap-2">
                     <HugeiconsIcon icon={Mail01Icon} size={24} className="text-white/90" />
                     <p className="text-xl font-bold tracking-tight text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                        Fundraising <span className="text-[#e8614d]">Emails</span>
+                        Fundraising <span className="text-brand">Emails</span>
                     </p>
                 </div>
                 <div className="z-10 mt-auto">
@@ -125,7 +125,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, o
                     <div className="flex items-center gap-2 lg:hidden">
                         <HugeiconsIcon icon={Mail01Icon} size={24} />
                         <p className="text-xl font-bold tracking-tight" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                            Fundraising <span className="text-[#e8614d]">Emails</span>
+                            Fundraising <span className="text-brand">Emails</span>
                         </p>
                     </div>
 
@@ -186,7 +186,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, o
                                     autoFocus
                                 />
                             </div>
-                            <Button type="submit" className="w-full bg-[#e8614d] hover:bg-[#d4553f] text-white" disabled={loading}>
+                            <Button type="submit" className="w-full bg-brand hover:bg-brand-dark text-white" disabled={loading}>
                                 {loading ? 'Verifying…' : 'Verify Email'}
                             </Button>
                             <Button
@@ -252,7 +252,7 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, o
                                 </div>
                             </div>
 
-                            <Button type="submit" className="w-full bg-[#e8614d] hover:bg-[#d4553f] text-white" disabled={loading}>
+                            <Button type="submit" className="w-full bg-brand hover:bg-brand-dark text-white" disabled={loading}>
                                 {loading
                                     ? (mode === 'login' ? 'Signing in…' : 'Creating account…')
                                     : (mode === 'login' ? 'Sign In' : 'Create Account')}

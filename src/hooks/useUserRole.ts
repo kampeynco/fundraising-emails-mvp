@@ -1,4 +1,4 @@
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 
 type UserRole = 'user' | 'manager' | 'superadmin'
 
@@ -8,7 +8,7 @@ type UserRole = 'user' | 'manager' | 'superadmin'
  * Defaults to 'user' if not set.
  */
 export function useUserRole() {
-    const { user } = useAuth()
+    const { user } = useAuthContext()
 
     const role: UserRole = (user?.metadata?.role as UserRole) || 'user'
 

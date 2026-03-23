@@ -233,7 +233,7 @@ function selectTemplates(
     return rotated.slice(0, Math.min(count, rotated.length));
 }
 
-// ── Helper: Generate a single draft via OpenAI ──
+// ── Helper: Generate a single draft via Gemini ──
 async function generateDraft(
     brandKit: BrandKit,
     template: EmailTemplate,
@@ -320,7 +320,13 @@ IMPORTANT for editor_blocks:
     const content = result.response.text();
     if (!content) throw new Error("Gemini returned empty response");
 
-    const parsed = JSON.parse(content) as GeneratedDraft;
+    let parsed: GeneratedDraft;
+    try {
+        parsed = JSON.parse(content) as GeneratedDraft;
+    } catch {
+        logger.error("Failed to parse Gemini JSON response", { rawContent: content.slice(0, 500) });
+        throw new Error("Gemini returned invalid JSON");
+    }
     parsed.template_used = template;
 
     return parsed;

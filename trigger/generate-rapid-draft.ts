@@ -9,6 +9,21 @@ const insforge = createClient({
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+interface EditorBlockPayload {
+    category: "header" | "content" | "donation" | "cta" | "ps" | "footer";
+    moduleId: string;
+    html: string;
+}
+
+interface RapidDraftResponse {
+    subject_line: string;
+    alt_subject_lines: string[];
+    preview_text: string;
+    body_html: string;
+    body_text: string;
+    editor_blocks?: EditorBlockPayload[];
+}
+
 const RAPID_TEMPLATES = [
     "breaking-news-response",
     "opposition-attack-rebuttal",
@@ -145,7 +160,13 @@ IMPORTANT for editor_blocks:
         const content = result.response.text();
         if (!content) throw new Error("Gemini returned empty response");
 
-        const draft = JSON.parse(content);
+        let draft: RapidDraftResponse;
+        try {
+            draft = JSON.parse(content) as RapidDraftResponse;
+        } catch {
+            logger.error("Failed to parse Gemini JSON response", { rawContent: content.slice(0, 500) });
+            throw new Error("Gemini returned invalid JSON");
+        }
 
         // 5. Calculate week_of
         const now = new Date();
@@ -169,7 +190,7 @@ IMPORTANT for editor_blocks:
                 alt_subject_lines: draft.alt_subject_lines,
                 status: "pending_review",
                 ai_model: "gemini-3.1-flash-lite-preview",
-                editor_blocks: draft.editor_blocks ? draft.editor_blocks.map((b: any, i: number) => ({
+                editor_blocks: draft.editor_blocks ? draft.editor_blocks.map((b: EditorBlockPayload, i: number) => ({
                     id: `block-rapid-${Date.now()}-${i}`,
                     type: "module" as const,
                     category: b.category,

@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
+import { type Draft } from '@/types/draft'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     Mail01Icon,
@@ -112,7 +113,7 @@ const settingsSections = [
 ]
 
 export function DashboardLayout() {
-    const { user, signOut } = useAuth()
+    const { user, signOut } = useAuthContext()
     const location = useLocation()
     const [activeSection, setActiveSection] = useState<string | null>(null)
     const [plusMenuOpen, setPlusMenuOpen] = useState(false)
@@ -170,7 +171,7 @@ export function DashboardLayout() {
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <button
-                                className="mb-4 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-[#e8614d] text-white transition-all hover:bg-[#d4553f] hover:shadow-lg hover:shadow-[#e8614d]/20 active:scale-95"
+                                className="mb-4 flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg bg-brand text-white transition-all hover:bg-brand-dark hover:shadow-lg hover:shadow-brand/20 active:scale-95"
                                 onClick={() => setPlusMenuOpen(prev => !prev)}
                             >
                                 <HugeiconsIcon icon={Add01Icon} size={18} />
@@ -247,7 +248,7 @@ export function DashboardLayout() {
                     </Tooltip>
 
                     <div
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8614d]/20 text-xs font-semibold text-[#e8614d]"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-brand/20 text-xs font-semibold text-brand"
                         title={user?.email || ''}
                     >
                         {userInitial}
@@ -263,7 +264,7 @@ export function DashboardLayout() {
                         <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-white">
                             {isSettings ? 'Settings' : isResearch ? 'Research' : 'Brand Kit'}
                             {isResearch && (
-                                <span className="rounded-full bg-[#e8614d]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#e8614d]">Beta</span>
+                                <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">Beta</span>
                             )}
                         </h2>
                     </div>
@@ -296,7 +297,7 @@ export function DashboardLayout() {
                                                     }
                                                 }}
                                                 className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isItemActive
-                                                    ? 'bg-[#e8614d] text-white'
+                                                    ? 'bg-brand text-white'
                                                     : 'text-white/60 hover:bg-white/8 hover:text-white/90'
                                                     }`}
                                             >

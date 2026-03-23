@@ -87,7 +87,7 @@ function ImportFromUrlButton({ onImport }: { onImport: (bio: string) => void }) 
         return (
             <button
                 onClick={() => setShowInput(true)}
-                className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-[#e8614d] transition-colors hover:bg-[#e8614d]/10"
+                className="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-medium text-brand transition-colors hover:bg-brand/10"
             >
                 <HugeiconsIcon icon={Link02Icon} size={13} />
                 Import from URL
@@ -104,12 +104,12 @@ function ImportFromUrlButton({ onImport }: { onImport: (bio: string) => void }) 
                 onKeyDown={(e) => e.key === 'Enter' && handleImport()}
                 placeholder="https://example.com/about"
                 autoFocus
-                className="h-8 w-56 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 text-xs text-white placeholder:text-white/25 outline-none focus:border-[#e8614d]/50"
+                className="h-8 w-56 rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 text-xs text-white placeholder:text-white/25 outline-none focus:border-brand/50"
             />
             <button
                 onClick={handleImport}
                 disabled={loading || !url.trim()}
-                className="flex h-8 items-center gap-1.5 rounded-lg bg-[#e8614d] px-3 text-xs font-medium text-white transition-colors hover:bg-[#d4553f] disabled:opacity-50"
+                className="flex h-8 items-center gap-1.5 rounded-lg bg-brand px-3 text-xs font-medium text-white transition-colors hover:bg-brand-dark disabled:opacity-50"
             >
                 {loading ? (
                     <><HugeiconsIcon icon={Loading03Icon} size={13} className="animate-spin" /> Scraping...</>
@@ -152,7 +152,7 @@ function StancesSection({ inputClasses }: { inputClasses: string }) {
         <section id="stances" className="scroll-mt-20">
             <h2 className="mb-2 flex items-center gap-2 text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
                 Policy Stances
-                <span className="rounded-full bg-[#e8614d]/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#e8614d]">Beta</span>
+                <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">Beta</span>
             </h2>
             <p className="mb-6 text-sm text-white/40">
                 Define your campaign's positions on key issues. The AI writer uses these to generate on-message emails.
@@ -169,7 +169,7 @@ function StancesSection({ inputClasses }: { inputClasses: string }) {
                                 <span className="text-sm font-semibold text-white">{stance.issue}</span>
                                 <span
                                     className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${stance.priority === 'high'
-                                        ? 'bg-[#e8614d]/15 text-[#e8614d]'
+                                        ? 'bg-brand/15 text-brand'
                                         : 'bg-white/5 text-white/40'
                                         }`}
                                 >
@@ -206,7 +206,7 @@ function StancesSection({ inputClasses }: { inputClasses: string }) {
                         className={`${inputClasses} flex-1`}
                         onKeyDown={e => e.key === 'Enter' && addStance()}
                     />
-                    <Button onClick={addStance} className="bg-[#e8614d] text-white hover:bg-[#d4553f] cursor-pointer">
+                    <Button onClick={addStance} className="bg-brand text-white hover:bg-brand-dark cursor-pointer">
                         Add
                     </Button>
                 </div>
@@ -248,7 +248,7 @@ export default function BrandKitPage() {
         setData(prev => ({ ...prev, [field]: '' }))
     }
 
-    const inputClasses = "w-full rounded-lg border border-white/[0.08] bg-[#1e293b] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
+    const inputClasses = "w-full rounded-lg border border-white/[0.08] bg-[#1e293b] px-4 py-3 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-brand/50 focus:ring-1 focus:ring-brand/30"
 
     if (loading) {
         return (
@@ -570,7 +570,7 @@ export default function BrandKitPage() {
 
                         <button
                             onClick={addSocial}
-                            className="mt-4 cursor-pointer text-sm font-medium text-[#e8614d] transition-colors hover:text-[#d4553f]"
+                            className="mt-4 cursor-pointer text-sm font-medium text-brand transition-colors hover:text-brand-dark"
                         >
                             + Add links
                         </button>
@@ -595,7 +595,7 @@ export default function BrandKitPage() {
                                 <div className="relative">
                                     <div
                                         onClick={() => primaryLogoRef.current?.click()}
-                                        className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-[#e8614d]/40 hover:bg-[#1e293b]/80"
+                                        className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-brand/40 hover:bg-[#1e293b]/80"
                                     >
                                         {data.primary_logo_url ? (
                                             <img src={data.primary_logo_url} alt="Primary logo" className="h-full w-full object-contain p-4" />
@@ -628,7 +628,7 @@ export default function BrandKitPage() {
                                 <div className="relative">
                                     <div
                                         onClick={() => iconLogoRef.current?.click()}
-                                        className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-[#e8614d]/40 hover:bg-[#1e293b]/80"
+                                        className="flex h-44 cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-white/[0.1] bg-[#1e293b] transition-colors hover:border-brand/40 hover:bg-[#1e293b]/80"
                                     >
                                         {data.icon_logo_url ? (
                                             <img src={data.icon_logo_url} alt="Signature" className="h-full w-full object-contain p-4" />
@@ -708,7 +708,7 @@ export default function BrandKitPage() {
                                     type="checkbox"
                                     checked={data.show_header || !!data.primary_logo_url}
                                     onChange={(e) => updateField('show_header', e.target.checked)}
-                                    className="h-4 w-4 rounded border-white/20 bg-transparent accent-[#e8614d]"
+                                    className="h-4 w-4 rounded border-white/20 bg-transparent accent-brand"
                                 />
                                 <div>
                                     <p className="text-sm font-medium text-white">Header</p>
@@ -734,7 +734,7 @@ export default function BrandKitPage() {
                                     type="checkbox"
                                     checked={data.show_footer}
                                     onChange={(e) => updateField('show_footer', e.target.checked)}
-                                    className="h-4 w-4 rounded border-white/20 bg-transparent accent-[#e8614d]"
+                                    className="h-4 w-4 rounded border-white/20 bg-transparent accent-brand"
                                 />
                                 <div>
                                     <p className="text-sm font-medium text-white">Footer</p>

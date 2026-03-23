@@ -11,7 +11,7 @@ import {
     InformationCircleIcon,
     Search01Icon,
 } from '@hugeicons/core-free-icons'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
 
 interface ResearchTopic {
@@ -89,7 +89,7 @@ const TAB_META: Record<string, { title: string; subtitle: string }> = {
 }
 
 export default function ResearchPage() {
-    const { user } = useAuth()
+    const { user } = useAuthContext()
     const { activeResearchSection } = useOutletContext<ResearchContext>()
     const [searchQuery, setSearchQuery] = useState('')
     const [topics, setTopics] = useState<ResearchTopic[]>([])
@@ -212,6 +212,7 @@ export default function ResearchPage() {
     }
 
     const handleMarkForDraft = async (topicId: string) => {
+        if (!user) return
         setTopics(prev => prev.map(t =>
             t.id === topicId ? { ...t, used_in_draft: true } : t
         ))
@@ -219,14 +220,17 @@ export default function ResearchPage() {
             .from('research_topics')
             .update({ used_in_draft: true })
             .eq('id', topicId)
+            .eq('user_id', user.id)
     }
 
     const handleRemoveTopic = async (topicId: string) => {
+        if (!user) return
         setTopics(prev => prev.filter(t => t.id !== topicId))
         await insforge.database
             .from('research_topics')
             .delete()
             .eq('id', topicId)
+            .eq('user_id', user.id)
     }
 
     const handleClearSearch = () => {
@@ -281,13 +285,13 @@ export default function ResearchPage() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 onKeyDown={handleKeyDown}
                                 placeholder="Search for topics, news, or issues..."
-                                className="w-full rounded-xl border border-white/[0.08] bg-[#1e293b] py-3 pl-10 pr-4 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-[#e8614d]/50 focus:ring-1 focus:ring-[#e8614d]/30"
+                                className="w-full rounded-xl border border-white/[0.08] bg-[#1e293b] py-3 pl-10 pr-4 text-sm text-white placeholder-white/30 outline-none transition-colors focus:border-brand/50 focus:ring-1 focus:ring-brand/30"
                             />
                         </div>
                         <Button
                             onClick={handleSearch}
                             disabled={isSearching || !searchQuery.trim()}
-                            className="bg-[#e8614d] text-white hover:bg-[#e8614d]/90 cursor-pointer px-5 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="bg-brand text-white hover:bg-brand/90 cursor-pointer px-5 disabled:opacity-50 disabled:cursor-not-allowed"
                             size="default"
                         >
                             <HugeiconsIcon icon={Search01Icon} className="mr-1.5 h-4 w-4" />
@@ -302,7 +306,7 @@ export default function ResearchPage() {
                         <p className="text-xs text-white/40">{searchMessage}</p>
                         <button
                             onClick={handleClearSearch}
-                            className="text-xs text-[#e8614d]/70 transition-colors hover:text-[#e8614d] cursor-pointer"
+                            className="text-xs text-brand/70 transition-colors hover:text-brand cursor-pointer"
                         >
                             Clear search
                         </button>
@@ -416,7 +420,7 @@ function TopicCard({ topic, onMarkForDraft, onRemove }: {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1 text-[11px] text-[#e8614d]/50 underline decoration-[#e8614d]/20 underline-offset-2 transition-colors hover:text-[#e8614d] hover:decoration-[#e8614d]/50"
+                            className="flex items-center gap-1 text-[11px] text-brand/50 underline decoration-brand/20 underline-offset-2 transition-colors hover:text-brand hover:decoration-brand/50"
                         >
                             <HugeiconsIcon icon={Globe02Icon} className="h-3 w-3" />
                             {topic.source_domain}

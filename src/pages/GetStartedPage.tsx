@@ -1,8 +1,8 @@
 import { AuthPage } from '@/components/ui/auth-page'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 
 export default function GetStartedPage() {
-    const { signUp, verifyEmail, signInWithOAuth } = useAuth()
+    const { signUp, verifyEmail, signInWithOAuth } = useAuthContext()
 
     return (
         <AuthPage

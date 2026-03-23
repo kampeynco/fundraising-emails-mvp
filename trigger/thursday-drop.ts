@@ -18,13 +18,13 @@ interface ActiveSubscription {
 /**
  * Thursday Drop — Weekly Email Draft Orchestrator
  *
- * Runs every Thursday at 6am CT (noon UTC).
+ * Runs every Thursday at 6am CT.
  * Queries all active subscribers, then fans out
  * one `generate-user-drafts` child task per user.
  */
 export const thursdayDrop = schedules.task({
     id: "thursday-drop",
-    cron: { pattern: "0 12 * * 4", timezone: "America/Chicago" },
+    cron: { pattern: "0 6 * * 4", timezone: "America/Chicago" },
     retry: { maxAttempts: 2 },
     run: async (payload) => {
         logger.info("🗓️ Thursday Drop starting", {

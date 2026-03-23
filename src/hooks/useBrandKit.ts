@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { insforge } from '@/lib/insforge'
-import { useAuth } from '@/hooks/useAuth'
+import { useAuthContext } from '@/providers/AuthProvider'
 
 // ── Types ────────────────────────────────────────────────────
 export interface BrandKitSocial {
@@ -78,7 +78,7 @@ const DEFAULT_BRAND_KIT: BrandKitData = {
 
 // ── Hook ─────────────────────────────────────────────────────
 export function useBrandKit() {
-    const { user } = useAuth()
+    const { user } = useAuthContext()
     const [data, setData] = useState<BrandKitData>(DEFAULT_BRAND_KIT)
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
