@@ -90,3 +90,46 @@
 ## Stale Files to Delete
 
 - `docs/PLAN-email-editor.md` — editor was deleted 2026-03-19; plan is stale and misleading
+
+---
+
+## New Findings — Autoplan Codebase Audit (2026-03-23)
+
+### Bugs (newly identified or confirmed)
+
+**B1. Gemini model ID may not exist** (`trigger/generate-user-drafts.ts:307`, `trigger/generate-rapid-draft.ts:132`) — `gemini-3.1-flash-lite-preview` does not match any known Google AI model naming convention (Google versions as 1.x, 2.x, 2.5; not 3.1). This is the *same class of bug* as the original `gpt-5.2-chat-latest` incident. Verify the model name against the Gemini API docs before assuming the Thursday Drop is working.
+
+**B2. Stale "OpenAI" comment** (`trigger/generate-user-drafts.ts:236`) — The helper function is annotated `// ── Helper: Generate a single draft via OpenAI ──` despite being fully migrated to Gemini. Will confuse the next developer who reads it.
+
+**B3. `handleMarkForDraft` missing user_id guard** (`ResearchPage:218`) — `.update({ used_in_draft: true }).eq('id', topicId)` has no `.eq('user_id', user.id)`. Same class of bug as `handleRemoveTopic` (security issue #2). Any authenticated user can mark any topic as used by id.
+
+**B4. `formatWeek` UTC off-by-one** (`DraftsPage:39-46`) — `new Date(weekOf)` where `weekOf` is a date string (`"2026-03-23"`) parses as UTC midnight. Users in timezones behind UTC (US clients) will see this render as the *previous day*, making the week range display wrong by one day for all US users.
+
+**B5. DraftsPage UI copy contradicts actual cron time** (`DraftsPage:359`) — The footer says "New drafts are generated every Thursday at 6:00 AM CT" but the actual cron fires at **noon CT** (`0 12 * * 4` with Chicago timezone). Both the comment in `thursday-drop.ts` and the user-facing copy are wrong.
+
+**B6. `type: any` on editor_blocks in rapid draft** (`trigger/generate-rapid-draft.ts:172`) — `.map((b: any, i: number)` skips type checking on the Gemini response structure. If Gemini returns blocks without `category`, `moduleId`, or `html`, it silently saves corrupt data.
+
+### Architecture (confirmed counts)
+
+- `#e8614d` appears **50 times** across `src/` (not "15+" as estimated). Extracting to a CSS variable or Tailwind token is higher leverage than previously assessed.
+
+### Security (confirmed + new)
+
+- **B3 above** (`handleMarkForDraft`) adds a second missing user_id guard beyond the one already flagged for `handleRemoveTopic`.
+
+### Priority Order for Next Work Session
+
+| Pri | Item | File | Effort |
+|-----|------|------|--------|
+| P0 | Verify Gemini model ID is real | trigger/generate-*.ts | 5 min |
+| P0 | Wrap `JSON.parse` in try/catch (both tasks) | trigger/generate-*.ts | 15 min |
+| P0 | Add user_id guard to `handleMarkForDraft` | ResearchPage:218 | 5 min |
+| P1 | Fix `#e8614d` → CSS variable `--accent` | src/ global | 30 min |
+| P1 | Extract `formatDate`/`formatWeek` to `src/lib/dates.ts` | DashboardPage, DraftsPage | 20 min |
+| P1 | Fix `formatWeek` UTC off-by-one | DraftsPage:39 | 10 min |
+| P1 | Fix DraftsPage drop time copy (6am → noon CT) | DraftsPage:359 | 2 min |
+| P1 | Fix cron comment in thursday-drop.ts | thursday-drop.ts:22 | 2 min |
+| P1 | Fix stale OpenAI comment | generate-user-drafts.ts:236 | 2 min |
+| P2 | Move Settings sections to conditional render | SettingsPage:639-648 | 15 min |
+| P2 | Add type safety to rapid draft editor_blocks | generate-rapid-draft.ts:172 | 10 min |
+| P2 | Move API key validation to edge function | SettingsPage + backend | L |
