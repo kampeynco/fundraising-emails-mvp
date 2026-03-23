@@ -14,11 +14,16 @@ import { Input } from './input'
 interface AuthPageProps {
     mode: 'login' | 'signup'
     onSubmitLogin?: (email: string, password: string) => Promise<{ error: Error | null }>
+    onSubmitSignup?: (email: string, password: string) => Promise<{ error: Error | null; requireEmailVerification?: boolean }>
+    onVerifyEmail?: (email: string, otp: string) => Promise<{ error: Error | null }>
 }
 
-export function AuthPage({ mode, onSubmitLogin }: AuthPageProps) {
+export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail }: AuthPageProps) {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [otp, setOtp] = useState('')
+    const [step, setStep] = useState<'form' | 'verify'>('form')
+    const [pendingEmail, setPendingEmail] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
@@ -28,13 +33,39 @@ export function AuthPage({ mode, onSubmitLogin }: AuthPageProps) {
         setLoading(true)
         setError(null)
 
-        if (onSubmitLogin) {
+        if (mode === 'signup' && onSubmitSignup) {
+            const result = await onSubmitSignup(email, password)
+            if (result.error) {
+                setError(result.error.message)
+            } else if (result.requireEmailVerification) {
+                setPendingEmail(email)
+                setStep('verify')
+            } else {
+                setSuccess(true)
+            }
+        } else if (onSubmitLogin) {
             const result = await onSubmitLogin(email, password)
             if (result.error) {
                 setError(result.error.message)
             } else {
                 setSuccess(true)
             }
+        }
+
+        setLoading(false)
+    }
+
+    const handleVerify = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!onVerifyEmail) return
+        setLoading(true)
+        setError(null)
+
+        const result = await onVerifyEmail(pendingEmail, otp)
+        if (result.error) {
+            setError(result.error.message)
+        } else {
+            setSuccess(true)
         }
 
         setLoading(false)

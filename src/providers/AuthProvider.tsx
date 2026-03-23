@@ -23,7 +23,8 @@ interface AuthContextValue {
     user: InsForgeUser | null
     loading: boolean
     signIn: (email: string, password: string) => Promise<{ error: Error | null }>
-    signUp: (email: string, password: string) => Promise<{ error: Error | null }>
+    signUp: (email: string, password: string) => Promise<{ error: Error | null; requireEmailVerification?: boolean }>
+    verifyEmail: (email: string, otp: string) => Promise<{ error: Error | null }>
     signOut: () => Promise<void>
 }
 
@@ -58,6 +59,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             setSession(data as unknown as InsForgeSession)
             setUser(data.user as unknown as InsForgeUser)
         }
+        return { error: error as Error | null, requireEmailVerification: data?.requireEmailVerification }
+    }
+
+    const verifyEmail = async (email: string, otp: string) => {
+        const { data, error } = await insforge.auth.verifyEmail({ email, otp })
+        if (data?.user && data.accessToken) {
+            setSession(data as unknown as InsForgeSession)
+            setUser(data.user as unknown as InsForgeUser)
+        }
         return { error: error as Error | null }
     }
 
@@ -68,7 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return (
-        <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signOut }}>
+        <AuthContext.Provider value={{ session, user, loading, signIn, signUp, verifyEmail, signOut }}>
             {children}
         </AuthContext.Provider>
     )
