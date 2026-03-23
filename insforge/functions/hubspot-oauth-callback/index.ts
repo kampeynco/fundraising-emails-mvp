@@ -9,7 +9,7 @@ export default async function (req: Request): Promise<Response> {
     const settingsUrl = `${appUrl}/dashboard/settings?section=integrations`
 
     if (!code) {
-        return Response.redirect(`${settingsUrl}?error=oauth_failed`, 302)
+        return Response.redirect(`${settingsUrl}&error=oauth_failed`, 302)
     }
 
     const clientId = Deno.env.get('HUBSPOT_CLIENT_ID')
@@ -17,14 +17,14 @@ export default async function (req: Request): Promise<Response> {
     const redirectUri = Deno.env.get('HUBSPOT_REDIRECT_URI')
 
     if (!clientId || !clientSecret || !redirectUri) {
-        return Response.redirect(`${settingsUrl}?error=not_configured`, 302)
+        return Response.redirect(`${settingsUrl}&error=not_configured`, 302)
     }
 
     try {
         // Decode state to recover the user's JWT
         const userToken = state ? atob(decodeURIComponent(state)) : null
         if (!userToken) {
-            return Response.redirect(`${settingsUrl}?error=invalid_state`, 302)
+            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
         }
 
         // Exchange authorization code for tokens
@@ -42,7 +42,7 @@ export default async function (req: Request): Promise<Response> {
 
         if (!tokenRes.ok) {
             console.error('HubSpot token exchange failed:', await tokenRes.text())
-            return Response.redirect(`${settingsUrl}?error=token_exchange_failed`, 302)
+            return Response.redirect(`${settingsUrl}&error=token_exchange_failed`, 302)
         }
 
         const tokenData = await tokenRes.json()
@@ -61,7 +61,7 @@ export default async function (req: Request): Promise<Response> {
 
         const { data: userData } = await client.auth.getCurrentUser()
         if (!userData?.user?.id) {
-            return Response.redirect(`${settingsUrl}?error=auth_failed`, 302)
+            return Response.redirect(`${settingsUrl}&error=auth_failed`, 302)
         }
 
         await client.database.from('email_integrations').upsert(
@@ -79,9 +79,9 @@ export default async function (req: Request): Promise<Response> {
             { onConflict: 'user_id,provider' }
         )
 
-        return Response.redirect(`${settingsUrl}?connected=hubspot`, 302)
+        return Response.redirect(`${settingsUrl}&connected=hubspot`, 302)
     } catch (err) {
         console.error('HubSpot OAuth callback error:', err)
-        return Response.redirect(`${settingsUrl}?error=callback_failed`, 302)
+        return Response.redirect(`${settingsUrl}&error=callback_failed`, 302)
     }
 }
