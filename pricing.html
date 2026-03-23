@@ -275,31 +275,37 @@
                 <!-- ── SUMMARY ROW ── -->
                 <div id="summary-bar"
                     class="bg-white rounded-2xl card-shadow-lg border border-navy-100/40 p-5 sm:p-6 mb-8 sticky top-[68px] z-40 summary-bar">
-                    <div class="flex flex-wrap items-center gap-x-6 gap-y-3 justify-between">
+                    <div class="flex items-center gap-x-6 gap-y-3 justify-between">
                         <!-- Line items -->
-                        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-                            <div class="text-center min-w-[80px]">
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 flex-1 min-w-0">
+                            <div class="text-center min-w-[70px]">
                                 <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Email
                                     Writing</p>
-                                <p id="sum-writing" class="text-lg font-bold text-navy-700">$249</p>
+                                <p id="sum-writing" class="text-lg font-bold text-navy-700">$250</p>
                             </div>
                             <div class="text-navy-200 hidden sm:block">+</div>
-                            <div class="text-center min-w-[80px]">
+                            <div class="text-center min-w-[70px]">
                                 <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Rapid
                                     Response</p>
                                 <p id="sum-rapid" class="text-lg font-bold text-navy-700">$0</p>
                             </div>
                             <div class="text-navy-200 hidden sm:block">+</div>
-                            <div class="text-center min-w-[80px]">
+                            <div class="text-center min-w-[70px]">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">List
+                                    Building</p>
+                                <p id="sum-list-building" class="text-lg font-bold text-navy-700">$0</p>
+                            </div>
+                            <div class="text-navy-200 hidden sm:block">+</div>
+                            <div class="text-center min-w-[70px]">
                                 <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">
                                     Platform</p>
-                                <p id="sum-platform" class="text-lg font-bold text-navy-700">$249</p>
+                                <p id="sum-platform" class="text-lg font-bold text-navy-700">$250</p>
                             </div>
                         </div>
                         <!-- Total -->
-                        <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-4 shrink-0">
                             <div class="text-right">
-                                <p id="sum-total" class="font-display text-3xl sm:text-4xl font-bold text-navy-700">$498
+                                <p id="sum-total" class="font-display text-3xl sm:text-4xl font-bold text-navy-700">$500
                                 </p>
                                 <p class="text-xs text-navy-400">/month</p>
                             </div>
@@ -319,7 +325,7 @@
                                 Thursday Drop.</p>
                         </div>
                         <div class="text-right shrink-0">
-                            <p id="writing-price" class="font-display text-2xl font-bold text-navy-700">$249</p>
+                            <p id="writing-price" class="font-display text-2xl font-bold text-navy-700">$250</p>
                             <p class="text-xs text-navy-400">/month</p>
                         </div>
                     </div>
@@ -502,6 +508,33 @@
                     </div>
                 </div>
 
+                <!-- ── LIST BUILDING ── -->
+                <div id="list-building-section"
+                    class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-1">
+                                <svg class="w-5 h-5 text-coral" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <h2 class="font-display text-xl font-bold text-navy-700">List Building</h2>
+                            </div>
+                            <p class="text-sm text-navy-400 mb-1">Grow your donor file with targeted prospecting, data hygiene, and list acquisition strategy.</p>
+                        </div>
+                        <div class="flex items-center gap-4 shrink-0">
+                            <div class="text-right">
+                                <p class="font-display text-xl font-bold text-navy-700">$500</p>
+                                <p class="text-xs text-navy-400">/month</p>
+                            </div>
+                            <div id="list-building-toggle" class="toggle-track" role="switch" aria-checked="false"
+                                tabindex="0">
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ── RAPID RESPONSE SERVICE ── -->
                 <div id="rapid-section"
                     class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
@@ -521,7 +554,7 @@
                         </div>
                         <div class="flex items-center gap-4 shrink-0">
                             <div class="text-right">
-                                <p class="font-display text-xl font-bold text-navy-700">$995</p>
+                                <p class="font-display text-xl font-bold text-navy-700">$250</p>
                                 <p class="text-xs text-navy-400">/month</p>
                             </div>
                             <div id="rapid-toggle" class="toggle-track disabled" role="switch" aria-checked="false"
@@ -543,11 +576,11 @@
                     <div class="grid sm:grid-cols-2 gap-4">
                         <!-- Base -->
                         <div class="platform-card selected bg-white rounded-2xl card-shadow p-6 border-2 border-navy-700"
-                            data-platform="base" data-price="249">
+                            data-platform="base" data-price="250">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="font-display text-lg font-bold text-navy-700">Base</h3>
                                 <div class="flex items-baseline gap-0.5">
-                                    <span class="text-xl font-bold text-navy-700">$249</span>
+                                    <span class="text-xl font-bold text-navy-700">$250</span>
                                     <span class="text-xs text-navy-400">/mo</span>
                                 </div>
                             </div>
@@ -562,11 +595,11 @@
                         </div>
                         <!-- Pro -->
                         <div class="platform-card bg-white rounded-2xl card-shadow p-6 border-2 border-navy-200/50"
-                            data-platform="pro" data-price="499">
+                            data-platform="pro" data-price="500">
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="font-display text-lg font-bold text-navy-700">Pro</h3>
                                 <div class="flex items-baseline gap-0.5">
-                                    <span class="text-xl font-bold text-navy-700">$499</span>
+                                    <span class="text-xl font-bold text-navy-700">$500</span>
                                     <span class="text-xs text-navy-400">/mo</span>
                                 </div>
                             </div>
@@ -680,7 +713,7 @@
                                     d="M19 9l-7 7-7-7" />
                             </svg></summary>
                         <div class="px-6 pb-6 text-sm text-navy-500 leading-relaxed">Rapid Response is a monthly add-on
-                            ($995/mo) for campaigns sending 3+ emails/week. It gives you 24-hour turnaround on urgent
+                            ($250/mo) for campaigns sending 3+ emails/week. It gives you 24-hour turnaround on urgent
                             emails — breaking news, opposition hits, deadline surprises. Subject lines, preview text,
                             and revisions are all included.</div>
                     </details>
@@ -743,16 +776,18 @@
             (function () {
                 // ── Config ──
                 var tiers = [
-                    { emails: 1, price: 249, monthly: '4–5', label: '1 email/week', desc: 'Ideal for smaller committees' },
-                    { emails: 2, price: 499, monthly: '8–10', label: '2 emails/week', desc: 'Steady fundraising with light deadlines' },
-                    { emails: 3, price: 995, monthly: '12–15', label: '3 emails/week', desc: 'Active campaigns + deadline pushes' },
-                    { emails: 4, price: 1995, monthly: '16–18', label: '4 emails/week', desc: 'Heavy calendars, frequent deadlines' },
-                    { emails: 5, price: 3995, monthly: '20–22', label: '5 emails/week', desc: 'Aggressive cadence + constant deadlines' }
+                    { emails: 1, price: 250, monthly: '4–5', label: '1 email/week', desc: 'Ideal for smaller committees' },
+                    { emails: 2, price: 500, monthly: '8–10', label: '2 emails/week', desc: 'Steady fundraising with light deadlines' },
+                    { emails: 3, price: 1000, monthly: '12–15', label: '3 emails/week', desc: 'Active campaigns + deadline pushes' },
+                    { emails: 4, price: 2000, monthly: '16–18', label: '4 emails/week', desc: 'Heavy calendars, frequent deadlines' },
+                    { emails: 5, price: 4000, monthly: '20–22', label: '5 emails/week', desc: 'Aggressive cadence + constant deadlines' }
                 ];
-                var rapidPrice = 995;
+                var rapidPrice = 250;
                 var rapidEnabled = false;
                 var rapidAvailable = false;
-                var platformPrice = 249;
+                var listBuildingPrice = 500;
+                var listBuildingEnabled = false;
+                var platformPrice = 250;
                 var currentTier = 0;
 
                 // ── DOM Refs ──
@@ -766,19 +801,23 @@
                 var rapidMsg = document.getElementById('rapid-disabled-msg');
                 var sumWriting = document.getElementById('sum-writing');
                 var sumRapid = document.getElementById('sum-rapid');
+                var sumListBuilding = document.getElementById('sum-list-building');
                 var sumPlatform = document.getElementById('sum-platform');
                 var sumTotal = document.getElementById('sum-total');
                 var platformCards = document.querySelectorAll('.platform-card');
+                var listBuildingToggle = document.getElementById('list-building-toggle');
 
                 function fmt(n) { return '$' + n.toLocaleString('en-US'); }
 
                 function updateTotal() {
                     var writing = tiers[currentTier].price;
                     var rapid = (rapidEnabled && rapidAvailable) ? rapidPrice : 0;
-                    var total = writing + rapid + platformPrice;
+                    var listBuilding = listBuildingEnabled ? listBuildingPrice : 0;
+                    var total = writing + rapid + listBuilding + platformPrice;
 
                     sumWriting.textContent = fmt(writing);
                     sumRapid.textContent = rapid ? fmt(rapid) : '$0';
+                    sumListBuilding.textContent = listBuilding ? fmt(listBuilding) : '$0';
                     sumPlatform.textContent = fmt(platformPrice);
                     sumTotal.textContent = fmt(total);
                 }
@@ -821,6 +860,17 @@
                     updateTotal();
                 });
                 rapidToggle.addEventListener('keydown', function (e) {
+                    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); this.click(); }
+                });
+
+                // ── List Building Toggle ──
+                listBuildingToggle.addEventListener('click', function () {
+                    listBuildingEnabled = !listBuildingEnabled;
+                    this.classList.toggle('on', listBuildingEnabled);
+                    this.setAttribute('aria-checked', listBuildingEnabled ? 'true' : 'false');
+                    updateTotal();
+                });
+                listBuildingToggle.addEventListener('keydown', function (e) {
                     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); this.click(); }
                 });
 

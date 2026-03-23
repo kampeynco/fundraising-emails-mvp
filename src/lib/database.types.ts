@@ -89,6 +89,7 @@ export type Database = {
           delivered_at: string | null
           draft_type: string
           feedback: string | null
+          google_doc_url: string | null
           id: string
           mailchimp_campaign_id: string | null
           preview_text: string | null
@@ -115,6 +116,7 @@ export type Database = {
           delivered_at?: string | null
           draft_type?: string
           feedback?: string | null
+          google_doc_url?: string | null
           id?: string
           mailchimp_campaign_id?: string | null
           preview_text?: string | null
@@ -141,6 +143,7 @@ export type Database = {
           delivered_at?: string | null
           draft_type?: string
           feedback?: string | null
+          google_doc_url?: string | null
           id?: string
           mailchimp_campaign_id?: string | null
           preview_text?: string | null

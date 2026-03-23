@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -41,11 +40,11 @@ interface RecentDraft {
     status: string
     draft_type: string
     created_at: string
+    google_doc_url?: string | null
 }
 
 export default function DashboardPage() {
     const { user } = useAuth()
-    const navigate = useNavigate()
     const [stats, setStats] = useState<DraftStats>({ totalDrafts: 0, sentThisMonth: 0, pendingReview: 0, approvalRate: 0 })
     const [topicStats, setTopicStats] = useState<TopicStat[]>([])
     const [templateStats, setTemplateStats] = useState<TemplateStat[]>([])
@@ -60,7 +59,7 @@ export default function DashboardPage() {
             // Fetch all drafts for stats
             const { data: drafts } = await supabase
                 .from('email_drafts')
-                .select('id, subject_line, status, draft_type, created_at, week_of')
+                .select('id, subject_line, status, draft_type, created_at, week_of, google_doc_url')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false })
 
@@ -296,8 +295,8 @@ export default function DashboardPage() {
                                 return (
                                     <div
                                         key={draft.id}
-                                        onClick={() => navigate(`/dashboard/drafts/${draft.id}/edit`)}
-                                        className="flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-5 py-4 transition-colors hover:bg-white/[0.04] cursor-pointer"
+                                        onClick={() => draft.google_doc_url && window.open(draft.google_doc_url, '_blank')}
+                                        className={`flex items-center justify-between rounded-lg border border-white/[0.06] bg-white/[0.02] px-5 py-4 transition-colors ${draft.google_doc_url ? 'hover:bg-white/[0.04] cursor-pointer' : 'cursor-default opacity-60'}`}
                                     >
                                         <div className="flex items-center gap-2">
                                             {draft.draft_type === 'rapid_response' && (

@@ -16,6 +16,7 @@ export interface Draft {
     user_comments?: string
     ai_model?: string
     research_topic_ids?: string[]
+    google_doc_url?: string | null
     created_at: string
     updated_at: string
 }

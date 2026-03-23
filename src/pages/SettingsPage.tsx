@@ -165,7 +165,7 @@ function BillingSection() {
                 <div className="flex items-center justify-between">
                     <div>
                         <p className="text-xs font-medium uppercase tracking-wider text-[#e8614d]">Current Plan</p>
-                        <p className="mt-1 text-2xl font-bold text-white">$498<span className="text-sm font-normal text-white/40">/month</span></p>
+                        <p className="mt-1 text-2xl font-bold text-white">$500<span className="text-sm font-normal text-white/40">/month</span></p>
                         <p className="mt-0.5 text-sm text-white/40">1 email/week · Base platform · Billed monthly</p>
                     </div>
                     <Button variant="outline" className="cursor-pointer border-[#e8614d] bg-[#e8614d]/10 text-[#e8614d] hover:bg-[#e8614d] hover:text-white">
@@ -184,7 +184,7 @@ function BillingSection() {
                         <p className="mt-0.5 text-xs text-white/40">Done-for-you fundraising emails, delivered weekly via the Thursday Drop</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-lg font-bold text-white">$249<span className="text-xs font-normal text-white/30">/mo</span></p>
+                        <p className="text-lg font-bold text-white">$250<span className="text-xs font-normal text-white/30">/mo</span></p>
                         <p className="text-[10px] uppercase tracking-wider text-white/30">1 email/wk</p>
                     </div>
                 </div>
@@ -199,8 +199,20 @@ function BillingSection() {
                         <p className="mt-0.5 text-xs text-white/40">Dashboard and client portal access</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-lg font-bold text-white">$249<span className="text-xs font-normal text-white/30">/mo</span></p>
+                        <p className="text-lg font-bold text-white">$250<span className="text-xs font-normal text-white/30">/mo</span></p>
                         <p className="text-[10px] uppercase tracking-wider text-white/30">Base tier</p>
+                    </div>
+                </div>
+
+                {/* List Building */}
+                <div className="flex items-center justify-between rounded-xl border border-dashed border-white/[0.06] bg-white/[0.01] p-5">
+                    <div>
+                        <p className="text-sm font-semibold text-white">List Building</p>
+                        <p className="mt-0.5 text-xs text-white/40">Targeted prospecting, data hygiene, and list acquisition strategy</p>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-lg font-bold text-white/40">$500<span className="text-xs font-normal text-white/20">/mo</span></p>
+                        <p className="text-[10px] uppercase tracking-wider text-white/20">Add-on</p>
                     </div>
                 </div>
 
@@ -214,7 +226,7 @@ function BillingSection() {
                         <p className="mt-0.5 text-xs text-white/40">24-hour turnaround for breaking news, opposition hits, deadline surprises</p>
                     </div>
                     <div className="text-right">
-                        <p className="text-lg font-bold text-white/40">$995<span className="text-xs font-normal text-white/20">/mo</span></p>
+                        <p className="text-lg font-bold text-white/40">$250<span className="text-xs font-normal text-white/20">/mo</span></p>
                         <p className="text-[10px] uppercase tracking-wider text-white/20">Add-on</p>
                     </div>
                 </div>

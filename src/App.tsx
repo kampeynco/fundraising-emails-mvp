@@ -7,7 +7,6 @@ import LoginPage from '@/pages/LoginPage'
 import GetStartedPage from '@/pages/GetStartedPage'
 import DashboardPage from '@/pages/DashboardPage'
 import DraftsPage from '@/pages/DraftsPage'
-import DraftEditorPage from '@/pages/DraftEditorPage'
 import ResearchPage from '@/pages/ResearchPage'
 import BrandKitPage from '@/pages/BrandKitPage'
 import SettingsPage from '@/pages/SettingsPage'
@@ -22,16 +21,6 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/get-started" element={<GetStartedPage />} />
             <Route path="/onboard" element={<Navigate to="/get-started" replace />} />
-
-            {/* Protected editor route (outside DashboardLayout) */}
-            <Route
-              path="/dashboard/drafts/:id/edit"
-              element={
-                <ProtectedRoute>
-                  <DraftEditorPage />
-                </ProtectedRoute>
-              }
-            />
 
             {/* Protected dashboard routes */}
             <Route

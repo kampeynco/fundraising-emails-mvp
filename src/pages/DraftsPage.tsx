@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
 import { supabase } from '@/lib/supabase'
@@ -47,7 +47,6 @@ function formatWeek(weekOf: string) {
 
 export default function DraftsPage() {
     const { user, loading: authLoading } = useAuth()
-    const navigate = useNavigate()
     const [searchParams, setSearchParams] = useSearchParams()
     const [drafts, setDrafts] = useState<Draft[]>([])
     const [loadingDrafts, setLoadingDrafts] = useState(true)
@@ -224,8 +223,8 @@ export default function DraftsPage() {
                                         {drafts.map((draft, idx) => (
                                             <div
                                                 key={draft.id}
-                                                onClick={() => navigate(`/dashboard/drafts/${draft.id}/edit`)}
-                                                className={`group flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-white/[0.03] cursor-pointer ${idx < drafts.length - 1 ? 'border-b border-white/[0.04]' : ''
+                                                onClick={() => draft.google_doc_url && window.open(draft.google_doc_url, '_blank')}
+                                                className={`group flex items-center gap-4 px-5 py-3.5 transition-colors ${draft.google_doc_url ? 'hover:bg-white/[0.03] cursor-pointer' : 'cursor-default opacity-60'} ${idx < drafts.length - 1 ? 'border-b border-white/[0.04]' : ''
                                                     }`}
                                             >
                                                 {/* Status dot */}

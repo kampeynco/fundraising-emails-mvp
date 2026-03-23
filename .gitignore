@@ -11,6 +11,7 @@ Thumbs.db
 # Agent/AI
 .agent/
 .gemini/
+.claude/settings.local.json
 
 # Node
 node_modules/
