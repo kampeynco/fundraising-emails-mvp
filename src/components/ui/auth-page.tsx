@@ -17,7 +17,7 @@ interface AuthPageProps {
     onSubmitLogin?: (email: string, password: string) => Promise<{ error: Error | null }>
     onSubmitSignup?: (email: string, password: string) => Promise<{ error: Error | null; requireEmailVerification?: boolean }>
     onVerifyEmail?: (email: string, otp: string) => Promise<{ error: Error | null }>
-    onSignInWithOAuth?: (provider: OAuthProvider) => Promise<void>
+    onSignInWithOAuth?: (provider: OAuthProvider) => Promise<{ error: Error | null }>
 }
 
 export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, onSignInWithOAuth }: AuthPageProps) {
@@ -266,7 +266,13 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, o
                                         variant="outline"
                                         className="w-full flex items-center gap-2"
                                         disabled={loading}
-                                        onClick={() => onSignInWithOAuth('google')}
+                                        onClick={async () => {
+                                            setLoading(true)
+                                            setError(null)
+                                            const result = await onSignInWithOAuth('google')
+                                            if (result.error) setError(result.error.message)
+                                            setLoading(false)
+                                        }}
                                     >
                                         <GoogleIcon />
                                         Continue with Google

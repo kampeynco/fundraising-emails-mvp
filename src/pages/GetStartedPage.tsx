@@ -15,7 +15,7 @@ export default function GetStartedPage() {
                 const { error } = await verifyEmail(email, otp)
                 return { error: error as Error | null }
             }}
-            onSignInWithOAuth={signInWithOAuth}
+            onSignInWithOAuth={(provider) => signInWithOAuth(provider)}
         />
     )
 }

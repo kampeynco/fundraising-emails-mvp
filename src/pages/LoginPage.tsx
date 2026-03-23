@@ -11,7 +11,7 @@ export default function LoginPage() {
                 const { error } = await signIn(email, password)
                 return { error: error as Error | null }
             }}
-            onSignInWithOAuth={signInWithOAuth}
+            onSignInWithOAuth={(provider) => signInWithOAuth(provider)}
         />
     )
 }
