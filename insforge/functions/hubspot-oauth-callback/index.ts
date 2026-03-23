@@ -55,7 +55,7 @@ export default async function (req: Request): Promise<Response> {
 
         // Authenticate as the user and save integration
         const client = createClient({
-            baseUrl: Deno.env.get('INSFORGE_BASE_URL'),
+            baseUrl: Deno.env.get('INSFORGE_INTERNAL_URL'),
             edgeFunctionToken: userToken,
         })
 
