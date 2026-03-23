@@ -36,10 +36,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        const s = insforge.auth.getSession()
-        setSession(s as InsForgeSession | null)
-        setUser((s?.user as InsForgeUser) ?? null)
-        setLoading(false)
+        insforge.auth.getCurrentUser().then(({ data }) => {
+            setUser((data?.user ?? null) as InsForgeUser | null)
+            setLoading(false)
+        })
     }, [])
 
     const signIn = async (email: string, password: string) => {
