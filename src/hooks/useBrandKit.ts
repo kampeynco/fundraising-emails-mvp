@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
 import { useAuth } from '@/hooks/useAuth'
 
 // ── Types ────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ export function useBrandKit() {
             setLoading(true)
             setError(null)
 
-            const { data: row, error: fetchError } = await supabase
+            const { data: row, error: fetchError } = await insforge.database
                 .from('brand_kits')
                 .select('*')
                 .eq('user_id', user.id)
@@ -164,50 +164,67 @@ export function useBrandKit() {
             show_footer: data.show_footer,
         }
 
-        const { data: row, error: saveError } = await supabase
-            .from('brand_kits')
-            .upsert(payload as any, { onConflict: 'user_id' })
-            .select()
-            .single()
+        let saveError: any = null
+        let savedRow: any = null
+
+        if (data.id) {
+            // Update existing record
+            const { data: row, error } = await insforge.database
+                .from('brand_kits')
+                .update(payload)
+                .eq('id', data.id)
+                .select()
+                .single()
+            saveError = error
+            savedRow = row
+        } else {
+            // Insert new record
+            const { data: row, error } = await insforge.database
+                .from('brand_kits')
+                .insert([payload])
+                .select()
+                .single()
+            saveError = error
+            savedRow = row
+        }
 
         if (saveError) {
             console.error('Error saving brand kit:', saveError)
             setError(saveError.message)
-        } else if (row) {
-            setData(prev => ({ ...prev, id: row.id }))
+        } else if (savedRow) {
+            setData(prev => ({ ...prev, id: savedRow.id }))
             setLastSaved(new Date())
         }
 
         setSaving(false)
     }, [user, data])
-    // Upload logo to Supabase Storage
+
+    // Upload logo to InsForge Storage
     const uploadLogo = useCallback(async (file: File, type: 'primary' | 'icon') => {
         if (!user) return
 
         const ext = file.name.split('.').pop()
-        const prefix = `${user.id}/${type}-logo`
+        const timestamp = Date.now()
+        const path = `${user.id}/${type}-logo-${timestamp}.${ext}`
 
-        // Delete any existing logo files for this type (handles extension changes)
-        const { data: existingFiles } = await supabase.storage
-            .from('brand-assets')
-            .list(user.id, { search: `${type}-logo` })
-
-        if (existingFiles && existingFiles.length > 0) {
-            const filesToDelete = existingFiles
-                .filter(f => f.name.startsWith(`${type}-logo`))
-                .map(f => `${user.id}/${f.name}`)
-            if (filesToDelete.length > 0) {
-                await supabase.storage.from('brand-assets').remove(filesToDelete)
+        // Delete previous logo if we have the URL stored (extract key from URL)
+        const existingUrl = type === 'primary' ? data.primary_logo_url : data.icon_logo_url
+        if (existingUrl) {
+            try {
+                // Extract key from URL: everything after /objects/
+                const match = existingUrl.match(/\/objects\/(.+?)(\?|$)/)
+                if (match) {
+                    const existingKey = decodeURIComponent(match[1])
+                    await insforge.storage.from('brand-assets').remove(existingKey)
+                }
+            } catch {
+                // Ignore delete errors — old file may already be gone
             }
         }
 
-        // Upload with timestamp to bust CDN/browser cache
-        const timestamp = Date.now()
-        const path = `${prefix}-${timestamp}.${ext}`
-
-        const { error: uploadError } = await supabase.storage
+        const { data: uploadData, error: uploadError } = await insforge.storage
             .from('brand-assets')
-            .upload(path, file, { upsert: true })
+            .upload(path, file)
 
         if (uploadError) {
             console.error('Error uploading logo:', uploadError)
@@ -215,17 +232,12 @@ export function useBrandKit() {
             return
         }
 
-        const { data: urlData } = supabase.storage
-            .from('brand-assets')
-            .getPublicUrl(path)
-
-        // Add cache-busting query param
-        const url = `${urlData.publicUrl}?t=${timestamp}`
+        const url = uploadData!.url
         setData(prev => ({
             ...prev,
             [type === 'primary' ? 'primary_logo_url' : 'icon_logo_url']: url,
         }))
-    }, [user])
+    }, [user, data])
 
     return {
         data,

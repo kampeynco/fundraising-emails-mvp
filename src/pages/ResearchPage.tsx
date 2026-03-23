@@ -12,7 +12,7 @@ import {
     Search01Icon,
 } from '@hugeicons/core-free-icons'
 import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
 
 interface ResearchTopic {
     id: string
@@ -103,7 +103,7 @@ export default function ResearchPage() {
         if (!user) return
         setIsLoading(true)
 
-        const { data, error } = await supabase
+        const { data, error } = await insforge.database
             .from('research_topics')
             .select('*')
             .eq('user_id', user.id)
@@ -162,7 +162,7 @@ export default function ResearchPage() {
         setSearchMessage(null)
 
         try {
-            const { data, error } = await supabase.functions.invoke('search-research', {
+            const { data, error } = await insforge.functions.invoke('search-research', {
                 body: { query: searchQuery.trim() },
             })
 
@@ -215,7 +215,7 @@ export default function ResearchPage() {
         setTopics(prev => prev.map(t =>
             t.id === topicId ? { ...t, used_in_draft: true } : t
         ))
-        await supabase
+        await insforge.database
             .from('research_topics')
             .update({ used_in_draft: true })
             .eq('id', topicId)
@@ -223,7 +223,7 @@ export default function ResearchPage() {
 
     const handleRemoveTopic = async (topicId: string) => {
         setTopics(prev => prev.filter(t => t.id !== topicId))
-        await supabase
+        await insforge.database
             .from('research_topics')
             .delete()
             .eq('id', topicId)

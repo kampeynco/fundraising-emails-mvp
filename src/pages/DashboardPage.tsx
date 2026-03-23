@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     LicenseDraftIcon,
@@ -57,7 +57,7 @@ export default function DashboardPage() {
             setLoading(true)
 
             // Fetch all drafts for stats
-            const { data: drafts } = await supabase
+            const { data: drafts } = await insforge.database
                 .from('email_drafts')
                 .select('id, subject_line, status, draft_type, created_at, week_of, google_doc_url')
                 .eq('user_id', user.id)
@@ -110,7 +110,7 @@ export default function DashboardPage() {
             }
 
             // Fetch topic metrics
-            const { data: topics } = await (supabase as any)
+            const { data: topics } = await insforge.database
                 .from('topic_metrics')
                 .select('topic, status')
                 .eq('user_id', user.id)

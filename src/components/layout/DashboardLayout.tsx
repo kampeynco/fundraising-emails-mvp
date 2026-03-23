@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     Mail01Icon,
@@ -123,7 +123,7 @@ export function DashboardLayout() {
     useEffect(() => {
         if (!user) return
         const checkPlan = async () => {
-            const { data } = await supabase
+            const { data } = await insforge.database
                 .from('subscriptions')
                 .select('emails_per_week')
                 .eq('user_id', user.id)

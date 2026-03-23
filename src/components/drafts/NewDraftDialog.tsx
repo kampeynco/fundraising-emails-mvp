@@ -7,7 +7,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { SparklesIcon } from '@hugeicons/core-free-icons'
 
@@ -26,7 +26,7 @@ export function NewDraftDialog({ open, onOpenChange }: NewDraftDialogProps) {
         setAiLoading(true)
 
         try {
-            const { data, error } = await supabase.functions.invoke('trigger-draft-generation', {
+            const { data, error } = await insforge.functions.invoke('trigger-draft-generation', {
                 body: { emailsToGenerate: 1 },
             })
 

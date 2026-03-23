@@ -1,12 +1,12 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@insforge/sdk";
 import OpenAI from "openai";
 import { fetchRagContext, formatRagPromptSection } from "./lib/rag-context";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const insforge = createClient({
+    baseUrl: process.env.INSFORGE_BASE_URL!,
+    anonKey: process.env.INSFORGE_API_KEY!
+});
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -47,7 +47,7 @@ export const generateRapidDraft = task({
         metadata.set("status", "loading_context").set("userId", userId);
 
         // 1. Verify user has rapid response enabled
-        const { data: subscription } = await supabase
+        const { data: subscription } = await insforge.database
             .from("subscriptions")
             .select("tier, rapid_response")
             .eq("user_id", userId)
@@ -59,7 +59,7 @@ export const generateRapidDraft = task({
         }
 
         // 2. Load brand kit
-        const { data: brandKit, error: bkError } = await supabase
+        const { data: brandKit, error: bkError } = await insforge.database
             .from("brand_kits")
             .select("id, kit_name, brand_summary, tone, disclaimers, colors")
             .eq("user_id", userId)
@@ -165,7 +165,7 @@ IMPORTANT for editor_blocks:
         const weekOf = monday.toISOString().split("T")[0];
 
         // 6. Save to database
-        const { data: savedDraft, error: saveError } = await supabase
+        const { data: savedDraft, error: saveError } = await insforge.database
             .from("email_drafts")
             .insert({
                 user_id: userId,

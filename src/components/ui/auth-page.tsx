@@ -6,17 +6,19 @@ import {
     MailAtSign01Icon,
     ArrowLeft01Icon,
     Mail01Icon,
+    LockPasswordIcon,
 } from '@hugeicons/core-free-icons'
 import { Button } from './button'
 import { Input } from './input'
 
 interface AuthPageProps {
     mode: 'login' | 'signup'
-    onSubmitLogin?: (email: string) => Promise<{ error: Error | null }>
+    onSubmitLogin?: (email: string, password: string) => Promise<{ error: Error | null }>
 }
 
 export function AuthPage({ mode, onSubmitLogin }: AuthPageProps) {
     const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
@@ -27,7 +29,7 @@ export function AuthPage({ mode, onSubmitLogin }: AuthPageProps) {
         setError(null)
 
         if (onSubmitLogin) {
-            const result = await onSubmitLogin(email)
+            const result = await onSubmitLogin(email, password)
             if (result.error) {
                 setError(result.error.message)
             } else {
@@ -109,8 +111,8 @@ export function AuthPage({ mode, onSubmitLogin }: AuthPageProps) {
                         <div className="space-y-3 py-4">
                             <p className="text-sm text-muted-foreground">
                                 {mode === 'login'
-                                    ? 'Check your email for a magic link to sign in.'
-                                    : 'Check your email for a magic link to get started.'}
+                                    ? 'Signed in successfully. Redirecting…'
+                                    : 'Account created! Check your email to verify your address.'}
                             </p>
                             <Button
                                 variant="outline"
@@ -152,12 +154,32 @@ export function AuthPage({ mode, onSubmitLogin }: AuthPageProps) {
                                 </div>
                             </div>
 
-
+                            <div className="space-y-1.5">
+                                <label htmlFor="auth-password" className="text-sm font-medium">
+                                    Password
+                                </label>
+                                <div className="relative">
+                                    <Input
+                                        id="auth-password"
+                                        placeholder="••••••••"
+                                        className="peer ps-9"
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+                                        minLength={6}
+                                    />
+                                    <div className="text-muted-foreground pointer-events-none absolute inset-y-0 start-0 flex items-center justify-center ps-3 peer-disabled:opacity-50">
+                                        <HugeiconsIcon icon={LockPasswordIcon} size={16} aria-hidden="true" />
+                                    </div>
+                                </div>
+                            </div>
 
                             <Button type="submit" className="w-full bg-[#e8614d] hover:bg-[#d4553f] text-white" disabled={loading}>
                                 {loading
-                                    ? 'Sending…'
-                                    : 'Send Magic Link'}
+                                    ? (mode === 'login' ? 'Signing in…' : 'Creating account…')
+                                    : (mode === 'login' ? 'Sign In' : 'Create Account')}
                             </Button>
                         </form>
                     )}

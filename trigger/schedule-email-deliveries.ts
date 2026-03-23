@@ -1,10 +1,10 @@
 import { task, logger, metadata, AbortTaskRunError } from "@trigger.dev/sdk";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@insforge/sdk";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const insforge = createClient({
+    baseUrl: process.env.INSFORGE_BASE_URL!,
+    anonKey: process.env.INSFORGE_API_KEY!
+});
 
 // Day name → JS getDay() index
 const DAY_INDEX: Record<string, number> = {
@@ -88,7 +88,7 @@ export const scheduleEmailDeliveries = task({
         metadata.set("status", "loading").set("userId", userId);
 
         // 1. Fetch user's delivery days and timezone
-        const { data: profile, error: profileError } = await supabase
+        const { data: profile, error: profileError } = await insforge.database
             .from("profiles")
             .select("delivery_days, email")
             .eq("id", userId)
@@ -103,7 +103,7 @@ export const scheduleEmailDeliveries = task({
         const deliveryDays: string[] = profile.delivery_days || ["thursday"];
 
         // 1b. Detect which email platform is connected
-        const { data: integration, error: intError } = await supabase
+        const { data: integration, error: intError } = await insforge.database
             .from("email_integrations")
             .select("provider")
             .eq("user_id", userId)
@@ -125,7 +125,7 @@ export const scheduleEmailDeliveries = task({
         logger.info("Delivery config", { deliveryDays, provider, sendTaskId });
 
         // 2. Fetch approved but unscheduled drafts
-        const { data: drafts, error: draftsError } = await supabase
+        const { data: drafts, error: draftsError } = await insforge.database
             .from("email_drafts")
             .select("id, subject_line")
             .eq("user_id", userId)
@@ -176,7 +176,7 @@ export const scheduleEmailDeliveries = task({
             const scheduledFor = deliveryDate.toISOString();
 
             // Update draft with scheduled_for and status
-            const { error: updateError } = await supabase
+            const { error: updateError } = await insforge.database
                 .from("email_drafts")
                 .update({
                     scheduled_for: scheduledFor,

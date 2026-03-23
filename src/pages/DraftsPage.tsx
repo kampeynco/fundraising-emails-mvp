@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
     ArrowDown01Icon,
@@ -70,7 +70,7 @@ export default function DraftsPage() {
 
         const fetchDrafts = async () => {
             setLoadingDrafts(true)
-            const { data, error } = await supabase
+            const { data, error } = await insforge.database
                 .from('email_drafts')
                 .select('*')
                 .eq('user_id', user.id)
@@ -91,7 +91,7 @@ export default function DraftsPage() {
     useEffect(() => {
         if (authLoading || !user) return
         const fetchDay = async () => {
-            const { data } = await supabase
+            const { data } = await insforge.database
                 .from('profiles')
                 .select('delivery_days')
                 .eq('id', user.id)

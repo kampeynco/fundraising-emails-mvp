@@ -1,13 +1,13 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@insforge/sdk";
 import OpenAI from "openai";
 import { fetchRagContext, formatRagPromptSection, type RagContext } from "./lib/rag-context";
 
 // ── Clients ──
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const insforge = createClient({
+    baseUrl: process.env.INSFORGE_BASE_URL!,
+    anonKey: process.env.INSFORGE_API_KEY!
+});
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
@@ -97,7 +97,7 @@ export const generateUserDrafts = task({
             .set("status", "loading_context");
 
         // ── 1. Load brand kit ──
-        const { data: brandKit, error: bkError } = await supabase
+        const { data: brandKit, error: bkError } = await insforge.database
             .from("brand_kits")
             .select("id, kit_name, brand_summary, tone, address, copyright, footer, disclaimers, colors")
             .eq("user_id", userId)
@@ -111,7 +111,7 @@ export const generateUserDrafts = task({
         const bk = brandKit as BrandKit;
 
         // ── 2. Load recent research topics ──
-        const { data: topics } = await supabase
+        const { data: topics } = await insforge.database
             .from("research_topics")
             .select("id, title, summary, content_snippet, source_url")
             .eq("user_id", userId)
@@ -122,7 +122,7 @@ export const generateUserDrafts = task({
         const researchTopics = (topics || []) as ResearchTopic[];
 
         // ── 3. Load recent sent emails for variety ──
-        const { data: recentEmails } = await supabase
+        const { data: recentEmails } = await insforge.database
             .from("email_drafts")
             .select("subject_line, draft_type")
             .eq("user_id", userId)
@@ -160,7 +160,7 @@ export const generateUserDrafts = task({
                 const draft = await generateDraft(bk, template, topicsForThisDraft, weekOf, ragContext);
 
                 // Save to database
-                const { data: savedDraft, error: saveError } = await supabase
+                const { data: savedDraft, error: saveError } = await insforge.database
                     .from("email_drafts")
                     .insert({
                         user_id: userId,
@@ -197,7 +197,7 @@ export const generateUserDrafts = task({
 
                 // Mark research topics as used
                 if (topicsForThisDraft.length > 0) {
-                    await supabase
+                    await insforge.database
                         .from("research_topics")
                         .update({ used_in_draft: true })
                         .in(

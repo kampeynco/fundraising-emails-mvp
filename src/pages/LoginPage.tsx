@@ -7,8 +7,8 @@ export default function LoginPage() {
     return (
         <AuthPage
             mode="login"
-            onSubmitLogin={async (email) => {
-                const { error } = await signIn(email)
+            onSubmitLogin={async (email, password) => {
+                const { error } = await signIn(email, password)
                 return { error: error as Error | null }
             }}
         />

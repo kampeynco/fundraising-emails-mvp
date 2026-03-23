@@ -3,7 +3,7 @@ import { useOutletContext } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Tick01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
 import { useAuth } from '@/hooks/useAuth'
 
 type SettingsContext = { activeSettingsSection: string }
@@ -22,7 +22,7 @@ function GeneralSection() {
         if (!user) return
         const load = async () => {
             // Fetch profile for current delivery_days
-            const { data: profile } = await supabase
+            const { data: profile } = await insforge.database
                 .from('profiles')
                 .select('delivery_days')
                 .eq('id', user.id)
@@ -33,7 +33,7 @@ function GeneralSection() {
             }
 
             // Fetch subscription for plan limit
-            const { data: sub } = await supabase
+            const { data: sub } = await insforge.database
                 .from('subscriptions')
                 .select('emails_per_week')
                 .eq('user_id', user.id)
@@ -63,7 +63,7 @@ function GeneralSection() {
         setSaving(true)
         setSaved(false)
 
-        const { error } = await supabase
+        const { error } = await insforge.database
             .from('profiles')
             .update({ delivery_days: deliveryDays })
             .eq('id', user.id)
@@ -275,7 +275,7 @@ function IntegrationsSection() {
     // Fetch connected integrations on mount
     const fetchIntegrations = useCallback(async () => {
         if (!user) return
-        const { data } = await supabase
+        const { data } = await insforge.database
             .from('email_integrations')
             .select('provider, metadata')
             .eq('user_id', user.id)
@@ -324,7 +324,7 @@ function IntegrationsSection() {
         }
 
         try {
-            const { data, error } = await supabase.functions.invoke(functionName)
+            const { data, error } = await insforge.functions.invoke(functionName)
 
             if (error) {
                 console.error('OAuth URL error:', error)
@@ -406,17 +406,31 @@ function IntegrationsSection() {
                 orgName = 'Campaigner'
             }
 
-            // Save to email_integrations
-            const { error } = await supabase
+            // Save to email_integrations (check-then-update-or-insert)
+            const { data: existing } = await insforge.database
                 .from('email_integrations')
-                .upsert({
-                    user_id: user.id,
-                    provider: apiKeyDialogProvider,
-                    access_token: apiKeyInput.trim(),
-                    server_prefix: apiKeyDialogProvider === 'active_campaign' ? accountUrlInput.trim().replace(/\/$/, '') : null,
-                    metadata: { account_name: orgName },
-                    connected_at: new Date().toISOString(),
-                }, { onConflict: 'user_id,provider' })
+                .select('id')
+                .eq('user_id', user.id)
+                .eq('provider', apiKeyDialogProvider)
+                .maybeSingle()
+
+            const integrationPayload = {
+                user_id: user.id,
+                provider: apiKeyDialogProvider,
+                access_token: apiKeyInput.trim(),
+                server_prefix: apiKeyDialogProvider === 'active_campaign' ? accountUrlInput.trim().replace(/\/$/, '') : null,
+                metadata: { account_name: orgName },
+                connected_at: new Date().toISOString(),
+            }
+
+            const { error } = existing
+                ? await insforge.database
+                    .from('email_integrations')
+                    .update(integrationPayload)
+                    .eq('id', existing.id)
+                : await insforge.database
+                    .from('email_integrations')
+                    .insert([integrationPayload])
 
             if (error) {
                 setApiKeyError(`Failed to save: ${error.message}`)
@@ -440,7 +454,7 @@ function IntegrationsSection() {
 
     const handleDisconnect = async (provider: string) => {
         if (!user) return
-        await supabase
+        await insforge.database
             .from('email_integrations')
             .delete()
             .eq('user_id', user.id)

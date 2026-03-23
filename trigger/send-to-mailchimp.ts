@@ -1,10 +1,10 @@
 import { task, logger, metadata, AbortTaskRunError } from "@trigger.dev/sdk";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@insforge/sdk";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const insforge = createClient({
+    baseUrl: process.env.INSFORGE_BASE_URL!,
+    anonKey: process.env.INSFORGE_API_KEY!
+});
 
 // ── Types ──
 
@@ -105,7 +105,7 @@ export const sendToMailchimp = task({
         metadata.set("status", "fetching_draft").set("draftId", draftId);
 
         // ── 1. Fetch the approved draft ──
-        const { data: draft, error: draftError } = await supabase
+        const { data: draft, error: draftError } = await insforge.database
             .from("email_drafts")
             .select("id, subject_line, body_html, body_text, status, user_id")
             .eq("id", draftId)
@@ -136,7 +136,7 @@ export const sendToMailchimp = task({
         // ── 2. Fetch Mailchimp credentials ──
         metadata.set("status", "fetching_credentials");
 
-        const { data: creds, error: credsError } = await supabase
+        const { data: creds, error: credsError } = await insforge.database
             .from("email_integrations")
             .select("access_token, server_prefix, list_id, metadata")
             .eq("user_id", userId)
@@ -167,13 +167,13 @@ export const sendToMailchimp = task({
         });
 
         // ── 3. Fetch sender info from brand kit ──
-        const { data: brandKit } = await supabase
+        const { data: brandKit } = await insforge.database
             .from("brand_kits")
             .select("kit_name")
             .eq("user_id", userId)
             .single();
 
-        const { data: profile } = await supabase
+        const { data: profile } = await insforge.database
             .from("profiles")
             .select("email, organization_name")
             .eq("id", userId)
@@ -314,7 +314,7 @@ export const sendToMailchimp = task({
         // ── Update draft status in Supabase ──
         metadata.set("status", "updating_draft");
 
-        const { error: updateError } = await supabase
+        const { error: updateError } = await insforge.database
             .from("email_drafts")
             .update({
                 status: scheduleTime ? "scheduled" : "sent",

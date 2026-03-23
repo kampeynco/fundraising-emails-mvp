@@ -1,9 +1,9 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@insforge/sdk";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const insforge = createClient({
+    baseUrl: process.env.INSFORGE_BASE_URL!,
+    anonKey: process.env.INSFORGE_API_KEY!
+});
 
 /**
  * RAG Context — Retrieves semantically similar past content for email generation.
@@ -66,7 +66,7 @@ export async function fetchRagContext(
         const queryEmbedding = embeddingData.data[0].embedding;
 
         // Search for similar email drafts (content)
-        const { data: emailResults } = await supabase.rpc("search_embeddings", {
+        const { data: emailResults } = await insforge.database.rpc("search_embeddings", {
             query_embedding: JSON.stringify(queryEmbedding),
             match_user_id: userId,
             match_source_types: ["email_draft"],
@@ -77,7 +77,7 @@ export async function fetchRagContext(
         if (emailResults?.length) {
             // Fetch full drafts for the matched source_ids
             const sourceIds = emailResults.map((r: { source_id: string }) => r.source_id);
-            const { data: drafts } = await supabase
+            const { data: drafts } = await insforge.database
                 .from("email_drafts")
                 .select("id, subject_line, body_text, body_html, status")
                 .in("id", sourceIds);
@@ -116,7 +116,7 @@ export async function fetchRagContext(
         }
 
         // Search for similar research topics
-        const { data: researchResults } = await supabase.rpc("search_embeddings", {
+        const { data: researchResults } = await insforge.database.rpc("search_embeddings", {
             query_embedding: JSON.stringify(queryEmbedding),
             match_user_id: userId,
             match_source_types: ["research_topic"],
@@ -128,7 +128,7 @@ export async function fetchRagContext(
             const researchIds = researchResults.map(
                 (r: { source_id: string }) => r.source_id
             );
-            const { data: topics } = await supabase
+            const { data: topics } = await insforge.database
                 .from("research_topics")
                 .select("id, title, summary")
                 .in("id", researchIds);

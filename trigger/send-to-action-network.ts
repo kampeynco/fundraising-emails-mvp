@@ -1,10 +1,10 @@
 import { task, logger, metadata, wait, AbortTaskRunError } from "@trigger.dev/sdk";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@insforge/sdk";
 
-const supabase = createClient(
-    process.env.SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const insforge = createClient({
+    baseUrl: process.env.INSFORGE_BASE_URL!,
+    anonKey: process.env.INSFORGE_API_KEY!
+});
 
 const AN_BASE_URL = "https://actionnetwork.org/api/v2";
 
@@ -68,7 +68,7 @@ export const sendToActionNetwork = task({
         metadata.set("status", "fetching_draft").set("draftId", draftId);
 
         // ── 1. Fetch the approved draft ──
-        const { data: draft, error: draftError } = await supabase
+        const { data: draft, error: draftError } = await insforge.database
             .from("email_drafts")
             .select("*")
             .eq("id", draftId)
@@ -90,7 +90,7 @@ export const sendToActionNetwork = task({
         // ── 2. Fetch Action Network credentials ──
         metadata.set("status", "fetching_credentials");
 
-        const { data: integration, error: intError } = await supabase
+        const { data: integration, error: intError } = await insforge.database
             .from("email_integrations")
             .select("*")
             .eq("user_id", userId)
@@ -106,7 +106,7 @@ export const sendToActionNetwork = task({
         const apiKey = integration.access_token;
 
         // ── 3. Fetch brand kit for from_name ──
-        const { data: brandKit } = await supabase
+        const { data: brandKit } = await insforge.database
             .from("brand_kits")
             .select("kit_name")
             .eq("user_id", userId)
@@ -233,7 +233,7 @@ export const sendToActionNetwork = task({
         // ── Update draft status in Supabase ──
         metadata.set("status", "updating_draft");
 
-        const { error: updateError } = await supabase
+        const { error: updateError } = await insforge.database
             .from("email_drafts")
             .update({
                 status: scheduleTime ? "scheduled" : "sent",

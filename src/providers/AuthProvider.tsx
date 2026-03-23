@@ -1,56 +1,74 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import type { Session, User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { insforge } from '@/lib/insforge'
+
+interface InsForgeUser {
+    id: string
+    email: string
+    emailVerified: boolean
+    providers: string[]
+    createdAt: string
+    updatedAt: string
+    profile?: { name?: string; avatar_url?: string }
+    metadata?: Record<string, unknown>
+}
+
+interface InsForgeSession {
+    accessToken: string
+    user: InsForgeUser
+    expiresAt?: Date
+}
 
 interface AuthContextValue {
-    session: Session | null
-    user: User | null
+    session: InsForgeSession | null
+    user: InsForgeUser | null
     loading: boolean
-    signIn: (email: string) => Promise<{ error: Error | null }>
+    signIn: (email: string, password: string) => Promise<{ error: Error | null }>
+    signUp: (email: string, password: string) => Promise<{ error: Error | null }>
     signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [session, setSession] = useState<Session | null>(null)
-    const [user, setUser] = useState<User | null>(null)
+    const [session, setSession] = useState<InsForgeSession | null>(null)
+    const [user, setUser] = useState<InsForgeUser | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            setSession(session)
-            setUser(session?.user ?? null)
+        insforge.auth.getCurrentSession().then(({ data }) => {
+            const s = data?.session ?? null
+            setSession(s as InsForgeSession | null)
+            setUser((s?.user as InsForgeUser) ?? null)
             setLoading(false)
         })
-
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
-            setSession(session)
-            setUser(session?.user ?? null)
-            setLoading(false)
-        })
-
-        return () => subscription.unsubscribe()
     }, [])
 
-    const signIn = async (email: string) => {
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: `${window.location.origin}/dashboard`,
-            },
-        })
-        return { error }
+    const signIn = async (email: string, password: string) => {
+        const { data, error } = await insforge.auth.signInWithPassword({ email, password })
+        if (data?.user) {
+            setSession(data as unknown as InsForgeSession)
+            setUser(data.user as unknown as InsForgeUser)
+        }
+        return { error: error as Error | null }
+    }
+
+    const signUp = async (email: string, password: string) => {
+        const { data, error } = await insforge.auth.signUp({ email, password })
+        if (data?.user && data.accessToken) {
+            setSession(data as unknown as InsForgeSession)
+            setUser(data.user as unknown as InsForgeUser)
+        }
+        return { error: error as Error | null }
     }
 
     const signOut = async () => {
-        await supabase.auth.signOut()
+        await insforge.auth.signOut()
+        setSession(null)
+        setUser(null)
     }
 
     return (
-        <AuthContext.Provider value={{ session, user, loading, signIn, signOut }}>
+        <AuthContext.Provider value={{ session, user, loading, signIn, signUp, signOut }}>
             {children}
         </AuthContext.Provider>
     )
