@@ -1,14 +1,13 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
 import { createClient } from "@insforge/sdk";
-import OpenAI from "openai";
-import { fetchRagContext, formatRagPromptSection } from "./lib/rag-context";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const insforge = createClient({
     baseUrl: process.env.INSFORGE_BASE_URL!,
     anonKey: process.env.INSFORGE_API_KEY!
 });
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 const RAPID_TEMPLATES = [
     "breaking-news-response",
@@ -76,14 +75,6 @@ export const generateRapidDraft = task({
             ? sourceUrls.map((url) => `- Source: ${url}`).join("\n")
             : "No specific sources provided. Write based on the topic description.";
 
-        // 3.5. Fetch RAG context
-        const ragQueryText = `${topic} ${brandKit.kit_name} ${brandKit.brand_summary || ""} urgent rapid response`;
-        const ragContext = await fetchRagContext(userId, ragQueryText);
-        logger.info("RAG context loaded for rapid draft", {
-            similarEmails: ragContext.similarEmails.length,
-            htmlFormats: ragContext.htmlFormats.length,
-        });
-
         // 4. Generate the draft
         const systemPrompt = `You are an expert rapid-response fundraising email writer. Write URGENT emails that capitalize on breaking news moments.
 
@@ -98,7 +89,6 @@ URGENCY: ${urgency}
 
 SOURCES:
 ${sourcesContext}
-${formatRagPromptSection(ragContext)}
 CRITICAL RULES:
 1. Keep it SHORT: 100-200 words maximum
 2. Lead with the news hook — NO preamble
@@ -138,22 +128,22 @@ IMPORTANT for editor_blocks:
 - Valid categories: header, content, donation, cta, ps, footer
 - body_html should be the concatenation of all editor_blocks HTML`;
 
-        const response = await openai.chat.completions.create({
-            model: "gpt-5.2-chat-latest",
-            messages: [
-                { role: "system", content: systemPrompt },
-                {
-                    role: "user",
-                    content: `Write a rapid response ${template} email about: ${topic}. Return only valid JSON.`,
-                },
-            ],
-            temperature: 0.6,
-            max_tokens: 1500,
-            response_format: { type: "json_object" },
+        const model = genAI.getGenerativeModel({
+            model: "gemini-3.1-flash-lite-preview",
+            systemInstruction: systemPrompt,
+            generationConfig: {
+                responseMimeType: "application/json",
+                temperature: 0.6,
+                maxOutputTokens: 3000,
+            },
         });
 
-        const content = response.choices[0]?.message?.content;
-        if (!content) throw new Error("OpenAI returned empty response");
+        const result = await model.generateContent(
+            `Write a rapid response ${template} email about: ${topic}. Return only valid JSON.`
+        );
+
+        const content = result.response.text();
+        if (!content) throw new Error("Gemini returned empty response");
 
         const draft = JSON.parse(content);
 
@@ -178,7 +168,7 @@ IMPORTANT for editor_blocks:
                 body_text: draft.body_text,
                 alt_subject_lines: draft.alt_subject_lines,
                 status: "pending_review",
-                ai_model: "gpt-5.2-chat-latest",
+                ai_model: "gemini-3.1-flash-lite-preview",
                 editor_blocks: draft.editor_blocks ? draft.editor_blocks.map((b: any, i: number) => ({
                     id: `block-rapid-${Date.now()}-${i}`,
                     type: "module" as const,

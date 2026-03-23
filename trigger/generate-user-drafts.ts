@@ -1,6 +1,6 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
 import { createClient } from "@insforge/sdk";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ── Clients ──
 const insforge = createClient({
@@ -8,7 +8,7 @@ const insforge = createClient({
     anonKey: process.env.INSFORGE_API_KEY!
 });
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 // ── Email template types ──
 const EMAIL_TEMPLATES = [
@@ -154,7 +154,7 @@ export const generateUserDrafts = task({
                         body_text: draft.body_text,
                         alt_subject_lines: draft.alt_subject_lines,
                         status: "pending_review",
-                        ai_model: "gpt-5.4-nano",
+                        ai_model: "gemini-3.1-flash-lite-preview",
                         research_topic_ids: topicsForThisDraft.map((t) => t.id),
                         editor_blocks: draft.editor_blocks ? draft.editor_blocks.map((b, i) => ({
                             id: `block-gen-${Date.now()}-${i}`,
@@ -303,22 +303,22 @@ IMPORTANT for editor_blocks:
 - Include at minimum: header + content + cta + footer blocks
 - The body_html should be the concatenation of all editor_blocks HTML`;
 
-    const response = await openai.chat.completions.create({
-        model: "gpt-5.4-nano",
-        messages: [
-            { role: "system", content: systemPrompt },
-            {
-                role: "user",
-                content: `Write a ${template} style fundraising email for ${brandKit.kit_name}. Return only valid JSON.`,
-            },
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-        response_format: { type: "json_object" },
+    const model = genAI.getGenerativeModel({
+        model: "gemini-3.1-flash-lite-preview",
+        systemInstruction: systemPrompt,
+        generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.7,
+            maxOutputTokens: 4000,
+        },
     });
 
-    const content = response.choices[0]?.message?.content;
-    if (!content) throw new Error("OpenAI returned empty response");
+    const result = await model.generateContent(
+        `Write a ${template} style fundraising email for ${brandKit.kit_name}. Return only valid JSON.`
+    );
+
+    const content = result.response.text();
+    if (!content) throw new Error("Gemini returned empty response");
 
     const parsed = JSON.parse(content) as GeneratedDraft;
     parsed.template_used = template;
