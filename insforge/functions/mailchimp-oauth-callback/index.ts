@@ -5,8 +5,8 @@ export default async function (req: Request): Promise<Response> {
     const code = reqUrl.searchParams.get('code')
     const state = reqUrl.searchParams.get('state')
 
-    const appUrl = Deno.env.get('APP_URL') || Deno.env.get('INSFORGE_BASE_URL') || ''
-    const settingsUrl = `${appUrl}/dashboard/settings`
+    const appUrl = Deno.env.get('APP_URL') || ''
+    const settingsUrl = `${appUrl}/dashboard/settings?section=integrations`
 
     if (!code) {
         return Response.redirect(`${settingsUrl}?error=oauth_failed`, 302)

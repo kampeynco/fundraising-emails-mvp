@@ -120,6 +120,16 @@ export function DashboardLayout() {
     const isSettings = location.pathname.startsWith('/dashboard/settings')
     const isResearch = location.pathname.startsWith('/dashboard/research')
 
+    // Auto-select settings section from URL param (e.g. after OAuth redirect)
+    useEffect(() => {
+        if (!isSettings) return
+        const params = new URLSearchParams(location.search)
+        const section = params.get('section')
+        if (section === 'integrations' || section === 'billing' || section === 'general') {
+            setActiveSettingsSection(section)
+        }
+    }, [location.search, isSettings])
+
     // Shared draft state — fetched once, passed to all routes via outlet context
     const [drafts, setDrafts] = useState<Draft[]>([])
     const [draftsLoading, setDraftsLoading] = useState(true)

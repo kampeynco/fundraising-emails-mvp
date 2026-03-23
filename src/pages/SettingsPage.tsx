@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useOutletContext } from 'react-router-dom'
+import { useOutletContext, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { Tick01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
@@ -261,9 +261,11 @@ const INTEGRATIONS: Integration[] = [
 
 function IntegrationsSection() {
     const { user } = useAuthContext()
+    const [searchParams, setSearchParams] = useSearchParams()
     const [connectedProviders, setConnectedProviders] = useState<Record<string, { account_name?: string; list_name?: string }>>({})
     const [connecting, setConnecting] = useState<string | null>(null)
     const [connectError, setConnectError] = useState<string | null>(null)
+    const [connectSuccess, setConnectSuccess] = useState<string | null>(null)
     const [apiKeyDialogProvider, setApiKeyDialogProvider] = useState<string | null>(null)
     const [apiKeyInput, setApiKeyInput] = useState('')
     const [accountUrlInput, setAccountUrlInput] = useState('')
@@ -297,6 +299,28 @@ function IntegrationsSection() {
     useEffect(() => {
         fetchIntegrations()
     }, [fetchIntegrations])
+
+    // Handle OAuth redirect params (?connected=mailchimp or ?error=...)
+    useEffect(() => {
+        const connected = searchParams.get('connected')
+        const error = searchParams.get('error')
+        if (connected) {
+            setConnectSuccess(`${connected.charAt(0).toUpperCase() + connected.slice(1)} connected successfully!`)
+            fetchIntegrations()
+            setSearchParams({}, { replace: true })
+        } else if (error) {
+            const messages: Record<string, string> = {
+                oauth_failed: 'OAuth authorization was cancelled.',
+                not_configured: 'Integration not configured. Contact support.',
+                invalid_state: 'Session expired. Please try again.',
+                token_exchange_failed: 'Failed to exchange authorization code. Please try again.',
+                auth_failed: 'Authentication failed. Please sign out and back in.',
+                callback_failed: 'Connection failed. Please try again.',
+            }
+            setConnectError(messages[error] || `Connection failed: ${error}`)
+            setSearchParams({}, { replace: true })
+        }
+    }, [searchParams, fetchIntegrations, setSearchParams])
 
     const handleConnect = async (integration: Integration) => {
         if (integration.authType === 'none') return
@@ -482,6 +506,9 @@ function IntegrationsSection() {
                 <p className="text-xs text-amber-400/60">
                     Only one platform can be connected at a time. Disconnect your current platform to switch.
                 </p>
+            )}
+            {connectSuccess && (
+                <p className="text-xs text-emerald-400">{connectSuccess}</p>
             )}
             {connectError && (
                 <p className="text-xs text-red-400">{connectError}</p>
