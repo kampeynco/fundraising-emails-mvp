@@ -50,7 +50,8 @@ export default async function (req: Request): Promise<Response> {
         if (!tokenRes.ok) {
             const body = await tokenRes.text()
             console.error('Mailchimp token exchange HTTP error', tokenRes.status, body)
-            return htmlRedirect(`${completeUrl}?error=mc_token_http_error`)
+            // Include status so we can distinguish redirect_uri mismatch (400) vs bad credentials (401)
+            return htmlRedirect(`${completeUrl}?error=mc_token_http_${tokenRes.status}`)
         }
 
         const tokenData = await tokenRes.json()

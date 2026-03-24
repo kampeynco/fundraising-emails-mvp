@@ -358,6 +358,9 @@ function IntegrationsSection() {
             callback_failed: 'Connection failed. Please try again.',
             // Mailchimp-specific diagnostic codes
             mc_token_http_error: 'Mailchimp: token exchange HTTP error. Check client credentials.',
+            mc_token_http_400: 'Mailchimp: token rejected (redirect URI mismatch or expired code). Check MAILCHIMP_REDIRECT_URI secret.',
+            mc_token_http_401: 'Mailchimp: invalid client credentials. Check MAILCHIMP_CLIENT_ID / MAILCHIMP_CLIENT_SECRET.',
+            mc_token_http_500: 'Mailchimp server error during token exchange. Please try again.',
             mc_token_missing: 'Mailchimp: token exchange returned no access token.',
             mc_metadata_error: 'Mailchimp: could not fetch account metadata.',
             mc_no_datacenter: 'Mailchimp: account has no data center assigned.',
