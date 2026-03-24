@@ -13,7 +13,6 @@ import {
     Clock01Icon,
     Comment01Icon,
     FlashIcon,
-    Mail01Icon,
     MoreHorizontalIcon,
     PencilEdit01Icon,
     ViewIcon,
@@ -159,9 +158,22 @@ export default function DraftsPage() {
                 <div className="sticky top-0 z-10 border-b border-white/[0.06] bg-[#111827]/95 px-8 py-5 backdrop-blur-sm">
                     <div className="flex items-center justify-between">
                         <div>
-                            <h1 className="text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
-                                Email Drafts
-                            </h1>
+                            <div className="flex items-center gap-2.5">
+                                <h1 className="text-xl font-semibold text-white" style={{ fontFamily: '"Playfair Display", Georgia, serif' }}>
+                                    Email Drafts
+                                </h1>
+                                <div className="group relative">
+                                    <span className="inline-flex cursor-default items-center gap-1.5 rounded-full border border-brand/25 bg-brand/10 px-2.5 py-0.5 text-[11px] font-medium text-brand/80 transition-colors group-hover:border-brand/40 group-hover:bg-brand/15 group-hover:text-brand">
+                                        ✦ The {dropDay} Drop
+                                    </span>
+                                    <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-lg border border-white/[0.08] bg-[#0f1724] px-3 py-2.5 opacity-0 shadow-xl transition-all duration-150 group-hover:opacity-100">
+                                        <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rotate-45 rounded-sm border-l border-t border-white/[0.08] bg-[#0f1724]" />
+                                        <p className="text-xs leading-relaxed text-white/50">
+                                            New drafts are generated every <span className="font-medium text-white/70">{dropDay}</span> at 6:00 AM CT based on your subscription tier.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                             <p className="mt-1 text-sm text-white/40">
                                 {pendingCount > 0
                                     ? `${pendingCount} draft${pendingCount > 1 ? 's' : ''} awaiting your review`
@@ -313,20 +325,6 @@ export default function DraftsPage() {
                     })}
                 </div>
 
-                {/* ── Drop Day Info ── */}
-                <div className="mx-8 mb-8 rounded-xl border border-white/[0.06] bg-gradient-to-r from-brand/5 to-transparent p-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand/10">
-                            <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 text-brand" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-white/80">The {dropDay} Drop</p>
-                            <p className="text-xs text-white/30">
-                                New drafts are generated every {dropDay} at 6:00 AM CT based on your subscription tier.
-                            </p>
-                        </div>
-                    </div>
-                </div>
             </div>
 
             <NewDraftDialog open={showNewDraft} onOpenChange={setShowNewDraft} />

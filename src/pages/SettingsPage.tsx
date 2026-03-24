@@ -393,6 +393,17 @@ function IntegrationsSection() {
                     // Clear any stale result before starting
                     localStorage.removeItem('oauth_result')
 
+                    // Declare bc and closedTimer before cleanup so cleanup can reference them
+                    let bc: BroadcastChannel | null = null
+                    let closedTimer: ReturnType<typeof setInterval>
+
+                    const cleanup = () => {
+                        window.removeEventListener('storage', handleStorage)
+                        bc?.close()
+                        clearInterval(closedTimer)
+                        localStorage.removeItem('oauth_result')
+                    }
+
                     const handleOAuthResult = (result: { type: string; provider?: string; error?: string }) => {
                         cleanup()
                         if (result.error) {
@@ -416,21 +427,12 @@ function IntegrationsSection() {
                     window.addEventListener('storage', handleStorage)
 
                     // Secondary: BroadcastChannel (for same-tab scenarios and fast browsers)
-                    let bc: BroadcastChannel | null = null
                     if (typeof BroadcastChannel !== 'undefined') {
                         bc = new BroadcastChannel('oauth_complete')
                         bc.onmessage = (event) => handleOAuthResult(event.data)
                     }
 
-                    const cleanup = () => {
-                        window.removeEventListener('storage', handleStorage)
-                        bc?.close()
-                        clearInterval(closedTimer)
-                        localStorage.removeItem('oauth_result')
-                    }
-
                     // Clean up if popup is closed without completing
-                    let closedTimer: ReturnType<typeof setInterval>
                     closedTimer = setInterval(() => {
                         if (popup.closed) cleanup()
                     }, 1000)
