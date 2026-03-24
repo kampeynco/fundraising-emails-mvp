@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
@@ -29,6 +29,7 @@ import {
     TextAlignLeftIcon,
     Mic01Icon,
     AiSearch02Icon,
+    Calendar03Icon,
 } from '@hugeicons/core-free-icons'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
@@ -37,6 +38,7 @@ const mainNavItems = [
     { icon: Home07Icon, label: 'Overview', href: '/dashboard' },
     { icon: AiSearch02Icon, label: 'Research', href: '/dashboard/research' },
     { icon: LicenseDraftIcon, label: 'Drafts', href: '/dashboard/drafts' },
+    { icon: SentIcon, label: 'Sent', href: '/dashboard/sent' },
     { icon: SwatchIcon, label: 'Brand Kit', href: '/dashboard/brand-kit' },
     { icon: Settings02Icon, label: 'Settings', href: '/dashboard/settings' },
 ]
@@ -119,6 +121,8 @@ export function DashboardLayout() {
     const isBrandKit = location.pathname.startsWith('/dashboard/brand-kit')
     const isSettings = location.pathname.startsWith('/dashboard/settings')
     const isResearch = location.pathname.startsWith('/dashboard/research')
+    const isSent = location.pathname.startsWith('/dashboard/sent')
+    const [activeSentMonth, setActiveSentMonth] = useState<string | null>(null)
 
     // Auto-select settings section from URL param (e.g. after OAuth redirect)
     useEffect(() => {
@@ -147,6 +151,57 @@ export function DashboardLayout() {
     }, [user])
 
     useEffect(() => { fetchDrafts() }, [fetchDrafts])
+
+    // Compute month/year folder structure for Sent page inner sidebar
+    const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December']
+
+    const sentSections = useMemo(() => {
+        const sentDrafts = drafts.filter(d => d.status === 'sent')
+        if (!sentDrafts.length) return []
+
+        // Find earliest sent draft — use updated_at (when status changed to 'sent')
+        const earliest = sentDrafts.reduce((min, d) =>
+            d.updated_at < min ? d.updated_at : min, sentDrafts[0].updated_at)
+
+        const start = new Date(earliest)
+        const now = new Date()
+
+        // Build all months from start → now
+        const months: { year: number; month: number }[] = []
+        const cur = new Date(start.getFullYear(), start.getMonth(), 1)
+        while (cur <= new Date(now.getFullYear(), now.getMonth(), 1)) {
+            months.push({ year: cur.getFullYear(), month: cur.getMonth() })
+            cur.setMonth(cur.getMonth() + 1)
+        }
+
+        // Group by year, newest first
+        const byYear = months.reduce((acc, { year, month }) => {
+            if (!acc[year]) acc[year] = []
+            acc[year].push(month)
+            return acc
+        }, {} as Record<number, number[]>)
+
+        return Object.entries(byYear)
+            .sort(([a], [b]) => Number(b) - Number(a))
+            .map(([year, monthNums]) => ({
+                label: year,
+                items: monthNums
+                    .sort((a, b) => b - a)
+                    .map(m => ({
+                        label: MONTH_NAMES[m],
+                        sectionId: `${year}-${String(m + 1).padStart(2, '0')}`,
+                    })),
+            }))
+    }, [drafts])
+
+    // Auto-select most recent month when navigating to Sent
+    useEffect(() => {
+        if (!isSent || !sentSections.length) return
+        if (!activeSentMonth) {
+            setActiveSentMonth(sentSections[0].items[0].sectionId)
+        }
+    }, [isSent, sentSections, activeSentMonth])
 
     // Get user initial for avatar
     const userInitial = user?.email?.[0]?.toUpperCase() || 'U'
@@ -228,13 +283,13 @@ export function DashboardLayout() {
                 </div>
             </aside>
 
-            {/* ── Inner sidebar (Brand Kit or Settings) ── */}
-            {(isBrandKit || isSettings || isResearch) && (
+            {/* ── Inner sidebar (Brand Kit, Settings, Research, or Sent) ── */}
+            {(isBrandKit || isSettings || isResearch || isSent) && (
                 <aside className="flex w-56 flex-col border-r border-white/[0.06] bg-[#142d48]">
                     {/* Title */}
                     <div className="px-5 py-5">
                         <h2 className="flex items-center gap-2 text-sm font-semibold tracking-wide text-white">
-                            {isSettings ? 'Settings' : isResearch ? 'Research' : 'Brand Kit'}
+                            {isSettings ? 'Settings' : isResearch ? 'Research' : isSent ? 'Sent' : 'Brand Kit'}
                             {isResearch && (
                                 <span className="rounded-full bg-brand/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-brand">Beta</span>
                             )}
@@ -243,51 +298,80 @@ export function DashboardLayout() {
 
                     {/* Navigation sections */}
                     <nav className="flex-1 space-y-5 px-3">
-                        {(isSettings ? settingsSections : isResearch ? researchSections : brandKitSections).map((section, sIdx) => (
-                            <div key={sIdx}>
-                                {section.label && (
-                                    <p className="mb-2 px-2 text-[11px] font-medium uppercase tracking-wider text-white/40">
-                                        {section.label}
-                                    </p>
-                                )}
-                                <div className="space-y-0.5">
-                                    {section.items.map((item) => {
-                                        const currentActive = isSettings ? activeSettingsSection : isResearch ? activeResearchSection : activeSection
-                                        const isItemActive = currentActive === item.sectionId
+                        {isSent ? (
+                            sentSections.length === 0 ? (
+                                <p className="px-2 text-xs text-white/30">No sent emails yet</p>
+                            ) : (
+                                sentSections.map((section, sIdx) => (
+                                    <div key={sIdx}>
+                                        <p className="mb-2 px-2 text-[11px] font-medium uppercase tracking-wider text-white/40">
+                                            {section.label}
+                                        </p>
+                                        <div className="space-y-0.5">
+                                            {section.items.map((item) => (
+                                                <button
+                                                    key={item.sectionId}
+                                                    onClick={() => setActiveSentMonth(item.sectionId)}
+                                                    className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${activeSentMonth === item.sectionId
+                                                        ? 'bg-brand text-white'
+                                                        : 'text-white/60 hover:bg-white/8 hover:text-white/90'
+                                                        }`}
+                                                >
+                                                    <HugeiconsIcon icon={Calendar03Icon} size={16} />
+                                                    {item.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))
+                            )
+                        ) : (
+                            (isSettings ? settingsSections : isResearch ? researchSections : brandKitSections).map((section, sIdx) => (
+                                <div key={sIdx}>
+                                    {section.label && (
+                                        <p className="mb-2 px-2 text-[11px] font-medium uppercase tracking-wider text-white/40">
+                                            {section.label}
+                                        </p>
+                                    )}
+                                    <div className="space-y-0.5">
+                                        {section.items.map((item) => {
+                                            const currentActive = isSettings ? activeSettingsSection : isResearch ? activeResearchSection : activeSection
+                                            const isItemActive = currentActive === item.sectionId
 
-                                        return (
-                                            <button
-                                                key={item.sectionId}
-                                                onClick={() => {
-                                                    if (isSettings) {
-                                                        setActiveSettingsSection(item.sectionId)
-                                                    } else if (isResearch) {
-                                                        setActiveResearchSection(item.sectionId)
-                                                    } else {
-                                                        setActiveSection(item.sectionId)
-                                                        document.getElementById(item.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                                                    }
-                                                }}
-                                                className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isItemActive
-                                                    ? 'bg-brand text-white'
-                                                    : 'text-white/60 hover:bg-white/8 hover:text-white/90'
-                                                    }`}
-                                            >
-                                                <HugeiconsIcon icon={item.icon} size={16} />
-                                                {item.label}
-                                            </button>
-                                        )
-                                    })}
+                                            return (
+                                                <button
+                                                    key={item.sectionId}
+                                                    onClick={() => {
+                                                        if (isSettings) {
+                                                            setActiveSettingsSection(item.sectionId)
+                                                        } else if (isResearch) {
+                                                            setActiveResearchSection(item.sectionId)
+                                                        } else {
+                                                            setActiveSection(item.sectionId)
+                                                            document.getElementById(item.sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                                                        }
+                                                    }}
+                                                    className={`flex w-full cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${isItemActive
+                                                        ? 'bg-brand text-white'
+                                                        : 'text-white/60 hover:bg-white/8 hover:text-white/90'
+                                                        }`}
+                                                >
+                                                    <HugeiconsIcon icon={item.icon} size={16} />
+                                                    {item.label}
+                                                </button>
+                                            )
+                                        })}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))
+                        )}
                     </nav>
                 </aside>
             )}
 
             {/* ── Main content area ── */}
             <main className="flex-1 overflow-hidden">
-                <Outlet context={{ activeSettingsSection, activeResearchSection, drafts, setDrafts, draftsLoading, refetchDrafts: fetchDrafts }} />
+                <Outlet context={{ activeSettingsSection, activeResearchSection, activeSentMonth, setActiveSentMonth, drafts, setDrafts, draftsLoading, refetchDrafts: fetchDrafts }} />
             </main>
         </div>
     )

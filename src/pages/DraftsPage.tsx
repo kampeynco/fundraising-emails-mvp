@@ -27,7 +27,6 @@ const STATUS_ORDER: DraftStatus[] = [
     'revision_requested',
     'approved',
     'scheduled',
-    'sent',
 ]
 
 interface DraftsContext {
@@ -40,7 +39,7 @@ export default function DraftsPage() {
     const { user, loading: authLoading } = useAuthContext()
     const { drafts, setDrafts, draftsLoading } = useOutletContext<DraftsContext>()
     const [searchParams, setSearchParams] = useSearchParams()
-    const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set(['sent']))
+    const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set())
     const [showNewDraft, setShowNewDraft] = useState(false)
     const [dropDay, setDropDay] = useState('Thursday')
     const [previewDraft, setPreviewDraft] = useState<Draft | null>(null)
