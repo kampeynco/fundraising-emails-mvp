@@ -53,7 +53,7 @@ function GeneralSection() {
             if (prev.includes(day)) {
                 return prev.filter(d => d !== day)
             }
-            if (prev.length >= maxDays) return prev
+            if (prev.length >= maxDays) return [day]
             return [...prev, day]
         })
     }
