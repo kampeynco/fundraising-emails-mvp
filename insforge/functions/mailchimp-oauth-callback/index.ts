@@ -48,12 +48,18 @@ export default async function (req: Request): Promise<Response> {
         })
 
         if (!tokenRes.ok) {
-            console.error('Mailchimp token exchange failed:', await tokenRes.text())
-            return htmlRedirect(`${completeUrl}?error=token_exchange_failed`)
+            const body = await tokenRes.text()
+            console.error('Mailchimp token exchange HTTP error', tokenRes.status, body)
+            return htmlRedirect(`${completeUrl}?error=mc_token_http_error`)
         }
 
         const tokenData = await tokenRes.json()
         const accessToken = tokenData.access_token
+
+        if (!accessToken) {
+            console.error('Mailchimp token exchange: no access_token in response', JSON.stringify(tokenData))
+            return htmlRedirect(`${completeUrl}?error=mc_token_missing`)
+        }
 
         // Fetch server prefix (data center, e.g. "us21")
         const metaRes = await fetch('https://login.mailchimp.com/oauth2/metadata', {
@@ -61,8 +67,9 @@ export default async function (req: Request): Promise<Response> {
         })
 
         if (!metaRes.ok) {
-            console.error('Mailchimp metadata fetch failed:', metaRes.status, await metaRes.text())
-            return htmlRedirect(`${completeUrl}?error=callback_failed`)
+            const body = await metaRes.text()
+            console.error('Mailchimp metadata fetch failed', metaRes.status, body)
+            return htmlRedirect(`${completeUrl}?error=mc_metadata_error`)
         }
 
         const metaData = await metaRes.json()
@@ -70,7 +77,7 @@ export default async function (req: Request): Promise<Response> {
 
         if (!serverPrefix) {
             console.error('Mailchimp metadata missing dc field:', JSON.stringify(metaData))
-            return htmlRedirect(`${completeUrl}?error=callback_failed`)
+            return htmlRedirect(`${completeUrl}?error=mc_no_datacenter`)
         }
 
         // Fetch first audience list (non-fatal — proceed without it if it fails)
@@ -129,7 +136,7 @@ export default async function (req: Request): Promise<Response> {
 
         if (upsertError) {
             console.error('Mailchimp integration upsert failed:', upsertError)
-            return htmlRedirect(`${completeUrl}?error=callback_failed`)
+            return htmlRedirect(`${completeUrl}?error=mc_db_write_failed`)
         }
 
         return htmlRedirect(`${completeUrl}?provider=mailchimp`)

@@ -356,6 +356,12 @@ function IntegrationsSection() {
             token_exchange_failed: 'Failed to exchange authorization code. Please try again.',
             auth_failed: 'Authentication failed. Please sign out and back in.',
             callback_failed: 'Connection failed. Please try again.',
+            // Mailchimp-specific diagnostic codes
+            mc_token_http_error: 'Mailchimp: token exchange HTTP error. Check client credentials.',
+            mc_token_missing: 'Mailchimp: token exchange returned no access token.',
+            mc_metadata_error: 'Mailchimp: could not fetch account metadata.',
+            mc_no_datacenter: 'Mailchimp: account has no data center assigned.',
+            mc_db_write_failed: 'Mailchimp: connected but failed to save. Please try again.',
         }
 
         try {
@@ -381,26 +387,44 @@ function IntegrationsSection() {
 
                 if (popup) {
                     setConnecting(null)
-                    let closedTimer: ReturnType<typeof setInterval>
+
+                    const handleOAuthResult = (data: { type: string; provider?: string; error?: string }) => {
+                        if (data.error) {
+                            setConnectError(oauthErrorMessages[data.error] || `Connection failed: ${data.error}`)
+                        } else if (data.provider) {
+                            const name = data.provider.charAt(0).toUpperCase() + data.provider.slice(1)
+                            setConnectSuccess(`${name} connected successfully!`)
+                            fetchIntegrations()
+                        }
+                    }
+
+                    // Primary: BroadcastChannel (works even when window.opener is null after cross-origin nav)
+                    let bc: BroadcastChannel | null = null
+                    if (typeof BroadcastChannel !== 'undefined') {
+                        bc = new BroadcastChannel('oauth_complete')
+                        bc.onmessage = (event) => {
+                            bc?.close()
+                            clearInterval(closedTimer)
+                            handleOAuthResult(event.data)
+                        }
+                    }
+
+                    // Fallback: postMessage (for browsers without BroadcastChannel)
                     const handleMessage = (event: MessageEvent) => {
                         if (event.origin !== window.location.origin) return
                         if (event.data?.type !== 'oauth_complete') return
                         window.removeEventListener('message', handleMessage)
                         clearInterval(closedTimer)
-
-                        if (event.data.error) {
-                            setConnectError(oauthErrorMessages[event.data.error] || `Connection failed: ${event.data.error}`)
-                        } else if (event.data.provider) {
-                            const name = event.data.provider.charAt(0).toUpperCase() + event.data.provider.slice(1)
-                            setConnectSuccess(`${name} connected successfully!`)
-                            fetchIntegrations()
-                        }
+                        handleOAuthResult(event.data)
                     }
                     window.addEventListener('message', handleMessage)
-                    // Clean up listener if the user closes the popup without completing
+
+                    // Clean up if popup is closed without completing
+                    let closedTimer: ReturnType<typeof setInterval>
                     closedTimer = setInterval(() => {
                         if (popup.closed) {
                             clearInterval(closedTimer)
+                            bc?.close()
                             window.removeEventListener('message', handleMessage)
                         }
                     }, 1000)
