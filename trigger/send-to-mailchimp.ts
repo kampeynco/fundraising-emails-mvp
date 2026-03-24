@@ -118,9 +118,9 @@ export const sendToMailchimp = task({
             );
         }
 
-        if (draft.status !== "approved") {
+        if (draft.status !== "approved" && draft.status !== "scheduled") {
             throw new AbortTaskRunError(
-                `Draft status is "${draft.status}", expected "approved"`
+                `Draft status is "${draft.status}", expected "approved" or "scheduled"`
             );
         }
 
