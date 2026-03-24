@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react'
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuthContext } from '@/providers/AuthProvider'
 import { insforge } from '@/lib/insforge'
@@ -206,6 +206,20 @@ export function DashboardLayout() {
     // Get user initial for avatar
     const userInitial = user?.email?.[0]?.toUpperCase() || 'U'
 
+    const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
+    const avatarRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        if (!avatarMenuOpen) return
+        const handler = (e: MouseEvent) => {
+            if (avatarRef.current && !avatarRef.current.contains(e.target as Node)) {
+                setAvatarMenuOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handler)
+        return () => document.removeEventListener('mousedown', handler)
+    }, [avatarMenuOpen])
+
     return (
         <div className="flex h-screen overflow-hidden bg-[#111827]">
             {/* ── Left icon sidebar ── */}
@@ -260,26 +274,27 @@ export function DashboardLayout() {
                     })}
                 </nav>
 
-                {/* Bottom: user avatar + sign out */}
-                <div className="mt-auto flex flex-col items-center gap-2">
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <button
-                                onClick={signOut}
-                                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg text-white/40 transition-colors hover:bg-white/8 hover:text-white/70"
-                            >
-                                <HugeiconsIcon icon={Logout03Icon} size={20} />
-                            </button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right" sideOffset={12}>Sign Out</TooltipContent>
-                    </Tooltip>
-
-                    <div
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-brand/20 text-xs font-semibold text-brand"
+                {/* Bottom: user avatar with dropdown */}
+                <div className="relative mt-auto" ref={avatarRef}>
+                    <button
+                        onClick={() => setAvatarMenuOpen(v => !v)}
+                        className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-brand/20 text-xs font-semibold text-brand transition-colors hover:bg-brand/30"
                         title={user?.email || ''}
                     >
                         {userInitial}
-                    </div>
+                    </button>
+
+                    {avatarMenuOpen && (
+                        <div className="absolute bottom-0 left-full ml-2 w-40 overflow-hidden rounded-lg border border-white/10 bg-[#0f2137] shadow-xl">
+                            <button
+                                onClick={() => { setAvatarMenuOpen(false); signOut() }}
+                                className="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2.5 text-sm text-white/70 transition-colors hover:bg-white/8 hover:text-white"
+                            >
+                                <HugeiconsIcon icon={Logout03Icon} size={16} />
+                                Log out
+                            </button>
+                        </div>
+                    )}
                 </div>
             </aside>
 
