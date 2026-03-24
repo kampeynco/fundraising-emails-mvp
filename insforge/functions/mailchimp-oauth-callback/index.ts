@@ -1,5 +1,12 @@
 import { createClient } from 'npm:@insforge/sdk'
 
+function htmlRedirect(url: string): Response {
+    return new Response(
+        `<!DOCTYPE html><html><head><title>Redirecting...</title></head><body><script>window.location.replace(${JSON.stringify(url)});</script></body></html>`,
+        { status: 200, headers: { 'Content-Type': 'text/html' } }
+    )
+}
+
 export default async function (req: Request): Promise<Response> {
     const reqUrl = new URL(req.url)
     const code = reqUrl.searchParams.get('code')
@@ -9,7 +16,7 @@ export default async function (req: Request): Promise<Response> {
     const settingsUrl = `${appUrl}/dashboard/settings?section=integrations`
 
     if (!code) {
-        return Response.redirect(`${settingsUrl}&error=oauth_failed`, 302)
+        return htmlRedirect(`${settingsUrl}&error=oauth_failed`)
     }
 
     const clientId = Deno.env.get('MAILCHIMP_CLIENT_ID')
@@ -17,14 +24,14 @@ export default async function (req: Request): Promise<Response> {
     const redirectUri = Deno.env.get('MAILCHIMP_REDIRECT_URI')
 
     if (!clientId || !clientSecret || !redirectUri) {
-        return Response.redirect(`${settingsUrl}&error=not_configured`, 302)
+        return htmlRedirect(`${settingsUrl}&error=not_configured`)
     }
 
     try {
         // Decode state to recover the user's JWT
         const userToken = state ? atob(decodeURIComponent(state)) : null
         if (!userToken) {
-            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
+            return htmlRedirect(`${settingsUrl}&error=invalid_state`)
         }
 
         // Exchange authorization code for access token
@@ -42,7 +49,7 @@ export default async function (req: Request): Promise<Response> {
 
         if (!tokenRes.ok) {
             console.error('Mailchimp token exchange failed:', await tokenRes.text())
-            return Response.redirect(`${settingsUrl}&error=token_exchange_failed`, 302)
+            return htmlRedirect(`${settingsUrl}&error=token_exchange_failed`)
         }
 
         const tokenData = await tokenRes.json()
@@ -66,7 +73,7 @@ export default async function (req: Request): Promise<Response> {
         const jwtParts = userToken.split('.')
         if (jwtParts.length !== 3) {
             console.error('Invalid JWT structure in state')
-            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
+            return htmlRedirect(`${settingsUrl}&error=invalid_state`)
         }
         let userId: string | null = null
         try {
@@ -74,11 +81,11 @@ export default async function (req: Request): Promise<Response> {
             userId = payload.sub || null
         } catch {
             console.error('Failed to decode JWT payload')
-            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
+            return htmlRedirect(`${settingsUrl}&error=invalid_state`)
         }
         if (!userId) {
             console.error('No user id (sub) in JWT payload')
-            return Response.redirect(`${settingsUrl}&error=auth_failed`, 302)
+            return htmlRedirect(`${settingsUrl}&error=auth_failed`)
         }
 
         // Write integration using API_KEY (admin) — no RLS, direct write
@@ -106,12 +113,12 @@ export default async function (req: Request): Promise<Response> {
 
         if (upsertError) {
             console.error('Mailchimp integration upsert failed:', upsertError)
-            return Response.redirect(`${settingsUrl}&error=callback_failed`, 302)
+            return htmlRedirect(`${settingsUrl}&error=callback_failed`)
         }
 
-        return Response.redirect(`${settingsUrl}&connected=mailchimp`, 302)
+        return htmlRedirect(`${settingsUrl}&connected=mailchimp`)
     } catch (err) {
         console.error('Mailchimp OAuth callback error:', err)
-        return Response.redirect(`${settingsUrl}&error=callback_failed`, 302)
+        return htmlRedirect(`${settingsUrl}&error=callback_failed`)
     }
 }

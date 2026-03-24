@@ -41,7 +41,8 @@ function getNextDeliveryDates(
     // Start scanning from today
     let scanDate = new Date(now);
 
-    while (dates.length < count) {
+    const maxScanDate = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000);
+    while (dates.length < count && scanDate <= maxScanDate) {
         const dayOfWeek = scanDate.getDay();
 
         if (targetDays.includes(dayOfWeek)) {
