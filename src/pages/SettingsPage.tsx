@@ -390,46 +390,49 @@ function IntegrationsSection() {
 
                 if (popup) {
                     setConnecting(null)
+                    // Clear any stale result before starting
+                    localStorage.removeItem('oauth_result')
 
-                    const handleOAuthResult = (data: { type: string; provider?: string; error?: string }) => {
-                        if (data.error) {
-                            setConnectError(oauthErrorMessages[data.error] || `Connection failed: ${data.error}`)
-                        } else if (data.provider) {
-                            const name = data.provider.charAt(0).toUpperCase() + data.provider.slice(1)
+                    const handleOAuthResult = (result: { type: string; provider?: string; error?: string }) => {
+                        cleanup()
+                        if (result.error) {
+                            setConnectError(oauthErrorMessages[result.error] || `Connection failed: ${result.error}`)
+                        } else if (result.provider) {
+                            const name = result.provider.charAt(0).toUpperCase() + result.provider.slice(1)
                             setConnectSuccess(`${name} connected successfully!`)
                             fetchIntegrations()
                         }
                     }
 
-                    // Primary: BroadcastChannel (works even when window.opener is null after cross-origin nav)
+                    // Primary: storage event — fires in all other same-origin windows when localStorage changes
+                    // Works even when window.opener is null and window.close() is blocked
+                    const handleStorage = (event: StorageEvent) => {
+                        if (event.key !== 'oauth_result' || !event.newValue) return
+                        try {
+                            const result = JSON.parse(event.newValue)
+                            if (result.type === 'oauth_complete') handleOAuthResult(result)
+                        } catch { /* ignore malformed */ }
+                    }
+                    window.addEventListener('storage', handleStorage)
+
+                    // Secondary: BroadcastChannel (for same-tab scenarios and fast browsers)
                     let bc: BroadcastChannel | null = null
                     if (typeof BroadcastChannel !== 'undefined') {
                         bc = new BroadcastChannel('oauth_complete')
-                        bc.onmessage = (event) => {
-                            bc?.close()
-                            clearInterval(closedTimer)
-                            handleOAuthResult(event.data)
-                        }
+                        bc.onmessage = (event) => handleOAuthResult(event.data)
                     }
 
-                    // Fallback: postMessage (for browsers without BroadcastChannel)
-                    const handleMessage = (event: MessageEvent) => {
-                        if (event.origin !== window.location.origin) return
-                        if (event.data?.type !== 'oauth_complete') return
-                        window.removeEventListener('message', handleMessage)
+                    const cleanup = () => {
+                        window.removeEventListener('storage', handleStorage)
+                        bc?.close()
                         clearInterval(closedTimer)
-                        handleOAuthResult(event.data)
+                        localStorage.removeItem('oauth_result')
                     }
-                    window.addEventListener('message', handleMessage)
 
                     // Clean up if popup is closed without completing
                     let closedTimer: ReturnType<typeof setInterval>
                     closedTimer = setInterval(() => {
-                        if (popup.closed) {
-                            clearInterval(closedTimer)
-                            bc?.close()
-                            window.removeEventListener('message', handleMessage)
-                        }
+                        if (popup.closed) cleanup()
                     }, 1000)
                 } else {
                     // Popup blocked — fall back to main-window redirect
