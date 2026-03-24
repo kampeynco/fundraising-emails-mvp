@@ -62,21 +62,34 @@ export default async function (req: Request): Promise<Response> {
         const listsData = await listsRes.json()
         const firstList = listsData?.lists?.[0]
 
-        // Authenticate as the user and save integration
-        const client = createClient({
-            baseUrl: Deno.env.get('INSFORGE_INTERNAL_URL'),
-            edgeFunctionToken: userToken,
-        })
-
-        const { data: userData } = await client.auth.getCurrentUser()
-        if (!userData?.user?.id) {
-            console.error('getCurrentUser failed — token may be expired')
+        // Extract user_id directly from JWT payload (no server round-trip needed)
+        const jwtParts = userToken.split('.')
+        if (jwtParts.length !== 3) {
+            console.error('Invalid JWT structure in state')
+            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
+        }
+        let userId: string | null = null
+        try {
+            const payload = JSON.parse(atob(jwtParts[1].replace(/-/g, '+').replace(/_/g, '/')))
+            userId = payload.sub || null
+        } catch {
+            console.error('Failed to decode JWT payload')
+            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
+        }
+        if (!userId) {
+            console.error('No user id (sub) in JWT payload')
             return Response.redirect(`${settingsUrl}&error=auth_failed`, 302)
         }
 
+        // Write integration using API_KEY (admin) — no RLS, direct write
+        const client = createClient({
+            baseUrl: Deno.env.get('INSFORGE_BASE_URL'),
+            anonKey: Deno.env.get('API_KEY'),
+        })
+
         const { error: upsertError } = await client.database.from('email_integrations').upsert(
             {
-                user_id: userData.user.id,
+                user_id: userId,
                 provider: 'mailchimp',
                 access_token: accessToken,
                 server_prefix: serverPrefix,

@@ -53,20 +53,34 @@ export default async function (req: Request): Promise<Response> {
         const accountRes = await fetch(`https://api.hubspot.com/oauth/v1/access-tokens/${accessToken}`)
         const accountData = await accountRes.json()
 
-        // Authenticate as the user and save integration
-        const client = createClient({
-            baseUrl: Deno.env.get('INSFORGE_INTERNAL_URL'),
-            edgeFunctionToken: userToken,
-        })
-
-        const { data: userData } = await client.auth.getCurrentUser()
-        if (!userData?.user?.id) {
+        // Extract user_id directly from JWT payload (no server round-trip needed)
+        const jwtParts = userToken.split('.')
+        if (jwtParts.length !== 3) {
+            console.error('Invalid JWT structure in state')
+            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
+        }
+        let userId: string | null = null
+        try {
+            const payload = JSON.parse(atob(jwtParts[1].replace(/-/g, '+').replace(/_/g, '/')))
+            userId = payload.sub || null
+        } catch {
+            console.error('Failed to decode JWT payload')
+            return Response.redirect(`${settingsUrl}&error=invalid_state`, 302)
+        }
+        if (!userId) {
+            console.error('No user id (sub) in JWT payload')
             return Response.redirect(`${settingsUrl}&error=auth_failed`, 302)
         }
 
-        await client.database.from('email_integrations').upsert(
+        // Write integration using API_KEY (admin) — no RLS, direct write
+        const client = createClient({
+            baseUrl: Deno.env.get('INSFORGE_BASE_URL'),
+            anonKey: Deno.env.get('API_KEY'),
+        })
+
+        const { error: upsertError } = await client.database.from('email_integrations').upsert(
             {
-                user_id: userData.user.id,
+                user_id: userId,
                 provider: 'hubspot',
                 access_token: accessToken,
                 refresh_token: refreshToken,
@@ -78,6 +92,11 @@ export default async function (req: Request): Promise<Response> {
             },
             { onConflict: 'user_id,provider' }
         )
+
+        if (upsertError) {
+            console.error('HubSpot integration upsert failed:', upsertError)
+            return Response.redirect(`${settingsUrl}&error=callback_failed`, 302)
+        }
 
         return Response.redirect(`${settingsUrl}&connected=hubspot`, 302)
     } catch (err) {

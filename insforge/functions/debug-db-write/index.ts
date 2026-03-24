@@ -1,65 +1,82 @@
 import { createClient } from 'npm:@insforge/sdk'
 
 export default async function (req: Request): Promise<Response> {
-    const internalUrl = Deno.env.get('INSFORGE_INTERNAL_URL')
-    const baseUrl = Deno.env.get('INSFORGE_BASE_URL')
-    const anonKey = Deno.env.get('ANON_KEY')
+    const internalUrl = Deno.env.get('INSFORGE_INTERNAL_URL') || ''
+    const anonKey = Deno.env.get('ANON_KEY') || ''
+    const apiKey = Deno.env.get('API_KEY') || ''
 
-    // Test 1: getCurrentUser with edgeFunctionToken from Authorization header
     const authHeader = req.headers.get('Authorization')
-    const userToken = authHeader ? authHeader.replace('Bearer ', '') : null
+    const rawToken = authHeader ? authHeader.replace('Bearer ', '') : null
 
     const results: Record<string, unknown> = {
         internalUrl,
-        baseUrl,
         hasAnonKey: !!anonKey,
-        hasUserToken: !!userToken,
+        hasApiKey: !!apiKey,
+        hasRawToken: !!rawToken,
     }
 
-    // Test with internal URL + edgeFunctionToken
-    if (userToken) {
+    // Test 1: Decode JWT locally to get user_id
+    if (rawToken) {
         try {
-            const client = createClient({ baseUrl: internalUrl, edgeFunctionToken: userToken })
-            const { data: userData, error: authError } = await client.auth.getCurrentUser()
-            results.getCurrentUser_internal = {
-                userId: userData?.user?.id || null,
-                error: authError?.message || null,
-            }
-
-            if (userData?.user?.id) {
-                // Test upsert
-                const { error: upsertError } = await client.database.from('email_integrations').upsert(
-                    {
-                        user_id: userData.user.id,
-                        provider: '_debug_test_',
-                        access_token: 'debug_token',
-                        metadata: { test: true },
-                        connected_at: new Date().toISOString(),
-                    },
-                    { onConflict: 'user_id,provider' }
-                )
-                results.upsert_internal = { error: upsertError?.message || null, success: !upsertError }
-
-                // Clean up test row
-                await client.database.from('email_integrations').delete().eq('user_id', userData.user.id).eq('provider', '_debug_test_')
+            const parts = rawToken.split('.')
+            if (parts.length === 3) {
+                const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')))
+                results.jwtPayload = { sub: payload.sub, role: payload.role, exp: payload.exp }
             }
         } catch (e: unknown) {
-            results.internal_exception = e instanceof Error ? e.message : String(e)
+            results.jwtDecodeError = e instanceof Error ? e.message : String(e)
         }
     }
 
-    // Test with anonKey
-    if (anonKey) {
+    // Test 2: createClient with edgeFunctionToken + getCurrentUser
+    if (rawToken) {
         try {
-            const client = createClient({ baseUrl: internalUrl, anonKey })
-            const { data: userData, error: authError } = await client.auth.getCurrentUser()
-            results.getCurrentUser_anon = {
-                userId: userData?.user?.id || null,
-                error: authError?.message || null,
+            const client = createClient({ baseUrl: internalUrl, edgeFunctionToken: rawToken })
+            const { data, error } = await client.auth.getCurrentUser()
+            results.edgeFunctionToken_getCurrentUser = {
+                data: data ?? 'undefined',
+                error: error?.message ?? null,
             }
         } catch (e: unknown) {
-            results.anon_exception = e instanceof Error ? e.message : String(e)
+            results.edgeFunctionToken_exception = e instanceof Error ? e.message : String(e)
         }
+    }
+
+    // Test 3: createClient with anonKey (API_KEY value) + try a DB write
+    if (apiKey) {
+        try {
+            const client = createClient({ baseUrl: internalUrl, anonKey: apiKey })
+            const { error } = await client.database.from('email_integrations').insert([{
+                user_id: '00000000-0000-0000-0000-000000000001',
+                provider: '_debug_apikey_',
+                access_token: 'debug',
+                metadata: {},
+                connected_at: new Date().toISOString(),
+            }])
+            results.apiKey_insert = { error: error?.message ?? null, success: !error }
+            // Clean up
+            if (!error) {
+                await client.database.from('email_integrations').delete()
+                    .eq('user_id', '00000000-0000-0000-0000-000000000001')
+                    .eq('provider', '_debug_apikey_')
+            }
+        } catch (e: unknown) {
+            results.apiKey_exception = e instanceof Error ? e.message : String(e)
+        }
+    }
+
+    // Test 4: Raw PostgREST HTTP call with anonKey
+    try {
+        const resp = await fetch(`${internalUrl}/rest/v1/email_integrations`, {
+            method: 'HEAD',
+            headers: {
+                'apikey': anonKey,
+                'Authorization': `Bearer ${anonKey}`,
+            },
+        })
+        results.postgrest_head = { status: resp.status, ok: resp.ok }
+    } catch (e: unknown) {
+        results.postgrest_exception = e instanceof Error ? e.message : String(e)
     }
 
     return new Response(JSON.stringify(results, null, 2), {
