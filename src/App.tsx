@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/layout/ProtectedRoute'
 import { DashboardLayout } from '@/components/layout/DashboardLayout'
 import LoginPage from '@/pages/LoginPage'
 import GetStartedPage from '@/pages/GetStartedPage'
+import OAuthCompletePage from '@/pages/OAuthCompletePage'
 import DashboardPage from '@/pages/DashboardPage'
 import DraftsPage from '@/pages/DraftsPage'
 import ResearchPage from '@/pages/ResearchPage'
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/get-started" element={<GetStartedPage />} />
             <Route path="/onboard" element={<Navigate to="/get-started" replace />} />
+            <Route path="/oauth-complete" element={<OAuthCompletePage />} />
 
             {/* Protected dashboard routes */}
             <Route

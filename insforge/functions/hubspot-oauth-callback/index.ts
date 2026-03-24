@@ -13,10 +13,10 @@ export default async function (req: Request): Promise<Response> {
     const state = reqUrl.searchParams.get('state')
 
     const appUrl = Deno.env.get('APP_URL') || ''
-    const settingsUrl = `${appUrl}/dashboard/settings?section=integrations`
+    const completeUrl = `${appUrl}/oauth-complete`
 
     if (!code) {
-        return htmlRedirect(`${settingsUrl}&error=oauth_failed`)
+        return htmlRedirect(`${completeUrl}?error=oauth_failed`)
     }
 
     const clientId = Deno.env.get('HUBSPOT_CLIENT_ID')
@@ -24,14 +24,14 @@ export default async function (req: Request): Promise<Response> {
     const redirectUri = Deno.env.get('HUBSPOT_REDIRECT_URI')
 
     if (!clientId || !clientSecret || !redirectUri) {
-        return htmlRedirect(`${settingsUrl}&error=not_configured`)
+        return htmlRedirect(`${completeUrl}?error=not_configured`)
     }
 
     try {
         // Decode state to recover the user's JWT
         const userToken = state ? atob(decodeURIComponent(state)) : null
         if (!userToken) {
-            return htmlRedirect(`${settingsUrl}&error=invalid_state`)
+            return htmlRedirect(`${completeUrl}?error=invalid_state`)
         }
 
         // Exchange authorization code for tokens
@@ -49,7 +49,7 @@ export default async function (req: Request): Promise<Response> {
 
         if (!tokenRes.ok) {
             console.error('HubSpot token exchange failed:', await tokenRes.text())
-            return htmlRedirect(`${settingsUrl}&error=token_exchange_failed`)
+            return htmlRedirect(`${completeUrl}?error=token_exchange_failed`)
         }
 
         const tokenData = await tokenRes.json()
@@ -64,7 +64,7 @@ export default async function (req: Request): Promise<Response> {
         const jwtParts = userToken.split('.')
         if (jwtParts.length !== 3) {
             console.error('Invalid JWT structure in state')
-            return htmlRedirect(`${settingsUrl}&error=invalid_state`)
+            return htmlRedirect(`${completeUrl}?error=invalid_state`)
         }
         let userId: string | null = null
         try {
@@ -72,11 +72,11 @@ export default async function (req: Request): Promise<Response> {
             userId = payload.sub || null
         } catch {
             console.error('Failed to decode JWT payload')
-            return htmlRedirect(`${settingsUrl}&error=invalid_state`)
+            return htmlRedirect(`${completeUrl}?error=invalid_state`)
         }
         if (!userId) {
             console.error('No user id (sub) in JWT payload')
-            return htmlRedirect(`${settingsUrl}&error=auth_failed`)
+            return htmlRedirect(`${completeUrl}?error=auth_failed`)
         }
 
         // Write integration using API_KEY (admin) — no RLS, direct write
@@ -102,12 +102,12 @@ export default async function (req: Request): Promise<Response> {
 
         if (upsertError) {
             console.error('HubSpot integration upsert failed:', upsertError)
-            return htmlRedirect(`${settingsUrl}&error=callback_failed`)
+            return htmlRedirect(`${completeUrl}?error=callback_failed`)
         }
 
-        return htmlRedirect(`${settingsUrl}&connected=hubspot`)
+        return htmlRedirect(`${completeUrl}?provider=hubspot`)
     } catch (err) {
         console.error('HubSpot OAuth callback error:', err)
-        return htmlRedirect(`${settingsUrl}&error=callback_failed`)
+        return htmlRedirect(`${completeUrl}?error=callback_failed`)
     }
 }

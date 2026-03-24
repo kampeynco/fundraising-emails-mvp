@@ -349,28 +349,71 @@ function IntegrationsSection() {
             return
         }
 
+        const oauthErrorMessages: Record<string, string> = {
+            oauth_failed: 'OAuth authorization was cancelled.',
+            not_configured: 'Integration not configured. Contact support.',
+            invalid_state: 'Session expired. Please try again.',
+            token_exchange_failed: 'Failed to exchange authorization code. Please try again.',
+            auth_failed: 'Authentication failed. Please sign out and back in.',
+            callback_failed: 'Connection failed. Please try again.',
+        }
+
         try {
             const { data, error } = await insforge.functions.invoke(functionName)
 
             if (error) {
                 console.error('OAuth URL error:', error)
                 setConnectError(`Failed to start ${integration.name} connection. Please try again.`)
+                setConnecting(null)
                 return
             }
 
             if (data?.error) {
                 console.error('OAuth URL error:', data.error)
                 setConnectError(`${integration.name} error: ${data.error}`)
+                setConnecting(null)
                 return
             }
 
             if (data?.url) {
-                window.location.href = data.url
+                // Open OAuth in a popup so the main window session stays alive
+                const popup = window.open(data.url, '_blank', 'width=600,height=700,left=200,top=100')
+
+                if (popup) {
+                    setConnecting(null)
+                    let closedTimer: ReturnType<typeof setInterval>
+                    const handleMessage = (event: MessageEvent) => {
+                        if (event.origin !== window.location.origin) return
+                        if (event.data?.type !== 'oauth_complete') return
+                        window.removeEventListener('message', handleMessage)
+                        clearInterval(closedTimer)
+
+                        if (event.data.error) {
+                            setConnectError(oauthErrorMessages[event.data.error] || `Connection failed: ${event.data.error}`)
+                        } else if (event.data.provider) {
+                            const name = event.data.provider.charAt(0).toUpperCase() + event.data.provider.slice(1)
+                            setConnectSuccess(`${name} connected successfully!`)
+                            fetchIntegrations()
+                        }
+                    }
+                    window.addEventListener('message', handleMessage)
+                    // Clean up listener if the user closes the popup without completing
+                    closedTimer = setInterval(() => {
+                        if (popup.closed) {
+                            clearInterval(closedTimer)
+                            window.removeEventListener('message', handleMessage)
+                        }
+                    }, 1000)
+                } else {
+                    // Popup blocked — fall back to main-window redirect
+                    window.location.href = data.url
+                }
+                return
             }
+            setConnecting(null)
         } catch (err) {
             console.error('Connect failed:', err)
             setConnectError('Connection failed. Please try again.')
-        } finally {
             setConnecting(null)
         }
     }
