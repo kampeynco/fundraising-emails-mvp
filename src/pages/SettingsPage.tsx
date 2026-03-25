@@ -104,7 +104,11 @@ function GeneralSection() {
                 <label className="block text-sm font-medium text-white/70">Email Delivery Days</label>
                 <p className="text-xs text-white/30">
                     Your plan allows <span className="font-medium text-white/50">{maxDays} delivery {maxDays === 1 ? 'day' : 'days'}</span> per week.
-                    {' '}Drafts generate every Thursday.
+                    {deliveryDays.length > 0 && (
+                        <> Emails are delivered every <span className="font-medium text-white/50">
+                            {deliveryDays.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(' and ')}
+                        </span>.</>
+                    )}
                 </p>
                 <div className="flex flex-wrap gap-2 pt-1">
                     {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => {
