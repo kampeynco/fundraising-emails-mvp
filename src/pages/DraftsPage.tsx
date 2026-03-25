@@ -164,7 +164,7 @@ export default function DraftsPage() {
                                 </h1>
                                 <div className="group relative">
                                     <span className="inline-flex cursor-default items-center gap-1.5 rounded-full border border-brand/25 bg-brand/10 px-2.5 py-0.5 text-[11px] font-medium text-brand/80 transition-colors group-hover:border-brand/40 group-hover:bg-brand/15 group-hover:text-brand">
-                                        ✦ The {dropDay} Drop
+                                        ✦ The Weekly Drop
                                     </span>
                                     <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-lg border border-white/[0.08] bg-[#0f1724] px-3 py-2.5 opacity-0 shadow-xl transition-all duration-150 group-hover:opacity-100">
                                         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rotate-45 rounded-sm border-l border-t border-white/[0.08] bg-[#0f1724]" />

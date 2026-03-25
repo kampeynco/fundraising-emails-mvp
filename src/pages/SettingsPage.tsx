@@ -185,7 +185,7 @@ function BillingSection() {
                 <div className="flex items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
                     <div>
                         <p className="text-sm font-semibold text-white">Email Writing Service</p>
-                        <p className="mt-0.5 text-xs text-white/40">Done-for-you fundraising emails, delivered weekly via the Thursday Drop</p>
+                        <p className="mt-0.5 text-xs text-white/40">Done-for-you fundraising emails, delivered weekly via the Weekly Drop</p>
                     </div>
                     <div className="text-right">
                         <p className="text-lg font-bold text-white">$250<span className="text-xs font-normal text-white/30">/mo</span></p>
