@@ -40,7 +40,6 @@ export default function DraftsPage() {
     const [searchParams, setSearchParams] = useSearchParams()
     const [collapsedSections, setCollapsedSections] = useState<Set<DraftStatus>>(new Set())
     const [showNewDraft, setShowNewDraft] = useState(false)
-    const [dropDay, setDropDay] = useState('Thursday')
     const [previewDraft, setPreviewDraft] = useState<Draft | null>(null)
 
     // Close preview modal on Escape
@@ -60,23 +59,6 @@ export default function DraftsPage() {
             setSearchParams(searchParams, { replace: true })
         }
     }, [searchParams, setSearchParams])
-
-    // ── Fetch delivery day ──
-    useEffect(() => {
-        if (authLoading || !user) return
-        const fetchDay = async () => {
-            const { data } = await insforge.database
-                .from('profiles')
-                .select('delivery_days')
-                .eq('id', user.id)
-                .maybeSingle()
-            if (data?.delivery_days?.length) {
-                const day = data.delivery_days[0]
-                setDropDay(day.charAt(0).toUpperCase() + day.slice(1))
-            }
-        }
-        fetchDay()
-    }, [user, authLoading])
 
     const updateDraftStatus = async (draftId: string, newStatus: DraftStatus, e: React.MouseEvent) => {
         e.stopPropagation()
@@ -169,7 +151,7 @@ export default function DraftsPage() {
                                     <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 w-64 -translate-x-1/2 rounded-lg border border-white/[0.08] bg-[#0f1724] px-3 py-2.5 opacity-0 shadow-xl transition-all duration-150 group-hover:opacity-100">
                                         <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 h-2.5 w-2.5 rotate-45 rounded-sm border-l border-t border-white/[0.08] bg-[#0f1724]" />
                                         <p className="text-xs leading-relaxed text-white/50">
-                                            New drafts are generated every <span className="font-medium text-white/70">{dropDay}</span> at 6:00 AM CT based on your subscription tier.
+                                            New drafts are generated every <span className="font-medium text-white/70">Thursday</span> at 6:00 AM CT based on your subscription tier.
                                         </p>
                                     </div>
                                 </div>

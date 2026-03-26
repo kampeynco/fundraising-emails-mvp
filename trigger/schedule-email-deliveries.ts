@@ -12,19 +12,31 @@ const DAY_INDEX: Record<string, number> = {
     thursday: 4, friday: 5, saturday: 6,
 };
 
+// Fixed delivery schedule per tier — Monday is never used (submission deadline day).
+// Saturday replaces Mon/Fri for multi-email plans, sent at a later hour.
+const FIXED_DELIVERY_SCHEDULE: Record<number, string[]> = {
+    1: ["thursday"],
+    2: ["tuesday", "thursday"],
+    3: ["tuesday", "thursday", "saturday"],
+    4: ["tuesday", "wednesday", "thursday", "saturday"],
+    5: ["tuesday", "wednesday", "thursday", "friday", "saturday"],
+};
+
+const WEEKDAY_SEND_HOUR = 9;   // 9 AM CT
+const SATURDAY_SEND_HOUR = 10; // 10 AM CT (mid-morning)
+
 /**
  * Get the next N upcoming delivery dates from today, given a set of delivery days.
  *
- * Example: today is Friday, delivery_days = ['monday', 'wednesday']
- *   → [next Monday, next Wednesday, Monday after that, ...]
+ * Example: today is Friday, deliveryDays = ['tuesday', 'thursday']
+ *   → [next Tuesday, next Thursday, Tuesday after that, ...]
  *
  * If today IS a delivery day and it's before the send time, today is included.
- * Otherwise, we skip to the next occurrence.
+ * Weekdays send at 9 AM CT; Saturdays send at 10 AM CT.
  */
 function getNextDeliveryDates(
     deliveryDays: string[],
     count: number,
-    sendHour: number,
     timezone: string
 ): Date[] {
     const dates: Date[] = [];
@@ -46,7 +58,10 @@ function getNextDeliveryDates(
         const dayOfWeek = scanDate.getDay();
 
         if (targetDays.includes(dayOfWeek)) {
-            // Build the delivery timestamp at sendHour in the user's timezone
+            const isSaturday = dayOfWeek === 6;
+            const sendHour = isSaturday ? SATURDAY_SEND_HOUR : WEEKDAY_SEND_HOUR;
+
+            // Build the delivery timestamp at sendHour CT
             const deliveryDate = new Date(scanDate);
             deliveryDate.setHours(sendHour, 0, 0, 0);
 
@@ -88,20 +103,22 @@ export const scheduleEmailDeliveries = task({
         logger.info("📅 Scheduling email deliveries", { userId });
         metadata.set("status", "loading").set("userId", userId);
 
-        // 1. Fetch user's delivery days and timezone
-        const { data: profile, error: profileError } = await insforge.database
-            .from("profiles")
-            .select("delivery_days, email")
-            .eq("id", userId)
-            .single();
+        // 1. Look up emails_per_week from subscription to determine fixed delivery schedule
+        const { data: sub, error: subError } = await insforge.database
+            .from("subscriptions")
+            .select("emails_per_week")
+            .eq("user_id", userId)
+            .eq("status", "active")
+            .maybeSingle();
 
-        if (profileError || !profile) {
+        if (subError) {
             throw new AbortTaskRunError(
-                `Profile not found: ${profileError?.message || "no data"}`
+                `Failed to fetch subscription: ${subError.message}`
             );
         }
 
-        const deliveryDays: string[] = profile.delivery_days || ["thursday"];
+        const emailsPerWeek = sub?.emails_per_week ?? 1;
+        const deliveryDays: string[] = FIXED_DELIVERY_SCHEDULE[emailsPerWeek] ?? ["thursday"];
 
         // 1b. Detect which email platform is connected
         const { data: integration, error: intError } = await insforge.database
@@ -123,7 +140,7 @@ export const scheduleEmailDeliveries = task({
                 ? "send-to-action-network"
                 : "send-to-mailchimp";
 
-        logger.info("Delivery config", { deliveryDays, provider, sendTaskId });
+        logger.info("Delivery config", { emailsPerWeek, deliveryDays, provider, sendTaskId });
 
         // 2. Fetch approved but unscheduled drafts
         const { data: drafts, error: draftsError } = await insforge.database
@@ -150,8 +167,7 @@ export const scheduleEmailDeliveries = task({
         const deliveryDates = getNextDeliveryDates(
             deliveryDays,
             drafts.length,
-            9, // 9am
-            "America/Chicago" // Default timezone, could be per-user
+            "America/Chicago"
         );
 
         if (deliveryDates.length < drafts.length) {

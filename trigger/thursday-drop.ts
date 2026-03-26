@@ -16,7 +16,7 @@ interface ActiveSubscription {
 }
 
 /**
- * Thursday Drop — Weekly Email Draft Orchestrator
+ * Weekly Drop — Weekly Email Draft Orchestrator
  *
  * Runs every Thursday at 6am CT.
  * Queries all active subscribers, then fans out
@@ -27,7 +27,7 @@ export const thursdayDrop = schedules.task({
     cron: { pattern: "0 6 * * 4", timezone: "America/Chicago" },
     retry: { maxAttempts: 2 },
     run: async (payload) => {
-        logger.info("🗓️ Thursday Drop starting", {
+        logger.info("🗓️ Weekly Drop starting", {
             scheduledTime: payload.timestamp,
             timezone: payload.timezone,
         });
@@ -92,7 +92,7 @@ export const thursdayDrop = schedules.task({
         const successCount = results.filter((r) => r.triggered).length;
         metadata.set("status", "completed");
 
-        logger.info("Thursday Drop complete", {
+        logger.info("Weekly Drop complete", {
             total: subs.length,
             succeeded: successCount,
             failed: subs.length - successCount,

@@ -63,7 +63,7 @@ interface EditorBlockPayload {
 /**
  * Generate User Drafts — Per-User Email Writer
  *
- * Triggered by the Thursday Drop orchestrator.
+ * Triggered by the Weekly Drop orchestrator.
  * Generates N email drafts based on the user's tier and brand kit.
  */
 export const generateUserDrafts = task({

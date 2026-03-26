@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useOutletContext, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { Tick01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
 import { insforge } from '@/lib/insforge'
 import { useAuthContext } from '@/providers/AuthProvider'
 
@@ -10,72 +10,7 @@ type SettingsContext = { activeSettingsSection: string }
 
 // ── General Section ─────────────────────────────────────────
 function GeneralSection() {
-    const { user } = useAuthContext()
     const [timezone, setTimezone] = useState('America/Chicago')
-    const [deliveryDays, setDeliveryDays] = useState<string[]>(['thursday'])
-    const [maxDays, setMaxDays] = useState<number>(1)
-    const [saving, setSaving] = useState(false)
-    const [saved, setSaved] = useState(false)
-
-    // Load existing profile settings + subscription limit
-    useEffect(() => {
-        if (!user) return
-        const load = async () => {
-            // Fetch profile for current delivery_days
-            const { data: profile } = await insforge.database
-                .from('profiles')
-                .select('delivery_days')
-                .eq('id', user.id)
-                .maybeSingle()
-
-            if (profile?.delivery_days && Array.isArray(profile.delivery_days)) {
-                setDeliveryDays(profile.delivery_days)
-            }
-
-            // Fetch subscription for plan limit
-            const { data: sub } = await insforge.database
-                .from('subscriptions')
-                .select('emails_per_week')
-                .eq('user_id', user.id)
-                .eq('status', 'active')
-                .maybeSingle()
-
-            if (sub?.emails_per_week) {
-                setMaxDays(sub.emails_per_week)
-            }
-        }
-        load()
-    }, [user])
-
-    const toggleDay = (day: string) => {
-        setSaved(false)
-        setDeliveryDays(prev => {
-            if (prev.includes(day)) {
-                return prev.filter(d => d !== day)
-            }
-            if (prev.length >= maxDays) return [day]
-            return [...prev, day]
-        })
-    }
-
-    const handleSave = async () => {
-        if (!user) return
-        setSaving(true)
-        setSaved(false)
-
-        const { error } = await insforge.database
-            .from('profiles')
-            .update({ delivery_days: deliveryDays })
-            .eq('id', user.id)
-
-        setSaving(false)
-        if (!error) {
-            setSaved(true)
-            setTimeout(() => setSaved(false), 3000)
-        }
-    }
-
-    const atLimit = deliveryDays.length >= maxDays
 
     return (
         <div className="space-y-8">
@@ -89,7 +24,7 @@ function GeneralSection() {
                 <label className="block text-sm font-medium text-white/70">Timezone</label>
                 <select
                     value={timezone}
-                    onChange={e => { setTimezone(e.target.value); setSaved(false) }}
+                    onChange={e => setTimezone(e.target.value)}
                     className="w-full max-w-md rounded-lg border border-white/[0.08] bg-white/[0.03] px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-brand/50 focus:ring-1 focus:ring-brand/30 [&>option]:bg-[#1e293b]"
                 >
                     <option value="America/New_York">Eastern Time (ET)</option>
@@ -97,59 +32,11 @@ function GeneralSection() {
                     <option value="America/Denver">Mountain Time (MT)</option>
                     <option value="America/Los_Angeles">Pacific Time (PT)</option>
                 </select>
-            </div>
-
-            {/* Delivery Days (multi-select, limited by plan) */}
-            <div className="space-y-2">
-                <label className="block text-sm font-medium text-white/70">Email Delivery Days</label>
                 <p className="text-xs text-white/30">
-                    Your plan allows <span className="font-medium text-white/50">{maxDays} delivery {maxDays === 1 ? 'day' : 'days'}</span> per week.
-                    {deliveryDays.length > 0 && (
-                        <> Emails are delivered every <span className="font-medium text-white/50">
-                            {deliveryDays.map(d => d.charAt(0).toUpperCase() + d.slice(1)).join(' and ')}
-                        </span>.</>
-                    )}
+                    Emails are delivered on a fixed weekly schedule — Tues/Thu for most plans, with Saturday added for higher tiers.
                 </p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                    {['monday', 'tuesday', 'wednesday', 'thursday', 'friday'].map(day => {
-                        const isSelected = deliveryDays.includes(day)
-                        const isDisabled = !isSelected && atLimit
-                        return (
-                            <button
-                                key={day}
-                                onClick={() => toggleDay(day)}
-                                disabled={isDisabled}
-                                className={`cursor-pointer rounded-lg border px-4 py-2 text-sm font-medium capitalize transition-all ${isSelected
-                                    ? 'border-brand bg-brand/10 text-brand'
-                                    : isDisabled
-                                        ? 'cursor-not-allowed border-white/[0.04] text-white/15'
-                                        : 'border-white/[0.08] text-white/40 hover:border-white/15 hover:text-white/60'
-                                    }`}
-                            >
-                                {day}
-                                {isSelected && (
-                                    <HugeiconsIcon icon={Tick01Icon} size={12} className="ml-1.5 inline-block" />
-                                )}
-                            </button>
-                        )
-                    })}
-                </div>
-                {deliveryDays.length === 0 && (
-                    <p className="text-xs text-amber-400/60">Select at least one delivery day</p>
-                )}
             </div>
-
-            <div className="pt-2">
-                <Button
-                    onClick={handleSave}
-                    disabled={saving || deliveryDays.length === 0}
-                    className="bg-brand text-white hover:bg-brand-dark disabled:opacity-50"
-                >
-                    <HugeiconsIcon icon={Tick01Icon} size={16} className="mr-1.5" />
-                    {saving ? 'Saving...' : saved ? 'Saved!' : 'Save Changes'}
-                </Button>
-            </div>
-        </div >
+        </div>
     )
 }
 
