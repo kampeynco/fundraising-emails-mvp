@@ -195,10 +195,19 @@
   <!-- Navigation -->
   <nav class="fixed top-0 left-0 right-0 z-50 nav-blur bg-cream/80 border-b border-navy-200/30">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="#"
-        class="font-display font-bold text-xl text-navy-600 tracking-tight cursor-pointer hover:text-navy-500 transition-colors duration-200">
-        Fundraising <span class="text-coral">Emails</span>
-      </a>
+      <div class="flex items-center gap-3">
+        <button id="mobile-menu-btn"
+          class="md:hidden p-2 text-navy-500 hover:text-navy-700 focus-visible:outline-2 focus-visible:outline-coral rounded-lg"
+          aria-label="Toggle menu">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <a href="#"
+          class="font-display font-bold text-xl text-navy-600 tracking-tight cursor-pointer hover:text-navy-500 transition-colors duration-200">
+          Fundraising <span class="text-coral">Emails</span>
+        </a>
+      </div>
       <div class="hidden md:flex items-center gap-8 text-sm font-medium text-navy-500">
         <a href="#how-it-works" class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">How It
           Works</a>
@@ -208,13 +217,6 @@
         <a href="#faq" class="hover:text-navy-700 transition-colors duration-200 cursor-pointer">FAQ</a>
       </div>
       <div class="flex items-center gap-3">
-        <button id="mobile-menu-btn"
-          class="md:hidden p-2 text-navy-500 hover:text-navy-700 focus-visible:outline-2 focus-visible:outline-coral rounded-lg"
-          aria-label="Toggle menu">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
         <a href="/login"
           class="hidden md:inline-block text-sm font-medium text-navy-500 hover:text-navy-700 transition-colors duration-200 cursor-pointer">Log
           In</a>
