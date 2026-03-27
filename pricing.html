@@ -527,60 +527,52 @@
                     </div>
                 </div>
 
-                <!-- ── EMAIL ACQUISITION ── -->
-                <div id="list-building-section"
-                    class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
-                    <div class="flex items-center justify-between gap-4 mb-3">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-coral shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <div>
-                                <h2 class="font-display text-xl font-bold text-navy-700 leading-tight">Email Acquisition</h2>
-                                <p class="text-xs text-navy-400/70 font-medium">powered by Reach Donors</p>
+                <!-- ── ADD-ONS ── -->
+                <div class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
+                    <div class="mb-4">
+                        <h2 class="font-display text-xl font-bold text-navy-700 mb-1">Add-ons</h2>
+                        <p class="text-sm text-navy-400">Optional services to extend your plan.</p>
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <!-- Rapid Response -->
+                        <div id="rapid-section" class="bg-white rounded-2xl card-shadow p-6 border-2 border-navy-200/50">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="font-display text-lg font-bold text-navy-700">Rapid Response</h3>
+                                <div class="flex items-baseline gap-0.5">
+                                    <span class="text-xl font-bold text-navy-700">$250</span>
+                                    <span class="text-xs text-navy-400">/mo</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-navy-400 mb-4">24-hour turnaround for urgent moments: breaking news, opposition hits, last-minute match, deadline surprises.</p>
+                            <p id="rapid-disabled-msg" class="text-xs text-coral font-medium mb-3">⚡ Available at 3+ emails/week</p>
+                            <div class="flex items-center gap-2">
+                                <div id="rapid-toggle" class="toggle-track disabled" role="switch" aria-checked="false" tabindex="0">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <span class="text-sm font-medium text-navy-400">Add on</span>
                             </div>
                         </div>
-                        <div class="flex flex-col items-center shrink-0 gap-1.5">
-                            <div class="flex items-baseline gap-1">
-                                <p class="font-display text-xl font-bold text-navy-700">$500</p>
-                                <span class="text-xs text-navy-400">/mo</span>
+                        <!-- Email Acquisition -->
+                        <div id="list-building-section" class="bg-white rounded-2xl card-shadow p-6 border-2 border-navy-200/50">
+                            <div class="flex items-center justify-between mb-3">
+                                <div>
+                                    <h3 class="font-display text-lg font-bold text-navy-700 leading-tight">Email Acquisition</h3>
+                                    <p class="text-xs text-navy-400/70 font-medium">powered by Reach Donors</p>
+                                </div>
+                                <div class="flex items-baseline gap-0.5">
+                                    <span class="text-xl font-bold text-navy-700">$500</span>
+                                    <span class="text-xs text-navy-400">/mo</span>
+                                </div>
                             </div>
-                            <div id="list-building-toggle" class="toggle-track" role="switch" aria-checked="false"
-                                tabindex="0">
-                                <div class="toggle-thumb"></div>
+                            <p class="text-sm text-navy-400 mb-4">Grow your donor file with targeted prospecting, data hygiene, and list acquisition strategy.</p>
+                            <div class="flex items-center gap-2">
+                                <div id="list-building-toggle" class="toggle-track" role="switch" aria-checked="false" tabindex="0">
+                                    <div class="toggle-thumb"></div>
+                                </div>
+                                <span class="text-sm font-medium text-navy-400">Add on</span>
                             </div>
                         </div>
                     </div>
-                    <p class="text-sm text-navy-400">Grow your donor file with targeted prospecting, data hygiene, and list acquisition strategy.</p>
-                </div>
-
-                <!-- ── RAPID RESPONSE SERVICE ── -->
-                <div id="rapid-section"
-                    class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
-                    <div class="flex items-center justify-between gap-4 mb-3">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-5 h-5 text-coral shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
-                            </svg>
-                            <h2 class="font-display text-xl font-bold text-navy-700">Rapid Response Service</h2>
-                        </div>
-                        <div class="flex flex-col items-center shrink-0 gap-1.5">
-                            <div class="flex items-baseline gap-1">
-                                <p class="font-display text-xl font-bold text-navy-700">$250</p>
-                                <span class="text-xs text-navy-400">/mo</span>
-                            </div>
-                            <div id="rapid-toggle" class="toggle-track disabled" role="switch" aria-checked="false"
-                                tabindex="0">
-                                <div class="toggle-thumb"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <p class="text-sm text-navy-400 mb-1">24-hour turnaround for urgent moments: breaking news,
-                        opposition hits, last-minute match, deadline surprises.</p>
-                    <p id="rapid-disabled-msg" class="text-xs text-coral font-medium mt-2">⚡ Available at 3+
-                        emails/week</p>
                 </div>
 
                 <!-- ── PLATFORM ── -->
