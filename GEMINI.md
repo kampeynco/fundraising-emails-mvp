@@ -69,6 +69,10 @@ Before coding, understand the context and commit to a bold aesthetic direction:
 ### Interactive States
 - Every clickable element needs `hover`, `focus-visible`, and `active` states.
 
+## Git Workflow
+- **Always commit and push at the end of every conversation** — do not wait to be asked.
+- Stage only files you changed, write a concise conventional commit message, then `git push`.
+
 ## Hard Rules
 - Do not use `transition: all`.
 - Do not use generic AI-generated aesthetics.
