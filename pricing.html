@@ -526,16 +526,21 @@
                                     <p class="text-xs text-navy-400/70 font-medium">powered by Reach Donors</p>
                                 </div>
                                 <div class="flex items-baseline gap-0.5">
-                                    <span class="text-xl font-bold text-navy-700">$500</span>
+                                    <span id="list-building-price-display" class="text-xl font-bold text-navy-700">$350</span>
                                     <span class="text-xs text-navy-400">/mo</span>
                                 </div>
                             </div>
-                            <p class="text-sm text-navy-400 mb-4">Grow your donor file with targeted prospecting, data hygiene, and list acquisition strategy.</p>
+                            <p class="text-sm text-navy-400 mb-3">Grow your donor file with targeted prospecting, data hygiene, and list acquisition strategy.</p>
+                            <p class="text-xs text-navy-400/60 mb-4">$0.35 per credit · buy in packages</p>
                             <div class="flex items-center gap-2">
                                 <div id="list-building-toggle" class="toggle-track" role="switch" aria-checked="false" tabindex="0">
                                     <div class="toggle-thumb"></div>
                                 </div>
-                                <span class="text-sm font-medium text-navy-400">Add on</span>
+                                <select id="list-building-credits" class="text-xs font-medium text-navy-600 bg-navy-50 border border-navy-200/60 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer hover:border-navy-300 transition-colors">
+                                    <option value="350">1,000 credits — $350</option>
+                                    <option value="875">2,500 credits — $875</option>
+                                    <option value="1750">5,000 credits — $1,750</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -761,7 +766,6 @@
                 var rapidPrice = 250;
                 var rapidEnabled = false;
                 var rapidAvailable = false;
-                var listBuildingPrice = 500;
                 var listBuildingEnabled = false;
                 var platformPrice = 250;
                 var currentTier = 0;
@@ -782,13 +786,15 @@
                 var sumTotal = document.getElementById('sum-total');
                 var platformCards = document.querySelectorAll('.platform-card');
                 var listBuildingToggle = document.getElementById('list-building-toggle');
+                var listBuildingCredits = document.getElementById('list-building-credits');
+                var listBuildingPriceDisplay = document.getElementById('list-building-price-display');
 
                 function fmt(n) { return '$' + n.toLocaleString('en-US'); }
 
                 function updateTotal() {
                     var writing = tiers[currentTier].price;
                     var rapid = (rapidEnabled && rapidAvailable) ? rapidPrice : 0;
-                    var listBuilding = listBuildingEnabled ? listBuildingPrice : 0;
+                    var listBuilding = listBuildingEnabled ? parseInt(listBuildingCredits.value) : 0;
                     var total = writing + rapid + listBuilding + platformPrice;
 
                     sumWriting.textContent = fmt(writing);
@@ -848,6 +854,12 @@
                 });
                 listBuildingToggle.addEventListener('keydown', function (e) {
                     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); this.click(); }
+                });
+
+                // ── Credit Package Dropdown ──
+                listBuildingCredits.addEventListener('change', function () {
+                    listBuildingPriceDisplay.textContent = fmt(parseInt(this.value));
+                    updateTotal();
                 });
 
                 // ── Platform Cards ──
