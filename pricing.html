@@ -533,17 +533,22 @@
                             <div class="flex items-center justify-between mb-3">
                                 <h3 class="font-display text-lg font-bold text-navy-700">Rapid Response</h3>
                                 <div class="flex items-baseline gap-0.5">
-                                    <span class="font-display text-xl font-bold text-navy-700">$250</span>
+                                    <span id="rapid-price-display" class="font-display text-xl font-bold text-navy-700">$250</span>
                                     <span class="text-xs text-navy-400">/mo</span>
                                 </div>
                             </div>
-                            <p class="text-sm text-navy-400 mb-4">24-hour turnaround for urgent moments: breaking news, opposition hits, last-minute match, deadline surprises.</p>
+                            <p class="text-sm text-navy-400 mb-3">Guaranteed turnaround for urgent moments: breaking news, opposition hits, last-minute match, deadline surprises.</p>
                             <p id="rapid-disabled-msg" class="text-xs text-coral font-medium mb-3">⚡ Available at 3+ emails/week</p>
                             <div class="flex items-center gap-2">
                                 <div id="rapid-toggle" class="toggle-track disabled" role="switch" aria-checked="false" tabindex="0">
                                     <div class="toggle-thumb"></div>
                                 </div>
-                                <span class="text-sm font-medium text-navy-400">Add on</span>
+                                <select id="rapid-response-time" class="text-xs font-medium text-navy-600 bg-navy-50 border border-navy-200/60 rounded-lg px-2.5 py-1.5 outline-none cursor-pointer hover:border-navy-300 transition-colors">
+                                    <option value="250">24-hour response — $250</option>
+                                    <option value="500">12-hour response — $500</option>
+                                    <option value="750">6-hour response — $750</option>
+                                    <option value="1000">2-hour response — $1,000</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -757,7 +762,6 @@
                     { emails: 4, price: 2000, monthly: '16–18', label: '4 emails/week', desc: 'Heavy calendars, frequent deadlines' },
                     { emails: 5, price: 4000, monthly: '20–22', label: '5 emails/week', desc: 'Aggressive cadence + constant deadlines' }
                 ];
-                var rapidPrice = 250;
                 var rapidEnabled = false;
                 var rapidAvailable = false;
                 var listBuildingEnabled = false;
@@ -773,6 +777,8 @@
                 var tierDesc = document.getElementById('tier-desc');
                 var rapidToggle = document.getElementById('rapid-toggle');
                 var rapidMsg = document.getElementById('rapid-disabled-msg');
+                var rapidResponseTime = document.getElementById('rapid-response-time');
+                var rapidPriceDisplay = document.getElementById('rapid-price-display');
                 var sumWriting = document.getElementById('sum-writing');
                 var sumRapid = document.getElementById('sum-rapid');
                 var sumListBuilding = document.getElementById('sum-list-building');
@@ -787,7 +793,7 @@
 
                 function updateTotal() {
                     var writing = tiers[currentTier].price;
-                    var rapid = (rapidEnabled && rapidAvailable) ? rapidPrice : 0;
+                    var rapid = (rapidEnabled && rapidAvailable) ? parseInt(rapidResponseTime.value) : 0;
                     var listBuilding = listBuildingEnabled ? parseInt(listBuildingCredits.value) : 0;
                     var total = writing + rapid + listBuilding + platformPrice;
 
@@ -848,6 +854,12 @@
                 });
                 listBuildingToggle.addEventListener('keydown', function (e) {
                     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); this.click(); }
+                });
+
+                // ── Rapid Response Time Dropdown ──
+                rapidResponseTime.addEventListener('change', function () {
+                    rapidPriceDisplay.textContent = fmt(parseInt(this.value));
+                    updateTotal();
                 });
 
                 // ── Credit Package Dropdown ──
