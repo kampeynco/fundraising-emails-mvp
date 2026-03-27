@@ -299,28 +299,25 @@
                     class="bg-white rounded-2xl card-shadow-lg border border-navy-100/40 p-5 sm:p-6 mb-8 sticky top-[68px] z-40 summary-bar">
                     <div class="flex items-center gap-x-6 gap-y-3 justify-between">
                         <!-- Line items -->
-                        <div class="flex flex-wrap items-center gap-x-4 gap-y-2 flex-1 min-w-0">
+                        <div class="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-x-3 sm:gap-x-4 gap-y-2 flex-1 min-w-0">
                             <div class="text-center min-w-[70px]">
-                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Email
-                                    Writing</p>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Platform</p>
+                                <p id="sum-platform" class="text-lg font-bold text-navy-700">$250</p>
+                            </div>
+                            <div class="text-navy-200 hidden sm:block">+</div>
+                            <div class="text-center min-w-[70px]">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Email Writing</p>
                                 <p id="sum-writing" class="text-lg font-bold text-navy-700">$250</p>
                             </div>
                             <div class="text-navy-200 hidden sm:block">+</div>
                             <div class="text-center min-w-[70px]">
-                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Rapid
-                                    Response</p>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Rapid Response</p>
                                 <p id="sum-rapid" class="text-lg font-bold text-navy-700">$0</p>
                             </div>
                             <div class="text-navy-200 hidden sm:block">+</div>
                             <div class="text-center min-w-[70px]">
                                 <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">Email Acquisition</p>
                                 <p id="sum-list-building" class="text-lg font-bold text-navy-700">$0</p>
-                            </div>
-                            <div class="text-navy-200 hidden sm:block">+</div>
-                            <div class="text-center min-w-[70px]">
-                                <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-navy-400 mb-0.5">
-                                    Platform</p>
-                                <p id="sum-platform" class="text-lg font-bold text-navy-700">$250</p>
                             </div>
                         </div>
                         <!-- Total -->
@@ -339,19 +336,19 @@
 
                 <!-- ── EMAIL WRITING SERVICE ── -->
                 <div class="config-section bg-white rounded-2xl card-shadow border border-navy-100/40 p-6 sm:p-8 mb-6">
-                    <div class="flex flex-row items-start justify-between gap-4 mb-5 sm:mb-6">
+                    <div class="flex flex-row items-start justify-between gap-4 mb-6">
                         <div class="min-w-0">
                             <h2 class="font-display text-xl font-bold text-navy-700 mb-1">Email Writing Service</h2>
                             <p class="text-sm text-navy-400">Done-for-you fundraising emails, delivered weekly via the
                                 Weekly Drop.</p>
                         </div>
-                        <div class="hidden sm:block text-right shrink-0">
-                            <p class="writing-price-display font-display text-2xl font-bold text-navy-700">$250</p>
+                        <div class="text-right shrink-0">
+                            <p id="writing-price" class="font-display text-2xl font-bold text-navy-700">$250</p>
                             <p class="text-xs text-navy-400">/month</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-[1fr_1fr_auto] sm:grid-cols-2 gap-4 sm:gap-6 items-start">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                         <!-- Left: Platforms -->
                         <div>
                             <p class="text-xs font-bold text-navy-400 uppercase tracking-[0.15em] mb-3">Supported
@@ -488,11 +485,6 @@
                                 </span>
                             </div>
                         </div>
-                        <!-- Price: mobile col 3 only -->
-                        <div class="sm:hidden text-right pt-1">
-                            <p class="writing-price-display font-display text-2xl font-bold text-navy-700">$250</p>
-                            <p class="text-xs text-navy-400">/month</p>
-                        </div>
                     </div>
                 </div>
 
@@ -548,14 +540,14 @@
                                 <p class="text-xs text-navy-400/70 font-medium">powered by Reach Donors</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-4 shrink-0">
-                            <div class="text-right">
-                                <p class="font-display text-xl font-bold text-navy-700">$500</p>
-                                <p class="text-xs text-navy-400">/month</p>
-                            </div>
+                        <div class="flex flex-col items-center shrink-0 gap-1.5">
                             <div id="list-building-toggle" class="toggle-track" role="switch" aria-checked="false"
                                 tabindex="0">
                                 <div class="toggle-thumb"></div>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm font-bold text-navy-700">$500</p>
+                                <p class="text-[10px] text-navy-400">/mo</p>
                             </div>
                         </div>
                     </div>
@@ -573,14 +565,14 @@
                             </svg>
                             <h2 class="font-display text-xl font-bold text-navy-700">Rapid Response Service</h2>
                         </div>
-                        <div class="flex items-center gap-4 shrink-0">
-                            <div class="text-right">
-                                <p class="font-display text-xl font-bold text-navy-700">$250</p>
-                                <p class="text-xs text-navy-400">/month</p>
-                            </div>
+                        <div class="flex flex-col items-center shrink-0 gap-1.5">
                             <div id="rapid-toggle" class="toggle-track disabled" role="switch" aria-checked="false"
                                 tabindex="0">
                                 <div class="toggle-thumb"></div>
+                            </div>
+                            <div class="text-center">
+                                <p class="text-sm font-bold text-navy-700">$250</p>
+                                <p class="text-[10px] text-navy-400">/mo</p>
                             </div>
                         </div>
                     </div>
@@ -818,7 +810,7 @@
                 // ── DOM Refs ──
                 var slider = document.getElementById('sends-slider');
                 var sliderCount = document.getElementById('slider-count');
-                var writingPrices = document.querySelectorAll('.writing-price-display');
+                var writingPrice = document.getElementById('writing-price');
                 var tierLabel = document.getElementById('tier-label');
                 var tierMonthly = document.getElementById('tier-monthly');
                 var tierDesc = document.getElementById('tier-desc');
@@ -854,7 +846,7 @@
                     var t = tiers[currentTier];
 
                     sliderCount.textContent = v;
-                    writingPrices.forEach(function(el) { el.textContent = fmt(t.price); });
+                    writingPrice.textContent = fmt(t.price);
                     tierLabel.textContent = t.label;
                     tierMonthly.textContent = t.monthly + ' emails/month';
                     tierDesc.textContent = t.desc;
