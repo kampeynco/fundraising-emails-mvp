@@ -46,3 +46,4 @@ docs/migratedb
 
 # Local Netlify folder
 .netlify
+.gstack/
