@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { useAuthContext } from '@/providers/AuthProvider'
-import { insforge } from '@/lib/insforge'
+import { supabase } from '@/lib/supabase'
 import { type Draft } from '@/types/draft'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
@@ -141,7 +141,7 @@ export function DashboardLayout() {
     const fetchDrafts = useCallback(async () => {
         if (!user) return
         setDraftsLoading(true)
-        const { data } = await insforge.database
+        const { data } = await supabase
             .from('email_drafts')
             .select('id, user_id, subject_line, preview_text, body_html, status, draft_type, week_of, created_at, updated_at, user_comments, alt_subject_lines, google_doc_url')
             .eq('user_id', user.id)

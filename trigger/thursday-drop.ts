@@ -1,12 +1,12 @@
 import { schedules, task, logger, metadata } from "@trigger.dev/sdk";
-import { createClient } from "@insforge/sdk";
+import { createClient } from "@supabase/supabase-js";
 import type { generateUserDrafts } from "./generate-user-drafts";
 
 // ── Supabase client (service role for server-side access) ──
-const insforge = createClient({
-    baseUrl: process.env.INSFORGE_BASE_URL!,
-    anonKey: process.env.INSFORGE_API_KEY!
-});
+const supabase = createClient(
+    process.env.SUPABASE_URL || "https://npxklgkoemybgivdrmka.supabase.co",
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY!
+);
 
 interface ActiveSubscription {
     user_id: string;
@@ -33,7 +33,7 @@ export const thursdayDrop = schedules.task({
         });
 
         // 1. Query all active subscriptions
-        const { data: subscriptions, error } = await insforge.database
+        const { data: subscriptions, error } = await supabase
             .from("subscriptions")
             .select("user_id, tier, emails_per_week, rapid_response")
             .eq("status", "active");

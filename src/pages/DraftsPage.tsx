@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useOutletContext } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuthContext } from '@/providers/AuthProvider'
-import { insforge } from '@/lib/insforge'
+import { supabase } from '@/lib/supabase'
 import { formatDate, formatWeek } from '@/lib/dates'
 import { HugeiconsIcon } from '@hugeicons/react'
 import {
@@ -65,7 +65,7 @@ export default function DraftsPage() {
         if (!user) return
         const prevStatus = drafts.find(d => d.id === draftId)?.status
         setDrafts(prev => prev.map(d => d.id === draftId ? { ...d, status: newStatus } : d))
-        const { error } = await insforge.database
+        const { error } = await supabase
             .from('email_drafts')
             .update({ status: newStatus })
             .eq('id', draftId)

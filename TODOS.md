@@ -14,12 +14,12 @@ Items deferred from CEO review sessions. Pick up when ready.
 **Context:** First tests to write: `getNextDeliveryDates()` in `trigger/schedule-email-deliveries.ts` — it's a pure function with complex date logic. Key test cases: empty `delivery_days` array, `count` larger than available dates in scan window (verify 365-day cap now in place), `sendHour` boundary at midnight, multiple delivery days in one week. Also: unbounded scan guard (365-day cap added in eng review — add a test that verifies it returns early instead of looping forever).
 **Effort:** S (human: 1 day → CC+gstack: ~10 min) | **Priority:** P1
 
-### [TODO-NEW-B] Move API key validation to an InsForge edge function
-**What:** API key validation currently runs client-side — the browser calls Action Network and Mailchimp APIs directly. Move to an InsForge edge function that: (1) validates the key against the provider, (2) writes the key directly to `email_integrations`, and (3) returns only success/failure to the browser. The key must never be returned or echoed back.
+### [TODO-NEW-B] Move API key validation to a Supabase Edge Function
+**What:** API key validation currently runs client-side — the browser calls Action Network and Mailchimp APIs directly. Move to a Supabase Edge Function that: (1) validates the key against the provider, (2) writes the key directly to `email_integrations`, and (3) returns only success/failure to the browser. The key must never be returned or echoed back.
 **Why:** CEO Review flagged as HIGH priority security. Raw key is visible in the browser's DevTools Network tab during validation. At $500/mo enterprise pricing, a customer seeing their key in the network tab is a deal-killer.
 **Pros:** Closes the client-side key exposure. Edge function owning the DB write means the key path is fully server-side.
-**Cons:** Requires new InsForge edge functions for Action Network and Mailchimp key validation.
-**Context:** Current validation: `SettingsPage` calls `fetch('https://actionnetwork.org/api/v2/')` and Mailchimp equivalents directly from the browser. Move this logic to InsForge functions (see `insforge/functions/` for existing patterns like `hubspot-oauth-callback`).
+**Cons:** Requires new Supabase Edge Functions for Action Network and Mailchimp key validation.
+**Context:** Current validation: `SettingsPage` calls `fetch('https://actionnetwork.org/api/v2/')` and Mailchimp equivalents directly from the browser. Move this logic to Supabase functions (see `supabase/functions/` for existing patterns like `hubspot-oauth-callback`).
 **Effort:** S (human: 1 day → CC+gstack: ~15 min) | **Priority:** P1
 
 ### [TODO-1] Draft scheduling executor (UI wiring)
@@ -46,11 +46,11 @@ Items deferred from CEO review sessions. Pick up when ready.
 **Depends on:** cherry-pick 5 (delivery_events table + webhook receivers) shipped
 
 ### [TODO-3] At-rest encryption for API keys
-**What:** Encrypt API keys stored in `email_integrations.access_token` using InsForge's native secrets management. Decrypt in edge functions and trigger tasks only.
+**What:** Encrypt API keys stored in `email_integrations.access_token` using Supabase-compatible server-side encryption. Decrypt in edge functions and trigger tasks only.
 **Why:** Keys currently stored plaintext in the DB. A DB breach exposes all user integration credentials. At $500/mo enterprise pricing, this is a compliance conversation waiting to happen.
 **Pros:** Closes a real security liability.
 **Cons:** Requires encrypt/decrypt in all code paths that read `access_token`: `send-to-action-network.ts`, `send-to-mailchimp.ts`, `hubspot-oauth-callback`, `mailchimp-oauth-callback`.
-**Context:** Use InsForge's native secrets management (not Supabase Vault or pgcrypto — InsForge handles secrets natively). Best done in conjunction with TODO-NEW-B (edge function key validation), since both touch the `access_token` storage path.
+**Context:** Use Supabase Vault or pgcrypto for server-side encryption. Best done in conjunction with TODO-NEW-B (edge function key validation), since both touch the `access_token` storage path.
 **Effort:** M (human: 1 week → CC+gstack: ~30 min) | **Priority:** P2
 
 ### [TODO-NEW-C] Fix timezone handling in scheduling
@@ -105,5 +105,5 @@ Items deferred from CEO review sessions. Pick up when ready.
 
 - **DB polling cron for scheduling** — Provider-native scheduling (Mailchimp `/actions/schedule`, Action Network `scheduled_date`) already handles this. A polling cron would duplicate solved infrastructure.
 - **Trigger.dev delay for scheduling** — Mutually exclusive with provider-native scheduling (already implemented). Would cause double-scheduling if added on top.
-- **Supabase Vault / pgcrypto for encryption** — InsForge handles secrets natively. Not applicable.
+- **Database polling cron for encryption** — Keep credential encryption inside the Supabase database/functions boundary.
 - **In-app email editor rebuild** — Deferred in CEO review. Keep Google Docs; plan hybrid later.

@@ -1,11 +1,11 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
-import { createClient } from "@insforge/sdk";
+import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const insforge = createClient({
-    baseUrl: process.env.INSFORGE_BASE_URL!,
-    anonKey: process.env.INSFORGE_API_KEY!
-});
+const supabase = createClient(
+    process.env.SUPABASE_URL || "https://npxklgkoemybgivdrmka.supabase.co",
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY!
+);
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -61,7 +61,7 @@ export const generateRapidDraft = task({
         metadata.set("status", "loading_context").set("userId", userId);
 
         // 1. Verify user has rapid response enabled
-        const { data: subscription } = await insforge.database
+        const { data: subscription } = await supabase
             .from("subscriptions")
             .select("tier, rapid_response")
             .eq("user_id", userId)
@@ -73,7 +73,7 @@ export const generateRapidDraft = task({
         }
 
         // 2. Load brand kit
-        const { data: brandKit, error: bkError } = await insforge.database
+        const { data: brandKit, error: bkError } = await supabase
             .from("brand_kits")
             .select("id, kit_name, brand_summary, tone, disclaimers, colors")
             .eq("user_id", userId)
@@ -176,7 +176,7 @@ IMPORTANT for editor_blocks:
         const weekOf = monday.toISOString().split("T")[0];
 
         // 6. Save to database
-        const { data: savedDraft, error: saveError } = await insforge.database
+        const { data: savedDraft, error: saveError } = await supabase
             .from("email_drafts")
             .insert({
                 user_id: userId,

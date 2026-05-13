@@ -1,17 +1,18 @@
-import { createClient } from 'npm:@insforge/sdk'
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2'
 
-export default async function (req: Request): Promise<Response> {
-    const internalUrl = Deno.env.get('INSFORGE_INTERNAL_URL') || ''
-    const anonKey = Deno.env.get('ANON_KEY') || ''
-    const apiKey = Deno.env.get('API_KEY') || ''
+Deno.serve(async (req: Request): Promise<Response> => {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://npxklgkoemybgivdrmka.supabase.co'
+    const anonKey = Deno.env.get('SUPABASE_ANON_KEY') || ''
+    const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || ''
 
     const authHeader = req.headers.get('Authorization')
     const rawToken = authHeader ? authHeader.replace('Bearer ', '') : null
 
     const results: Record<string, unknown> = {
-        internalUrl,
+        supabaseUrl,
         hasAnonKey: !!anonKey,
-        hasApiKey: !!apiKey,
+        hasServiceRoleKey: !!serviceRoleKey,
         hasRawToken: !!rawToken,
     }
 
@@ -28,46 +29,48 @@ export default async function (req: Request): Promise<Response> {
         }
     }
 
-    // Test 2: createClient with edgeFunctionToken + getCurrentUser
+    // Test 2: validate the caller JWT with Supabase Auth
     if (rawToken) {
         try {
-            const client = createClient({ baseUrl: internalUrl, edgeFunctionToken: rawToken })
-            const { data, error } = await client.auth.getCurrentUser()
-            results.edgeFunctionToken_getCurrentUser = {
+            const client = createClient(supabaseUrl, anonKey)
+            const { data, error } = await client.auth.getUser(rawToken)
+            results.auth_getUser = {
                 data: data ?? 'undefined',
                 error: error?.message ?? null,
             }
         } catch (e: unknown) {
-            results.edgeFunctionToken_exception = e instanceof Error ? e.message : String(e)
+            results.auth_getUser_exception = e instanceof Error ? e.message : String(e)
         }
     }
 
-    // Test 3: createClient with anonKey (API_KEY value) + try a DB write
-    if (apiKey) {
+    // Test 3: service-role client DB write
+    if (serviceRoleKey) {
         try {
-            const client = createClient({ baseUrl: internalUrl, anonKey: apiKey })
-            const { error } = await client.database.from('email_integrations').insert([{
+            const client = createClient(supabaseUrl, serviceRoleKey, {
+                auth: { persistSession: false, autoRefreshToken: false },
+            })
+            const { error } = await client.from('email_integrations').insert([{
                 user_id: '00000000-0000-0000-0000-000000000001',
-                provider: '_debug_apikey_',
+                provider: '_debug_service_role_',
                 access_token: 'debug',
                 metadata: {},
                 connected_at: new Date().toISOString(),
             }])
-            results.apiKey_insert = { error: error?.message ?? null, success: !error }
+            results.serviceRole_insert = { error: error?.message ?? null, success: !error }
             // Clean up
             if (!error) {
-                await client.database.from('email_integrations').delete()
+                await client.from('email_integrations').delete()
                     .eq('user_id', '00000000-0000-0000-0000-000000000001')
-                    .eq('provider', '_debug_apikey_')
+                    .eq('provider', '_debug_service_role_')
             }
         } catch (e: unknown) {
-            results.apiKey_exception = e instanceof Error ? e.message : String(e)
+            results.serviceRole_exception = e instanceof Error ? e.message : String(e)
         }
     }
 
     // Test 4: Raw PostgREST HTTP call with anonKey
     try {
-        const resp = await fetch(`${internalUrl}/rest/v1/email_integrations`, {
+        const resp = await fetch(`${supabaseUrl}/rest/v1/email_integrations`, {
             method: 'HEAD',
             headers: {
                 'apikey': anonKey,
@@ -82,4 +85,4 @@ export default async function (req: Request): Promise<Response> {
     return new Response(JSON.stringify(results, null, 2), {
         headers: { 'Content-Type': 'application/json' },
     })
-}
+})

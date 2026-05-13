@@ -1,10 +1,10 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
-import { createClient } from "@insforge/sdk";
+import { createClient } from "@supabase/supabase-js";
 
-const insforge = createClient({
-    baseUrl: process.env.INSFORGE_BASE_URL!,
-    anonKey: process.env.INSFORGE_API_KEY!
-});
+const supabase = createClient(
+    process.env.SUPABASE_URL || "https://npxklgkoemybgivdrmka.supabase.co",
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY!
+);
 
 // ── Perplexity Search API types ──
 interface PerplexitySearchResult {
@@ -75,7 +75,7 @@ export const researchTopics = task({
         const savedIds: string[] = [];
 
         for (const topic of topTopics) {
-            const { data, error } = await insforge.database
+            const { data, error } = await supabase
                 .from("research_topics")
                 .insert({
                     user_id: userId,

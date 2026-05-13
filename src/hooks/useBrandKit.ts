@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { insforge } from '@/lib/insforge'
+import { supabase } from '@/lib/supabase'
 import { useAuthContext } from '@/providers/AuthProvider'
 
 // ── Types ────────────────────────────────────────────────────
@@ -93,7 +93,7 @@ export function useBrandKit() {
             setLoading(true)
             setError(null)
 
-            const { data: row, error: fetchError } = await insforge.database
+            const { data: row, error: fetchError } = await supabase
                 .from('brand_kits')
                 .select('*')
                 .eq('user_id', user.id)
@@ -169,7 +169,7 @@ export function useBrandKit() {
 
         if (data.id) {
             // Update existing record
-            const { data: row, error } = await insforge.database
+            const { data: row, error } = await supabase
                 .from('brand_kits')
                 .update(payload)
                 .eq('id', data.id)
@@ -179,7 +179,7 @@ export function useBrandKit() {
             savedRow = row
         } else {
             // Insert new record
-            const { data: row, error } = await insforge.database
+            const { data: row, error } = await supabase
                 .from('brand_kits')
                 .insert([payload])
                 .select()
@@ -199,7 +199,7 @@ export function useBrandKit() {
         setSaving(false)
     }, [user, data])
 
-    // Upload logo to InsForge Storage
+    // Upload logo to Supabase Storage
     const uploadLogo = useCallback(async (file: File, type: 'primary' | 'icon') => {
         if (!user) return
 
@@ -211,18 +211,17 @@ export function useBrandKit() {
         const existingUrl = type === 'primary' ? data.primary_logo_url : data.icon_logo_url
         if (existingUrl) {
             try {
-                // Extract key from URL: everything after /objects/
-                const match = existingUrl.match(/\/objects\/(.+?)(\?|$)/)
+                const match = existingUrl.match(/\/storage\/v1\/object\/public\/brand-assets\/(.+?)(\?|$)/)
                 if (match) {
                     const existingKey = decodeURIComponent(match[1])
-                    await insforge.storage.from('brand-assets').remove(existingKey)
+                    await supabase.storage.from('brand-assets').remove([existingKey])
                 }
             } catch {
                 // Ignore delete errors — old file may already be gone
             }
         }
 
-        const { data: uploadData, error: uploadError } = await insforge.storage
+        const { data: uploadData, error: uploadError } = await supabase.storage
             .from('brand-assets')
             .upload(path, file)
 
@@ -232,7 +231,11 @@ export function useBrandKit() {
             return
         }
 
-        const url = uploadData!.url
+        const { data: publicUrlData } = supabase.storage
+            .from('brand-assets')
+            .getPublicUrl(uploadData!.path)
+
+        const url = publicUrlData.publicUrl
         setData(prev => ({
             ...prev,
             [type === 'primary' ? 'primary_logo_url' : 'icon_logo_url']: url,

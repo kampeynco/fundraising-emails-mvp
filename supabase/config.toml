@@ -1,0 +1,34 @@
+project_id = "npxklgkoemybgivdrmka"
+
+[functions.get-mailchimp-oauth-url]
+verify_jwt = true
+
+[functions.get-hubspot-oauth-url]
+verify_jwt = true
+
+[functions.mailchimp-oauth-callback]
+verify_jwt = false
+
+[functions.hubspot-oauth-callback]
+verify_jwt = false
+
+[functions.debug-db-write]
+verify_jwt = true
+
+[functions.search-research]
+verify_jwt = true
+
+[functions.scrape-bio]
+verify_jwt = true
+
+[functions.trigger-draft-generation]
+verify_jwt = true
+
+[functions.generate-embedding]
+verify_jwt = true
+
+[functions.search-similar]
+verify_jwt = true
+
+[functions.send-email]
+verify_jwt = false

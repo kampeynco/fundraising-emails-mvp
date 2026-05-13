@@ -28,8 +28,8 @@ dist/
 *.local
 .tmp-antigravity-kit
 
-# InsForge & AI agent skills
-.insforge
+# Supabase & AI agent skills
+.supabase
 .agent
 .agents
 .augment

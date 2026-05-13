@@ -3,7 +3,7 @@ import { useOutletContext, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { ArrowRight01Icon } from '@hugeicons/core-free-icons'
-import { insforge } from '@/lib/insforge'
+import { supabase } from '@/lib/supabase'
 import { useAuthContext } from '@/providers/AuthProvider'
 
 type SettingsContext = { activeSettingsSection: string }
@@ -169,7 +169,7 @@ function IntegrationsSection() {
     // Fetch connected integrations on mount
     const fetchIntegrations = useCallback(async () => {
         if (!user) return
-        const { data } = await insforge.database
+        const { data } = await supabase
             .from('email_integrations')
             .select('provider, metadata')
             .eq('user_id', user.id)
@@ -259,7 +259,7 @@ function IntegrationsSection() {
         }
 
         try {
-            const { data, error } = await insforge.functions.invoke(functionName)
+            const { data, error } = await supabase.functions.invoke(functionName)
 
             if (error) {
                 console.error('OAuth URL error:', error)
@@ -399,7 +399,7 @@ function IntegrationsSection() {
             }
 
             // Save to email_integrations (check-then-update-or-insert)
-            const { data: existing } = await insforge.database
+            const { data: existing } = await supabase
                 .from('email_integrations')
                 .select('id')
                 .eq('user_id', user.id)
@@ -416,11 +416,11 @@ function IntegrationsSection() {
             }
 
             const { error } = existing
-                ? await insforge.database
+                ? await supabase
                     .from('email_integrations')
                     .update(integrationPayload)
                     .eq('id', existing.id)
-                : await insforge.database
+                : await supabase
                     .from('email_integrations')
                     .insert([integrationPayload])
 
@@ -446,7 +446,7 @@ function IntegrationsSection() {
 
     const handleDisconnect = async (provider: string) => {
         if (!user) return
-        await insforge.database
+        await supabase
             .from('email_integrations')
             .delete()
             .eq('user_id', user.id)

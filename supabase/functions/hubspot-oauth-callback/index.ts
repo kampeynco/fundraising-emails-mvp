@@ -1,4 +1,5 @@
-import { createClient } from 'npm:@insforge/sdk'
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { createClient } from 'jsr:@supabase/supabase-js@2'
 
 function htmlRedirect(url: string): Response {
     return new Response(
@@ -7,7 +8,7 @@ function htmlRedirect(url: string): Response {
     )
 }
 
-export default async function (req: Request): Promise<Response> {
+Deno.serve(async (req: Request): Promise<Response> => {
     const reqUrl = new URL(req.url)
     const code = reqUrl.searchParams.get('code')
     const state = reqUrl.searchParams.get('state')
@@ -79,13 +80,18 @@ export default async function (req: Request): Promise<Response> {
             return htmlRedirect(`${completeUrl}?error=auth_failed`)
         }
 
-        // Write integration using API_KEY (admin) — no RLS, direct write
-        const client = createClient({
-            baseUrl: Deno.env.get('INSFORGE_BASE_URL'),
-            anonKey: Deno.env.get('API_KEY'),
+        const supabaseUrl = Deno.env.get('SUPABASE_URL') || 'https://npxklgkoemybgivdrmka.supabase.co'
+        const serviceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
+        if (!serviceRoleKey) {
+            console.error('Missing SUPABASE_SERVICE_ROLE_KEY')
+            return htmlRedirect(`${completeUrl}?error=callback_failed`)
+        }
+
+        const client = createClient(supabaseUrl, serviceRoleKey, {
+            auth: { persistSession: false, autoRefreshToken: false },
         })
 
-        const { error: upsertError } = await client.database.from('email_integrations').upsert(
+        const { error: upsertError } = await client.from('email_integrations').upsert(
             {
                 user_id: userId,
                 provider: 'hubspot',
@@ -110,4 +116,4 @@ export default async function (req: Request): Promise<Response> {
         console.error('HubSpot OAuth callback error:', err)
         return htmlRedirect(`${completeUrl}?error=callback_failed`)
     }
-}
+})

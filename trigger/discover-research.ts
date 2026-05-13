@@ -1,10 +1,10 @@
 import { schedules, logger, metadata } from "@trigger.dev/sdk";
-import { createClient } from "@insforge/sdk";
+import { createClient } from "@supabase/supabase-js";
 
-const insforge = createClient({
-    baseUrl: process.env.INSFORGE_BASE_URL!,
-    anonKey: process.env.INSFORGE_API_KEY!
-});
+const supabase = createClient(
+    process.env.SUPABASE_URL || "https://npxklgkoemybgivdrmka.supabase.co",
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY!
+);
 
 // ── Types ──
 interface BrandKitRow {
@@ -75,7 +75,7 @@ export const discoverResearch = schedules.task({
         metadata.set("status", "fetching_users");
 
         // 1. Fetch all brand kits
-        const { data: brandKits, error: bkError } = await insforge.database
+        const { data: brandKits, error: bkError } = await supabase
             .from("brand_kits")
             .select("user_id, kit_name, org_type, org_level, office_sought, state, district, brand_summary");
 
@@ -121,7 +121,7 @@ async function processUserDiscovery(kit: BrandKitRow): Promise<number> {
     }
 
     // Fetch existing topic URLs for deduplication
-    const { data: existing } = await insforge.database
+    const { data: existing } = await supabase
         .from("research_topics")
         .select("source_url")
         .eq("user_id", kit.user_id)
@@ -159,7 +159,7 @@ async function processUserDiscovery(kit: BrandKitRow): Promise<number> {
 
     let saved = 0;
     for (const topic of topTopics) {
-        const { error } = await insforge.database.from("research_topics").insert({
+        const { error } = await supabase.from("research_topics").insert({
             user_id: kit.user_id,
             title: topic.title,
             summary: topic.summary,

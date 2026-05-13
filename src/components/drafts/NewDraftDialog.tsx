@@ -7,7 +7,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { useAuthContext } from '@/providers/AuthProvider'
-import { insforge } from '@/lib/insforge'
+import { supabase } from '@/lib/supabase'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { SparklesIcon } from '@hugeicons/core-free-icons'
 
@@ -29,7 +29,7 @@ export function NewDraftDialog({ open, onOpenChange }: NewDraftDialogProps) {
         setError(null)
 
         try {
-            const { data, error: fnError } = await insforge.functions.invoke('trigger-draft-generation', {
+            const { data, error: fnError } = await supabase.functions.invoke('trigger-draft-generation', {
                 body: { emailsToGenerate: 1 },
             })
 

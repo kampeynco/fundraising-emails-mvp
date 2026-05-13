@@ -16,7 +16,7 @@ Under the **Auth** tab:
 
 1. Set **Redirect URL** to:
    ```
-   https://z4yfizmv.us-east.insforge.app/functions/hubspot-oauth-callback
+   https://npxklgkoemybgivdrmka.supabase.co/functions/v1/hubspot-oauth-callback
    ```
 
 2. Under **Scopes**, add:
@@ -25,12 +25,12 @@ Under the **Auth** tab:
 
 3. Copy the **Client ID** and **Client Secret**
 
-## 3. Set InsForge Secrets
+## 3. Set Supabase Secrets
 
 ```bash
-insforge secrets add HUBSPOT_CLIENT_ID your_client_id_here
-insforge secrets add HUBSPOT_CLIENT_SECRET your_client_secret_here
-# HUBSPOT_REDIRECT_URI is already set automatically
+supabase secrets set HUBSPOT_CLIENT_ID=your_client_id_here
+supabase secrets set HUBSPOT_CLIENT_SECRET=your_client_secret_here
+supabase secrets set HUBSPOT_REDIRECT_URI=https://npxklgkoemybgivdrmka.supabase.co/functions/v1/hubspot-oauth-callback
 ```
 
 ## 4. Edge Functions

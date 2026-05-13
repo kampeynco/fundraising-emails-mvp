@@ -1,12 +1,12 @@
 import { task, logger, metadata } from "@trigger.dev/sdk";
-import { createClient } from "@insforge/sdk";
+import { createClient } from "@supabase/supabase-js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // ── Clients ──
-const insforge = createClient({
-    baseUrl: process.env.INSFORGE_BASE_URL!,
-    anonKey: process.env.INSFORGE_API_KEY!
-});
+const supabase = createClient(
+    process.env.SUPABASE_URL || "https://npxklgkoemybgivdrmka.supabase.co",
+    process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY!
+);
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -96,7 +96,7 @@ export const generateUserDrafts = task({
             .set("status", "loading_context");
 
         // ── 1. Load brand kit ──
-        const { data: brandKit, error: bkError } = await insforge.database
+        const { data: brandKit, error: bkError } = await supabase
             .from("brand_kits")
             .select("id, kit_name, brand_summary, tone, address, copyright, footer, disclaimers, colors")
             .eq("user_id", userId)
@@ -110,7 +110,7 @@ export const generateUserDrafts = task({
         const bk = brandKit as BrandKit;
 
         // ── 2. Load recent research topics ──
-        const { data: topics } = await insforge.database
+        const { data: topics } = await supabase
             .from("research_topics")
             .select("id, title, summary, content_snippet, source_url")
             .eq("user_id", userId)
@@ -141,7 +141,7 @@ export const generateUserDrafts = task({
                 const draft = await generateDraft(bk, template, topicsForThisDraft, weekOf);
 
                 // Save to database
-                const { data: savedDraft, error: saveError } = await insforge.database
+                const { data: savedDraft, error: saveError } = await supabase
                     .from("email_drafts")
                     .insert({
                         user_id: userId,
@@ -178,7 +178,7 @@ export const generateUserDrafts = task({
 
                 // Mark research topics as used
                 if (topicsForThisDraft.length > 0) {
-                    await insforge.database
+                    await supabase
                         .from("research_topics")
                         .update({ used_in_draft: true })
                         .in(

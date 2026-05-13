@@ -156,48 +156,59 @@ export function AuthPage({ mode, onSubmitLogin, onSubmitSignup, onVerifyEmail, o
                             </Button>
                         </div>
                     ) : step === 'verify' ? (
-                        <form onSubmit={handleVerify} className="space-y-3">
-                            <p className="text-sm text-muted-foreground">
-                                We sent a 6-digit code to <strong>{pendingEmail}</strong>. Enter it below to verify your account.
-                            </p>
-                            {error && (
-                                <p
-                                    className="text-sm text-destructive text-center rounded-md bg-destructive/10 px-3 py-2"
-                                    role="alert"
-                                >
-                                    {error}
+                        onVerifyEmail ? (
+                            <form onSubmit={handleVerify} className="space-y-3">
+                                <p className="text-sm text-muted-foreground">
+                                    We sent a 6-digit code to <strong>{pendingEmail}</strong>. Enter it below to verify your account.
                                 </p>
-                            )}
-                            <div className="space-y-1.5">
-                                <label htmlFor="auth-otp" className="text-sm font-medium">
-                                    Verification Code
-                                </label>
-                                <Input
-                                    id="auth-otp"
-                                    placeholder="123456"
-                                    type="text"
-                                    inputMode="numeric"
-                                    pattern="[0-9]{6}"
-                                    maxLength={6}
-                                    value={otp}
-                                    onChange={(e) => setOtp(e.target.value)}
-                                    required
-                                    autoComplete="one-time-code"
-                                    autoFocus
-                                />
+                                {error && (
+                                    <p
+                                        className="text-sm text-destructive text-center rounded-md bg-destructive/10 px-3 py-2"
+                                        role="alert"
+                                    >
+                                        {error}
+                                    </p>
+                                )}
+                                <div className="space-y-1.5">
+                                    <label htmlFor="auth-otp" className="text-sm font-medium">
+                                        Verification Code
+                                    </label>
+                                    <Input
+                                        id="auth-otp"
+                                        placeholder="123456"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]{6}"
+                                        maxLength={6}
+                                        value={otp}
+                                        onChange={(e) => setOtp(e.target.value)}
+                                        required
+                                        autoComplete="one-time-code"
+                                        autoFocus
+                                    />
+                                </div>
+                                <Button type="submit" className="w-full bg-brand hover:bg-brand-dark text-white" disabled={loading}>
+                                    {loading ? 'Verifying…' : 'Verify Email'}
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    className="w-full text-sm"
+                                    onClick={() => { setStep('form'); setOtp(''); setError(null) }}
+                                >
+                                    Back
+                                </Button>
+                            </form>
+                        ) : (
+                            <div className="space-y-3 py-4">
+                                <p className="text-sm text-muted-foreground">
+                                    We sent a confirmation link to <strong>{pendingEmail}</strong>. Open it to finish creating your account.
+                                </p>
+                                <Button variant="outline" className="w-full" asChild>
+                                    <Link to="/login">Back to sign in</Link>
+                                </Button>
                             </div>
-                            <Button type="submit" className="w-full bg-brand hover:bg-brand-dark text-white" disabled={loading}>
-                                {loading ? 'Verifying…' : 'Verify Email'}
-                            </Button>
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                className="w-full text-sm"
-                                onClick={() => { setStep('form'); setOtp(''); setError(null) }}
-                            >
-                                Back
-                            </Button>
-                        </form>
+                        )
                     ) : (
                         <form onSubmit={handleSubmit} className="space-y-3">
                             {error && (

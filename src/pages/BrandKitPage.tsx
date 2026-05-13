@@ -4,7 +4,7 @@ import { HexColorPickerField } from '@/components/ui/hex-color-picker'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { BlueskyIcon, Globe02Icon, ThreadsIcon, Link02Icon, Loading03Icon } from '@hugeicons/core-free-icons'
 import { useBrandKit, type BrandKitSocial } from '@/hooks/useBrandKit'
-import { insforge } from '@/lib/insforge'
+import { supabase } from '@/lib/supabase'
 
 const toneOptions = [
     'Inspirational',
@@ -60,7 +60,7 @@ function ImportFromUrlButton({ onImport }: { onImport: (bio: string) => void }) 
         setError('')
 
         try {
-            const { data, error: fnError } = await insforge.functions.invoke('scrape-bio', {
+            const { data, error: fnError } = await supabase.functions.invoke('scrape-bio', {
                 body: { url: url.trim() },
             })
 

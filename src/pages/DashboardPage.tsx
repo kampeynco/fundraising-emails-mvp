@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useOutletContext } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { useAuthContext } from '@/providers/AuthProvider'
-import { insforge } from '@/lib/insforge'
+import { supabase } from '@/lib/supabase'
 import { formatDate } from '@/lib/dates'
 import { type Draft } from '@/types/draft'
 import { HugeiconsIcon } from '@hugeicons/react'
@@ -104,7 +104,7 @@ export default function DashboardPage() {
     useEffect(() => {
         if (!user) return
         const fetchTopics = async () => {
-            const { data: topics } = await insforge.database
+            const { data: topics } = await supabase
                 .from('topic_metrics')
                 .select('topic, status')
                 .eq('user_id', user.id)
