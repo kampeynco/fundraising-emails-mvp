@@ -2,6 +2,18 @@
   command = "npm run build"
   publish = "dist"
 
+# Production context (main branch)
+[context.production]
+  command = "npm run build"
+
+# Staging context (staging branch)
+[context.staging]
+  command = "npm run build"
+
+# Deploy preview context (pull requests)
+[context.deploy-preview]
+  command = "npm run build"
+
 [[redirects]]
   from = "/login"
   to = "/app.html"
